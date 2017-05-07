@@ -1,0 +1,28 @@
+{
+  "name": "akun-x",
+  "version": "1.0.0",
+  "description": "Extending the Akun experience",
+  "main": "dest/akun-x.user.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node build/build.js --entry=src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fiddlekins/akun-x.git"
+  },
+  "author": "Fiddlekins",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Fiddlekins/akun-x/issues"
+  },
+  "homepage": "https://github.com/Fiddlekins/akun-x#readme",
+  "devDependencies": {
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-latest": "^6.24.1",
+    "fs-extra": "^3.0.1",
+    "lodash.escaperegexp": "^4.1.2",
+    "rollup": "^0.41.6",
+    "rollup-plugin-babel": "^2.7.1"
+  }
+}
