@@ -6,7 +6,8 @@ const EVENTS = {
 	CHAT_NODE_ADDED: 'dom.added.chatItem',
 	CHAT_NODE_MESSAGE_ADDED: 'dom.added.chatItemMessage',
 	CHAT_NODE_FIELD_BODY_ADDED: 'dom.added.chatItemFieldBody',
-	CHAPTER_NODE_ADDED: 'dom.added.chapter'
+	CHAPTER_NODE_ADDED: 'dom.added.chapter',
+	STORY_NODE_ADDED: 'dom.added.storyItem'
 };
 
 export default class ObserverDOM {
@@ -25,6 +26,9 @@ export default class ObserverDOM {
 			});
 			document.querySelectorAll('.chapter').forEach(nodeChapter => {
 				this._eventEmitter.emit(EVENTS.CHAPTER_NODE_ADDED, nodeChapter);
+			});
+			document.querySelectorAll('.storyItem').forEach(nodeStoryItem => {
+				this._eventEmitter.emit(EVENTS.STORY_NODE_ADDED, nodeStoryItem);
 			});
 		});
 	}
@@ -64,8 +68,14 @@ export default class ObserverDOM {
 							this._eventEmitter.emit(EVENTS.CHAPTER_NODE_ADDED, nodeChapter);
 						});
 					}
+					if (node.classList.contains('chapter')) {
+						this._eventEmitter.emit(EVENTS.CHAPTER_NODE_ADDED, node);
+					}
 					if (node.classList.contains('fieldBody')) {
 						this._eventEmitter.emit(EVENTS.CHAT_NODE_FIELD_BODY_ADDED, node);
+					}
+					if (node.classList.contains('storyItem')) {
+						this._eventEmitter.emit(EVENTS.STORY_NODE_ADDED, node);
 					}
 				}
 			}

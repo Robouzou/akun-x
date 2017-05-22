@@ -2,6 +2,7 @@
 
 import EventEmitter from 'eventemitter3';
 import ObserverDOM from './observerDOM';
+import ObserverNet from './observerNet';
 
 const LOCAL_STORAGE_KEY = 'akun-x';
 
@@ -9,6 +10,7 @@ class Core extends EventEmitter {
 	constructor() {
 		super();
 		this._observerDOM = new ObserverDOM(this);
+		this._observerNet = new ObserverNet(this);
 		this._modules = {};
 		this._settings = {};
 
