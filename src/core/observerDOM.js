@@ -4,7 +4,9 @@ const MutationObserver = window.MutationObserver || window.WebKitMutationObserve
 
 const EVENTS = {
 	CHAT_NODE_ADDED: 'dom.added.chatItem',
-	CHAT_NODE_MESSAGE_ADDED: 'dom.added.chatItemMessage'
+	CHAT_NODE_MESSAGE_ADDED: 'dom.added.chatItemMessage',
+	CHAT_NODE_FIELD_BODY_ADDED: 'dom.added.chatItemFieldBody',
+	CHAPTER_NODE_ADDED: 'dom.added.chapter'
 };
 
 export default class ObserverDOM {
@@ -20,6 +22,9 @@ export default class ObserverDOM {
 				if (nodeMessage) {
 					this._eventEmitter.emit(EVENTS.CHAT_NODE_MESSAGE_ADDED, nodeMessage);
 				}
+			});
+			document.querySelectorAll('.chapter').forEach(nodeChapter => {
+				this._eventEmitter.emit(EVENTS.CHAPTER_NODE_ADDED, nodeChapter);
 			});
 		});
 	}
@@ -55,6 +60,12 @@ export default class ObserverDOM {
 								this._eventEmitter.emit(EVENTS.CHAT_NODE_MESSAGE_ADDED, nodeMessage);
 							}
 						});
+						node.querySelectorAll('.chapter').forEach(nodeChapter => {
+							this._eventEmitter.emit(EVENTS.CHAPTER_NODE_ADDED, nodeChapter);
+						});
+					}
+					if (node.classList.contains('fieldBody')) {
+						this._eventEmitter.emit(EVENTS.CHAT_NODE_FIELD_BODY_ADDED, node);
 					}
 				}
 			}
