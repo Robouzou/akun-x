@@ -6,7 +6,7 @@ import ObserverNet from './observerNet';
 
 const LOCAL_STORAGE_KEY = 'akun-x';
 
-class Core extends EventEmitter {
+export default class Core extends EventEmitter {
 	constructor() {
 		super();
 		this._observerDOM = new ObserverDOM(this);
@@ -39,5 +39,3 @@ class Core extends EventEmitter {
 		localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this._settings));
 	}
 }
-
-export {Core};
