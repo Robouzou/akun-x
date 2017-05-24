@@ -127,7 +127,7 @@ export default class Linker {
 		}
 
 		let link = document.createElement('a');
-		link.innerHTML = url;
+		link.textContent = url;
 		link.href = url;
 		return link;
 	}

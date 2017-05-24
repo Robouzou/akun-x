@@ -6,6 +6,10 @@ import ObserverNet from './observerNet';
 
 const LOCAL_STORAGE_KEY = 'akun-x';
 
+const EVENTS = {
+	FOCUS: 'focus'
+};
+
 export default class Core extends EventEmitter {
 	constructor() {
 		super();
@@ -15,6 +19,10 @@ export default class Core extends EventEmitter {
 		this._settings = {};
 
 		this._loadSettings();
+
+		window.onfocus = () => {
+			this.emit(EVENTS.FOCUS);
+		}
 	}
 
 	addModule(module) {

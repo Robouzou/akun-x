@@ -6,6 +6,7 @@ const EVENTS = {
 	CHAT_NODE_ADDED: 'dom.added.chatItem',
 	CHAT_NODE_MESSAGE_ADDED: 'dom.added.chatItemMessage',
 	CHAT_NODE_FIELD_BODY_ADDED: 'dom.added.chatItemFieldBody',
+	CHAT_HEADER_ADDED: 'dom.added.chatHeader',
 	CHAPTER_NODE_ADDED: 'dom.added.chapter',
 	STORY_NODE_ADDED: 'dom.added.storyItem'
 };
@@ -76,6 +77,9 @@ export default class ObserverDOM {
 					}
 					if (node.classList.contains('storyItem')) {
 						this._eventEmitter.emit(EVENTS.STORY_NODE_ADDED, node);
+					}
+					if (node.classList.contains('chatContainer')) {
+						this._eventEmitter.emit(EVENTS.CHAT_HEADER_ADDED, node.querySelector('.chatHeader'));
 					}
 				}
 			}
