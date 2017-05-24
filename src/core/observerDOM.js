@@ -54,6 +54,10 @@ export default class ObserverDOM {
 				if (node.classList) {
 					if (node.classList.contains('logItem')) {
 						this._eventEmitter.emit(EVENTS.CHAT_NODE_ADDED, node);
+						let nodeMessage = node.querySelector('.message');
+						if (nodeMessage) {
+							this._eventEmitter.emit(EVENTS.CHAT_NODE_MESSAGE_ADDED, nodeMessage);
+						}
 					}
 					if (node.classList.contains('message')) {
 						this._eventEmitter.emit(EVENTS.CHAT_NODE_MESSAGE_ADDED, node);
@@ -84,6 +88,15 @@ export default class ObserverDOM {
 					}
 					if (node.classList.contains('secondRow')) {
 						this._eventEmitter.emit(EVENTS.CHAPTER_BUTTON_CONTROLS_ADDED, node);
+					}
+					if (node.classList.contains('chatLight')) {
+						node.querySelectorAll('.logItem').forEach(nodeLogItem => {
+							this._eventEmitter.emit(EVENTS.CHAT_NODE_ADDED, nodeLogItem);
+							let nodeMessage = nodeLogItem.querySelector('.message');
+							if (nodeMessage) {
+								this._eventEmitter.emit(EVENTS.CHAT_NODE_MESSAGE_ADDED, nodeMessage);
+							}
+						});
 					}
 				}
 			}
