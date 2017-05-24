@@ -75,7 +75,7 @@ export default class Linker {
 		let contentNode = node.querySelector('.fieldBody');
 		if (contentNode) {
 			this._linkify(contentNode);
-			contentNode.querySelectorAll('p').forEach(this._linkify, this);
+			contentNode.querySelectorAll('p, span').forEach(this._linkify, this);
 		}
 	}
 
