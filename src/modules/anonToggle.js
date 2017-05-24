@@ -2,6 +2,27 @@
 
 const MODULE_ID = 'anonToggle';
 
+const CSS = `
+.akun-x-anon-toggle {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.akun-x-anon-toggle .avatar{
+	margin-right: 4px;
+	display: inline;
+	-webkit-border-radius: 2em;
+    -moz-border-radius: 2em;
+    -ms-border-radius: 2em;
+	border-radius: 2em;
+	position: relative;
+	top: -1px;
+}`;
+
 export default class AnonToggle {
 	constructor(core, settings) {
 		this._core = core;
@@ -28,25 +49,7 @@ export default class AnonToggle {
 	_addCSS() {
 		this._styleElement = document.createElement('style');
 		this._styleElement.id = 'akun-x-anon-toggle-css';
-		this._styleElement.textContent = `.akun-x-anon-toggle {
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}
-
-.akun-x-anon-toggle .avatar{
-	margin-right: 4px;
-	display: inline;
-	-webkit-border-radius: 2em;
-    -moz-border-radius: 2em;
-    -ms-border-radius: 2em;
-	border-radius: 2em;
-	position: relative;
-	top: -1px;
-}`;
+		this._styleElement.textContent = CSS;
 		document.querySelector('head').appendChild(this._styleElement);
 	}
 
