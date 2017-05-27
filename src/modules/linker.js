@@ -114,15 +114,24 @@ export default class Linker {
 		if (this._settings.embedVideos.value && this.isVideoUrl(url)) {
 			let type = this._videoTypeRegex.exec(url);
 			type = type && type[1];
-			if (type === 'gifv') {
-				url = url.replace(/\.gifv/, '.webm'); // Works for imgur stuff
-			}
 			let vid = document.createElement('video');
 			vid.setAttribute('controls', 'controls');
-			let source = document.createElement('source');
-			source.type = `video/${type}`;
-			source.src = url;
-			vid.appendChild(source);
+			if (type === 'gifv') {
+				// Handle Imgur's dumb idea
+				let sourceWebm = document.createElement('source');
+				sourceWebm.type = `video/webm`;
+				sourceWebm.src = url.replace(/\.gifv/, '.webm');
+				let sourceMp4 = document.createElement('source');
+				sourceMp4.type = `video/mp4`;
+				sourceMp4.src = url.replace(/\.gifv/, '.mp4');
+				vid.appendChild(sourceWebm);
+				vid.appendChild(sourceMp4);
+			} else {
+				let source = document.createElement('source');
+				source.type = `video/${type}`;
+				source.src = url;
+				vid.appendChild(source);
+			}
 			return vid;
 		}
 
