@@ -2,6 +2,19 @@
 
 const MODULE_ID = 'anonToggle';
 
+const DEFAULT_SETTINGS = {
+	name: 'Anon Toggle',
+	id: MODULE_ID,
+	settings: {
+		enabled: {
+			name: 'Enabled',
+			description:'Turn the Anon Toggle module on or off.',
+			type: 'boolean',
+			value: true
+		}
+	}
+};
+
 const CSS = `
 .akun-x-anon-toggle {
 	-webkit-touch-callout: none;
@@ -24,10 +37,9 @@ const CSS = `
 }`;
 
 export default class AnonToggle {
-	constructor(core, settings) {
+	constructor(core) {
 		this._core = core;
-		this._settings = settings;
-		this._initialiseSettings();
+		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS, this._onSettingsChanged.bind(this));
 		this._onClickShouldSetToAnon = false;
 		this._styleElement = null;
 		this._toggleElement = null;
@@ -43,7 +55,7 @@ export default class AnonToggle {
 		return MODULE_ID;
 	}
 
-	_initialiseSettings() {
+	_onSettingsChanged() {
 	}
 
 	_addCSS() {

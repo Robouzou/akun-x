@@ -4,11 +4,48 @@ const MODULE_ID = 'linker';
 const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
 const videoExtensions = ['webm', 'mp4', 'gifv'];
 
+const DEFAULT_SETTINGS = {
+	name: 'Linker',
+	id: MODULE_ID,
+	settings: {
+		enabled: {
+			name: 'Enabled',
+			description:'Turn the Linker module on or off.',
+			type: 'boolean',
+			value: true
+		},
+		embedImages: {
+			name: 'Embed Images',
+			description:'Embed links recognised to be images as images instead.',
+			type: 'boolean',
+			value: true
+		},
+		embedVideos: {
+			name: 'Embed Videos',
+			description:'Embed links recognised to be videos as images instead.',
+			type: 'boolean',
+			value: true
+		},
+		mediaSites: {
+			name: 'Media Sites',
+			description:'Define a list of sites to embed links as media from. Used as a regex pattern.',
+			type: 'array',
+			value: [
+				'puu.sh',
+				'i.imgur.com',
+				'data.archive.moe',
+				'i.4cdn.org',
+				'i0.kym-cdn.com',
+				'[\\S]*.deviantart.net'
+			]
+		}
+	}
+};
+
 export default class Linker {
-	constructor(core, settings) {
+	constructor(core) {
 		this._core = core;
-		this._settings = settings;
-		this._initialiseSettings();
+		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS, this._onSettingsChanged.bind(this));
 		this._imageRegex = null;
 		this._videoRegex = null;
 		this._videoTypeRegex = null;
@@ -22,35 +59,7 @@ export default class Linker {
 		return MODULE_ID;
 	}
 
-	_initialiseSettings() {
-		if (!this._settings.embedImages) {
-			this._settings.embedImages = {
-				name: 'Embed Images',
-				type: 'boolean',
-				value: true
-			}
-		}
-		if (!this._settings.embedVideos) {
-			this._settings.embedVideos = {
-				name: 'Embed Videos',
-				type: 'boolean',
-				value: true
-			}
-		}
-		if (!this._settings.mediaSites) {
-			this._settings.mediaSites = {
-				name: 'Embed Videos',
-				type: 'array',
-				value: [
-					'puu.sh',
-					'i.imgur.com',
-					'data.archive.moe',
-					'i.4cdn.org',
-					'i0.kym-cdn.com',
-					'[\\S]*.deviantart.net'
-				]
-			}
-		}
+	_onSettingsChanged() {
 	}
 
 	_updateMediaRegex() {

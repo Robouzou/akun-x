@@ -2,6 +2,19 @@
 
 const MODULE_ID = 'chapterHtmlEditor';
 
+const DEFAULT_SETTINGS = {
+	name: 'Chapter HTML Editor',
+	id: MODULE_ID,
+	settings: {
+		enabled: {
+			name: 'Enabled',
+			description:'Turn the Chapter HTML Editor module on or off.',
+			type: 'boolean',
+			value: true
+		}
+	}
+};
+
 const CSS = `
 .akun-x-chapter-html-editor-disabled {
 	opacity: 0.5;
@@ -9,10 +22,9 @@ const CSS = `
 }`;
 
 export default class ChapterHTMLEditor {
-	constructor(core, settings) {
+	constructor(core) {
 		this._core = core;
-		this._settings = settings;
-		this._initialiseSettings();
+		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS, this._onSettingsChanged.bind(this));
 		this._styleElement = null;
 		this._addCSS();
 		this._core.on('dom.added.chapter', this._onAddedChapter, this);
@@ -23,7 +35,7 @@ export default class ChapterHTMLEditor {
 		return MODULE_ID;
 	}
 
-	_initialiseSettings() {
+	_onSettingsChanged() {
 	}
 
 	_addCSS() {

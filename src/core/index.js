@@ -1,10 +1,9 @@
 'use strict';
 
 import EventEmitter from 'eventemitter3';
+import Settings from './settings';
 import ObserverDOM from './observerDOM';
 import ObserverNet from './observerNet';
-
-const LOCAL_STORAGE_KEY = 'akun-x';
 
 const EVENTS = {
 	FOCUS: 'focus'
@@ -13,12 +12,10 @@ const EVENTS = {
 export default class Core extends EventEmitter {
 	constructor() {
 		super();
+		this._settings = new Settings(this);
 		this._observerDOM = new ObserverDOM(this);
 		this._observerNet = new ObserverNet(this);
 		this._modules = {};
-		this._settings = {};
-
-		this._loadSettings();
 
 		window.onfocus = () => {
 			this.emit(EVENTS.FOCUS);
@@ -27,23 +24,10 @@ export default class Core extends EventEmitter {
 
 	addModule(module) {
 		const id = module.id;
-		if (!this._settings[id]) {
-			this._settings[id] = {};
-		}
-		this._modules[id] = new module(this, this._settings[id]);
+		this._modules[id] = new module(this);
 	}
 
-	_loadSettings() {
-		let settings;
-		try {
-			settings = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
-		} catch (err) {
-			// Don't care
-		}
-		this._settings = settings || {};
-	}
-
-	_saveSettings() {
-		localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this._settings));
+	get settings() {
+		return this._settings;
 	}
 }

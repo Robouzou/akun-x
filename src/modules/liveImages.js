@@ -2,13 +2,25 @@
 
 const MODULE_ID = 'liveImages';
 
+const DEFAULT_SETTINGS = {
+	name: 'Live Images',
+	id: MODULE_ID,
+	settings: {
+		enabled: {
+			name: 'Enabled',
+			description:'Turn the Live Images module on or off.',
+			type: 'boolean',
+			value: true
+		}
+	}
+};
+
 const PLACEHOLDER_IMAGE_URL = 'https://cdn.fiction.live/h180-w320-cfill/images/1bfbkfv80_Feline_Heart.jpg';
 
 export default class LiveImages {
-	constructor(core, settings) {
+	constructor(core) {
 		this._core = core;
-		this._settings = settings;
-		this._initialiseSettings();
+		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS, this._onSettingsChanged.bind(this));
 		this._storyIdToImageMap = new Map();
 		this._core.on('net.received.liveStories', this._onLiveStories, this);
 		this._core.on('dom.added.storyItem', this._onAddedStoryItem, this);
@@ -18,7 +30,7 @@ export default class LiveImages {
 		return MODULE_ID;
 	}
 
-	_initialiseSettings() {
+	_onSettingsChanged() {
 	}
 
 	_fetchLiveData() {
