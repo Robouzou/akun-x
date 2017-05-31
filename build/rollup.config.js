@@ -3,11 +3,25 @@
 const nodeResolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const babel = require('rollup-plugin-babel');
+const postcss = require('rollup-plugin-postcss');
+const simplevars = require('postcss-simple-vars');
+const nested = require('postcss-nested');
+const cssnext = require('postcss-cssnext');
+const cssnano = require('cssnano');
 
 module.exports = {
 	entry: 'src/index.js',
 	format: 'iife',
 	plugins: [
+		postcss({
+			plugins: [
+				simplevars(),
+				nested(),
+				cssnext({ warnForDuplicates: false }),
+				cssnano({ safe: true })
+			],
+			extensions: ['.css']
+		}),
 		nodeResolve({
 			jsnext: true,
 			browser: true,
@@ -16,8 +30,7 @@ module.exports = {
 		commonjs({
 			sourceMap: false
 		}),
-		babel({
-		})
+		babel({})
 	],
 	dest: 'bundle.js'
 };

@@ -1,5 +1,7 @@
 'use strict';
 
+import './anonToggle.css';
+
 const MODULE_ID = 'anonToggle';
 
 const DEFAULT_SETTINGS = {
@@ -15,27 +17,6 @@ const DEFAULT_SETTINGS = {
 	}
 };
 
-const CSS = `
-.akun-x-anon-toggle {
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}
-
-.akun-x-anon-toggle .avatar{
-	margin-right: 4px;
-	display: inline;
-	-webkit-border-radius: 2em;
-    -moz-border-radius: 2em;
-    -ms-border-radius: 2em;
-	border-radius: 2em;
-	position: relative;
-	top: -1px;
-}`;
-
 export default class AnonToggle {
 	constructor(core) {
 		this._core = core;
@@ -45,7 +26,6 @@ export default class AnonToggle {
 		this._toggleElement = null;
 		this._avatarElement = null;
 		this._usernameElement = null;
-		this._addCSS();
 		this._createToggleElement();
 		this._core.on('focus', this._onFocus, this);
 		this._core.on('dom.added.chatHeader', this._onAddedChatHeader, this);
@@ -56,13 +36,6 @@ export default class AnonToggle {
 	}
 
 	_onSettingsChanged() {
-	}
-
-	_addCSS() {
-		this._styleElement = document.createElement('style');
-		this._styleElement.id = 'akun-x-anon-toggle-css';
-		this._styleElement.textContent = CSS;
-		document.querySelector('head').appendChild(this._styleElement);
 	}
 
 	_createToggleElement() {

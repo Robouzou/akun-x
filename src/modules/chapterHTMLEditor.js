@@ -1,5 +1,7 @@
 'use strict';
 
+import './chapterHTMLEditor.css';
+
 const MODULE_ID = 'chapterHtmlEditor';
 
 const DEFAULT_SETTINGS = {
@@ -15,18 +17,11 @@ const DEFAULT_SETTINGS = {
 	}
 };
 
-const CSS = `
-.akun-x-chapter-html-editor-disabled {
-	opacity: 0.5;
-	pointer-events: none;
-}`;
-
 export default class ChapterHTMLEditor {
 	constructor(core) {
 		this._core = core;
 		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS, this._onSettingsChanged.bind(this));
 		this._styleElement = null;
-		this._addCSS();
 		this._core.on('dom.added.chapter', this._onAddedChapter, this);
 		this._core.on('dom.added.chapterButtonControls', this._onAddedChapterButtonControls, this);
 	}
@@ -36,13 +31,6 @@ export default class ChapterHTMLEditor {
 	}
 
 	_onSettingsChanged() {
-	}
-
-	_addCSS() {
-		this._styleElement = document.createElement('style');
-		this._styleElement.id = 'akun-x-chapter-html-editor-css';
-		this._styleElement.textContent = CSS;
-		document.querySelector('head').appendChild(this._styleElement);
 	}
 
 	_onAddedChapter(node) {

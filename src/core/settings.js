@@ -1,61 +1,8 @@
 'use strict';
 
+import './settings.css';
+
 const LOCAL_STORAGE_KEY = 'akun-x';
-
-const CSS = `
-.akun-x-settings-backdrop{
-	position: fixed;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	z-index: 999;
-	background-color: rgba(0,0,0,0.5);
-}
-.akun-x-settings-horizontal-align {
-	width: 100%;
-	height: 100%;
-	display: flex;
-    justify-content: center;
-}
-.akun-x-settings-vertical-align {
-	display: flex;
-    justify-content: center;
-	flex-direction: column;
-	width: 40%;
-	min-width: 700px;
-}
-.akun-x-settings {
-	display: flex;
-	flex-direction: column;
-	height: 50%;
-	min-height: 500px;
-}
-.akun-x-settings-header {
-	
-}
-.akun-x-settings-body {
-	display: flex;
-}
-.akun-x-settings-module-list {
-	
-}
-.akun-x-settings-module-list-item {
-
-}
-.akun-x-settings-module-details-container {
-	
-}
-.akun-x-settings-module-details {
-	
-}
-.akun-x-settings-hidden {
-	display: none!important;
-}
-.akun-x-settings-selected {
-	background-color: red;
-}
-`;
 
 /* Modules have default settings. When loading the locally stored settings, these defaults should be overridden where
  *   there are locally stored settings to do so.
@@ -70,7 +17,6 @@ export default class Settings {
 	constructor(core) {
 		this._core = core;
 		this._styleElement = null;
-		this._addCSS();
 		this._settings = {};
 		this._loadedSettings = {};
 		this._loadSettings();
@@ -83,13 +29,6 @@ export default class Settings {
 		this._hideMenu();
 		document.body.appendChild(this._backdropNode);
 		this._core.on('dom.added.mainMenu', this._onAddedMainMenu.bind(this));
-	}
-
-	_addCSS() {
-		this._styleElement = document.createElement('style');
-		this._styleElement.id = 'akun-x-chapter-html-editor-css';
-		this._styleElement.textContent = CSS;
-		document.querySelector('head').appendChild(this._styleElement);
 	}
 
 	addModule(moduleSettings, callback) {
@@ -165,12 +104,13 @@ export default class Settings {
 		menuNode.classList.add('akun-x-settings');
 		const headerNode = document.createElement('div');
 		headerNode.classList.add('akun-x-settings-header');
-		const titleNode = document.createElement('span');
+		const titleNode = document.createElement('h3');
 		titleNode.classList.add('akun-x-settings-header-title');
 		titleNode.textContent = 'AkunX';
-		const exitNode = document.createElement('span');
+		const exitNode = document.createElement('button');
 		exitNode.classList.add('akun-x-settings-header-exit');
-		exitNode.textContent = 'X';
+		exitNode.type = 'button';
+		exitNode.textContent = '×';
 		const bodyNode = document.createElement('div');
 		bodyNode.classList.add('akun-x-settings-body');
 		const moduleListNode = document.createElement('ul');
@@ -209,7 +149,7 @@ export default class Settings {
 		this._moduleListNode.firstChild.classList.add('akun-x-settings-selected');
 		this._moduleDetailsContainerNode.firstChild.classList.remove('akun-x-settings-hidden');
 		// Set settings menu CSS
-		this._menuNode.style.backgroundColor = window.getComputedStyle(document.getElementById('left')).backgroundColor;
+		// this._menuNode.style.backgroundColor = window.getComputedStyle(document.getElementById('left')).backgroundColor;
 	}
 
 	_hideMenu() {
