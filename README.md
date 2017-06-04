@@ -14,7 +14,7 @@ Or if you don't want automatic updates use [this version](https://github.com/Fid
 ### Chrome:
 Install [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo), then click the link above to install AkunX.
 ### Firefox:
-Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then click the link above to install AkunX.
+Install [Tampermonkey](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/) as well since Greasemonkey doesn't work properly anymore, then click the link above to install AkunX.
 
 ## Features
 #### Settings menu
