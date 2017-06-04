@@ -75,11 +75,11 @@ export default class Settings {
 				let settingNode = document.createElement('div');
 				moduleDetailsNode.appendChild(settingNode);
 				let nameNode = document.createElement('div');
+				nameNode.classList.add('akun-x-settings-setting-name');
 				nameNode.textContent = setting.name;
 				settingNode.appendChild(nameNode);
 				let descriptionNode = document.createElement('div');
 				descriptionNode.textContent = setting.description;
-				settingNode.appendChild(descriptionNode);
 				let valueNode;
 				switch (setting.type) {
 					case SETTING_TYPES.BOOLEAN:
@@ -88,13 +88,16 @@ export default class Settings {
 						valueNode.dataset.id = settingName;
 						valueNode.dataset.type = setting.type;
 						valueNode.checked = setting.value;
+						valueNode.style.float = 'left';
 						settingNode.appendChild(valueNode);
+						settingNode.appendChild(descriptionNode);
 						break;
 					case SETTING_TYPES.ARRAY:
 						valueNode = document.createElement('textarea');
 						valueNode.dataset.id = settingName;
 						valueNode.dataset.type = setting.type;
 						valueNode.value = setting.value.join('\n');
+						settingNode.appendChild(descriptionNode);
 						settingNode.appendChild(valueNode);
 						break;
 				}
