@@ -9,8 +9,8 @@ the 'official' modules as examples until I get round to it.
 Personally written modules can be contributed to this repo or just used to do generate
 personal builds of AkunX.
 
-### [Click to Install](Fiddlekins/akun-x/raw/master/dest/akun-x.user.js)
-Or if you don't want automatic updates use [this version](raw/master/dest/akun-x-noupdate.user.js).
+### [Click to Install](https://github.com/Fiddlekins/akun-x/raw/master/dest/akun-x.user.js)
+Or if you don't want automatic updates use [this version](https://github.com/Fiddlekins/akun-x/raw/master/dest/akun-x-noupdate.user.js).
 ### Chrome:
 Install [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo), then click the link above to install AkunX.
 ### Firefox:
