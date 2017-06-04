@@ -51,10 +51,9 @@ export default class ObserverDOM {
 	}
 
 	_observerBodyFunction(mutations) {
-		// console.log(mutations);
 		for (let mutation of mutations) {
 			for (let node of mutation.addedNodes) {
-				console.log(node);
+				// console.log(node);
 				if (node.classList) {
 					if (node.classList.contains('logItem')) {
 						this._eventEmitter.emit(EVENTS.CHAT_NODE_ADDED, node);
