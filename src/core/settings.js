@@ -39,7 +39,6 @@ export default class Settings {
 		this._hideMenu();
 		document.body.appendChild(this._backdropNode);
 		this._core.on('dom.added.mainMenu', this._onAddedMainMenu.bind(this));
-		console.log(this._core.theme);
 	}
 
 	addModule(moduleSettings, callback) {
