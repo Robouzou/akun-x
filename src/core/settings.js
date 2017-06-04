@@ -122,6 +122,10 @@ export default class Settings {
 		const titleNode = document.createElement('h3');
 		titleNode.classList.add('akun-x-settings-header-title');
 		titleNode.textContent = 'AkunX';
+		const issuesNode = document.createElement('a');
+		issuesNode.classList.add('akun-x-settings-header-issues');
+		issuesNode.textContent = 'Issues';
+		issuesNode.href = 'https://github.com/Fiddlekins/akun-x/issues';
 		const exitNode = document.createElement('button');
 		exitNode.classList.add('akun-x-settings-header-exit');
 		exitNode.type = 'button';
@@ -137,6 +141,7 @@ export default class Settings {
 		verticalAlignNode.appendChild(menuNode);
 		menuNode.appendChild(headerNode);
 		headerNode.appendChild(titleNode);
+		headerNode.appendChild(issuesNode);
 		headerNode.appendChild(exitNode);
 		menuNode.appendChild(bodyNode);
 		bodyNode.appendChild(moduleListNode);
