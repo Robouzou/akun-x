@@ -20,7 +20,7 @@ module.exports = {
 				cssnext({ warnForDuplicates: false }),
 				cssnano({ safe: true })
 			],
-			extensions: ['.css']
+			extensions: ['.css', '.pcss']
 		}),
 		nodeResolve({
 			jsnext: true,

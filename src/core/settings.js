@@ -1,8 +1,13 @@
 'use strict';
 
-import './settings.css';
+import './settings.pcss';
 
 const LOCAL_STORAGE_KEY = 'akun-x';
+
+const THEME_CLASS = {
+	LIGHT: 'akun-x-settings-theme-light',
+	DARK: 'akun-x-settings-theme-dark'
+};
 
 /* Modules have default settings. When loading the locally stored settings, these defaults should be overridden where
  *   there are locally stored settings to do so.
@@ -29,6 +34,7 @@ export default class Settings {
 		this._hideMenu();
 		document.body.appendChild(this._backdropNode);
 		this._core.on('dom.added.mainMenu', this._onAddedMainMenu.bind(this));
+		console.log(this._core.theme);
 	}
 
 	addModule(moduleSettings, callback) {
@@ -94,8 +100,9 @@ export default class Settings {
 	}
 
 	_createMenu() {
+		const themeClass = this._core.theme === this._core.THEMES.DARK ? THEME_CLASS.DARK : THEME_CLASS.LIGHT;
 		const backdropNode = document.createElement('div');
-		backdropNode.classList.add('akun-x-settings-backdrop');
+		backdropNode.classList.add('akun-x-settings-backdrop', themeClass);
 		const horizontalAlignNode = document.createElement('div');
 		horizontalAlignNode.classList.add('akun-x-settings-horizontal-align');
 		const verticalAlignNode = document.createElement('div');

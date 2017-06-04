@@ -10,7 +10,7 @@ const DEFAULT_SETTINGS = {
 	settings: {
 		enabled: {
 			name: 'Enabled',
-			description:'Turn the Anon Toggle module on or off.',
+			description: 'Turn the Anon Toggle module on or off.',
 			type: 'boolean',
 			value: true
 		}
@@ -53,14 +53,14 @@ export default class AnonToggle {
 	}
 
 	_toggleClickCallback(e) {
-		const currentUser = AnonToggle._getCurrentUser();
+		const currentUser = this._core.currentUser;
 		currentUser['profile']['asAnon'] = this._onClickShouldSetToAnon;
 		this._updateProfileSettings(currentUser['profile']);
 		this._updateToggleElement(currentUser);
 	}
 
 	_onFocus() {
-		const currentUser = AnonToggle._getCurrentUser();
+		const currentUser = this._core.currentUser;
 		const asAnon = localStorage.getItem('akun-x-anon-toggle-as-anon');
 		if (asAnon !== null) {
 			currentUser['profile']['asAnon'] = asAnon === 'true';
@@ -70,7 +70,7 @@ export default class AnonToggle {
 
 	_onAddedChatHeader(node) {
 		node.querySelector('.pagination-dropdown').appendChild(this._toggleElement);
-		const currentUser = AnonToggle._getCurrentUser();
+		const currentUser = this._core.currentUser;
 		this._updateToggleElement(currentUser);
 	}
 
@@ -90,10 +90,5 @@ export default class AnonToggle {
 			this._avatarElement.style.display = 'inline';
 			this._avatarElement.src = `${currentUser['profile']['image']}/convert?w=16&h=16&fit=crop&cache=true`;
 		}
-	}
-
-	static _getCurrentUser() {
-		// This returns reference to what Akun is using
-		return $(document)['scope']()['currentUser'];
 	}
 }

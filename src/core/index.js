@@ -9,6 +9,11 @@ const EVENTS = {
 	FOCUS: 'focus'
 };
 
+const THEMES = {
+	LIGHT: 'snowdrift',
+	DARK: 'dark'
+};
+
 export default class Core extends EventEmitter {
 	constructor() {
 		super();
@@ -29,5 +34,22 @@ export default class Core extends EventEmitter {
 
 	get settings() {
 		return this._settings;
+	}
+
+	get currentUser() {
+		// This returns reference to what Akun is using
+		return $(document)['scope']()['currentUser'];
+	}
+
+	get theme() {
+		return this.currentUser['profile']['settings']['theme']['dark'] ? THEMES.DARK : THEMES.LIGHT;
+	}
+
+	get EVENTS() {
+		return EVENTS;
+	}
+
+	get THEMES() {
+		return THEMES;
 	}
 }
