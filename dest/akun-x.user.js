@@ -468,7 +468,6 @@ var Settings = function () {
 		this._hideMenu();
 		document.body.appendChild(this._backdropNode);
 		this._core.on('dom.added.mainMenu', this._onAddedMainMenu.bind(this));
-		console.log(this._core.theme);
 	}
 
 	createClass(Settings, [{
@@ -755,7 +754,6 @@ var ObserverDOM = function () {
 		value: function _observerBodyFunction(mutations) {
 			var _this2 = this;
 
-			// console.log(mutations);
 			var _iteratorNormalCompletion = true;
 			var _didIteratorError = false;
 			var _iteratorError = undefined;
@@ -771,7 +769,7 @@ var ObserverDOM = function () {
 						for (var _iterator2 = mutation.addedNodes[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
 							var node = _step2.value;
 
-							console.log(node);
+							// console.log(node);
 							if (node.classList) {
 								if (node.classList.contains('logItem')) {
 									this._eventEmitter.emit(EVENTS$1.CHAT_NODE_ADDED, node);
@@ -1014,7 +1012,8 @@ var Core = function (_EventEmitter) {
 	}, {
 		key: 'theme',
 		get: function get$$1() {
-			return this.currentUser['profile']['settings']['theme']['dark'] ? THEMES.DARK : THEMES.LIGHT;
+			return (/themeColor=("|%22)?dark("|%22)?/i.test(document.cookie) ? THEMES.DARK : THEMES.LIGHT
+			);
 		}
 	}, {
 		key: 'EVENTS',
@@ -1083,8 +1082,11 @@ var AnonToggle = function () {
 	}, {
 		key: '_enable',
 		value: function _enable() {
-			this._core.on('focus', this._onFocus, this);
-			this._core.on('dom.added.chatHeader', this._onAddedChatHeader, this);
+			// Don't do anything if the user isn't logged in (and thus doesn't have any settings available)
+			if (this._core.currentUser) {
+				this._core.on('focus', this._onFocus, this);
+				this._core.on('dom.added.chatHeader', this._onAddedChatHeader, this);
+			}
 		}
 	}, {
 		key: '_disable',
