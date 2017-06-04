@@ -42,7 +42,7 @@ export default class Core extends EventEmitter {
 	}
 
 	get theme() {
-		return this.currentUser['profile']['settings']['theme']['dark'] ? THEMES.DARK : THEMES.LIGHT;
+		return /themeColor=("|%22)?dark("|%22)?/i.test(document.cookie) ? THEMES.DARK : THEMES.LIGHT;
 	}
 
 	get EVENTS() {
