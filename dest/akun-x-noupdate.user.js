@@ -1392,6 +1392,11 @@ var Linker = function () {
 		key: '_onAddedChatItemFieldBody',
 		value: function _onAddedChatItemFieldBody(node) {
 			this._linkify(node);
+			if (node.classList.contains('angular-medium-editor')) {
+				// When viewing a topic in its own tab the first post comes through as this, and can contain HTML elements
+				//   if it is the topic OP
+				node.querySelectorAll('p, span').forEach(this._linkify, this);
+			}
 		}
 	}, {
 		key: '_onAddedChapter',
