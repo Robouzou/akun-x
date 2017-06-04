@@ -9,6 +9,11 @@ const THEME_CLASS = {
 	DARK: 'akun-x-settings-theme-dark'
 };
 
+export const SETTING_TYPES = {
+	BOOLEAN: 'boolean',
+	ARRAY: 'array'
+};
+
 /* Modules have default settings. When loading the locally stored settings, these defaults should be overridden where
  *   there are locally stored settings to do so.
  * If there are locally stored settings with no corresponding default these should be presumed to be caused by changes
@@ -43,10 +48,10 @@ export default class Settings {
 		for (let settingName in moduleSettings.settings) {
 			if (moduleSettings.settings.hasOwnProperty(settingName)) {
 				settings[settingName] = moduleSettings.settings[settingName];
-				let loadedSettings = this._loadSettings[moduleId] && this._loadSettings[moduleId][settingName];
+				let loadedSettings = this._loadedSettings[moduleId] && this._loadedSettings[moduleId][settingName];
 				// If different types assume module has changed and default should be used
 				if (loadedSettings && typeof loadedSettings.value === typeof settings[settingName].value) {
-					settingName[settingName].value = loadedSettings.value;
+					settings[settingName].value = loadedSettings.value;
 				}
 			}
 		}
@@ -77,7 +82,7 @@ export default class Settings {
 				settingNode.appendChild(descriptionNode);
 				let valueNode;
 				switch (setting.type) {
-					case 'boolean':
+					case SETTING_TYPES.BOOLEAN:
 						valueNode = document.createElement('input');
 						valueNode.type = 'checkbox';
 						valueNode.dataset.id = settingName;
@@ -85,7 +90,7 @@ export default class Settings {
 						valueNode.checked = setting.value;
 						settingNode.appendChild(valueNode);
 						break;
-					case 'array':
+					case SETTING_TYPES.ARRAY:
 						valueNode = document.createElement('textarea');
 						valueNode.dataset.id = settingName;
 						valueNode.dataset.type = setting.type;
@@ -136,7 +141,7 @@ export default class Settings {
 
 		exitNode.addEventListener('click', this._exitCallback.bind(this));
 		moduleListNode.addEventListener('click', this._moduleListCallback.bind(this));
-		moduleDetailsContainerNode.addEventListener('click', this._moduleDetailsCallback.bind(this));
+		moduleDetailsContainerNode.addEventListener('change', this._moduleDetailsCallback.bind(this));
 
 		this._backdropNode = backdropNode;
 		this._menuNode = menuNode;
@@ -155,8 +160,6 @@ export default class Settings {
 		});
 		this._moduleListNode.firstChild.classList.add('akun-x-settings-selected');
 		this._moduleDetailsContainerNode.firstChild.classList.remove('akun-x-settings-hidden');
-		// Set settings menu CSS
-		// this._menuNode.style.backgroundColor = window.getComputedStyle(document.getElementById('left')).backgroundColor;
 	}
 
 	_hideMenu() {
@@ -174,7 +177,20 @@ export default class Settings {
 	}
 
 	_saveSettings() {
-		localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this._storageSettings));
+		const storageSettings = {};
+		for (let moduleId in this._settings) {
+			if (this._settings.hasOwnProperty(moduleId)) {
+				storageSettings[moduleId] = {};
+				for (let settingId in this._settings[moduleId]) {
+					if (this._settings[moduleId].hasOwnProperty(settingId)) {
+						storageSettings[moduleId][settingId] = {
+							value: this._settings[moduleId][settingId].value
+						};
+					}
+				}
+			}
+		}
+		localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(storageSettings));
 	}
 
 	_onAddedMainMenu(node) {
@@ -215,5 +231,20 @@ export default class Settings {
 	}
 
 	_moduleDetailsCallback(e) {
+		const type = e.target.dataset.type;
+		const settingId = e.target.dataset.id;
+		const moduleId = e.target.closest('.akun-x-settings-module-details').dataset.id;
+		let newValue;
+		switch (type) {
+			case SETTING_TYPES.BOOLEAN:
+				newValue = e.target.checked;
+				break;
+			case SETTING_TYPES.ARRAY:
+				newValue = e.target.value.split('\n');
+				break;
+		}
+		this._settings[moduleId][settingId].value = newValue;
+		this._moduleCallbacks[moduleId](settingId);
+		this._saveSettings();
 	}
 }

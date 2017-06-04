@@ -1,36 +1,60 @@
 'use strict';
 
+import {SETTING_TYPES} from '../core/settings';
 import './chapterHTMLEditor.css';
 
 const MODULE_ID = 'chapterHtmlEditor';
 
+const SETTING_IDS = {
+	ENABLED: 'enabled'
+};
+
 const DEFAULT_SETTINGS = {
 	name: 'Chapter HTML Editor',
 	id: MODULE_ID,
-	settings: {
-		enabled: {
-			name: 'Enabled',
-			description:'Turn the Chapter HTML Editor module on or off.',
-			type: 'boolean',
-			value: true
-		}
-	}
+	settings: {}
+};
+
+DEFAULT_SETTINGS.settings[SETTING_IDS.ENABLED] = {
+	name: 'Enabled',
+	description: 'Turn the Chapter HTML Editor module on or off.',
+	type: SETTING_TYPES.BOOLEAN,
+	value: true
 };
 
 export default class ChapterHTMLEditor {
 	constructor(core) {
 		this._core = core;
 		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS, this._onSettingsChanged.bind(this));
-		this._styleElement = null;
-		this._core.on('dom.added.chapter', this._onAddedChapter, this);
-		this._core.on('dom.added.chapterButtonControls', this._onAddedChapterButtonControls, this);
+		if (this._settings[SETTING_IDS.ENABLED].value) {
+			this._enable();
+		}
 	}
 
 	static get id() {
 		return MODULE_ID;
 	}
 
-	_onSettingsChanged() {
+	_onSettingsChanged(settingId) {
+		switch (settingId) {
+			case SETTING_IDS.ENABLED:
+				if (this._settings[SETTING_IDS.ENABLED].value) {
+					this._enable();
+				} else {
+					this._disable();
+				}
+				break;
+		}
+	}
+
+	_enable() {
+		this._core.on('dom.added.chapter', this._onAddedChapter, this);
+		this._core.on('dom.added.chapterButtonControls', this._onAddedChapterButtonControls, this);
+	}
+
+	_disable() {
+		this._core.removeListener('dom.added.chapter', this._onAddedChapter, this);
+		this._core.removeListener('dom.added.chapterButtonControls', this._onAddedChapterButtonControls, this);
 	}
 
 	_onAddedChapter(node) {

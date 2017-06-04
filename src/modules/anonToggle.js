@@ -1,20 +1,25 @@
 'use strict';
 
+import {SETTING_TYPES} from '../core/settings';
 import './anonToggle.css';
 
 const MODULE_ID = 'anonToggle';
 
+const SETTING_IDS = {
+	ENABLED: 'enabled'
+};
+
 const DEFAULT_SETTINGS = {
 	name: 'Anon Toggle',
 	id: MODULE_ID,
-	settings: {
-		enabled: {
-			name: 'Enabled',
-			description: 'Turn the Anon Toggle module on or off.',
-			type: 'boolean',
-			value: true
-		}
-	}
+	settings: {}
+};
+
+DEFAULT_SETTINGS.settings[SETTING_IDS.ENABLED] = {
+	name: 'Enabled',
+	description: 'Turn the Anon Toggle module on or off.',
+	type: SETTING_TYPES.BOOLEAN,
+	value: true
 };
 
 export default class AnonToggle {
@@ -22,20 +27,39 @@ export default class AnonToggle {
 		this._core = core;
 		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS, this._onSettingsChanged.bind(this));
 		this._onClickShouldSetToAnon = false;
-		this._styleElement = null;
 		this._toggleElement = null;
 		this._avatarElement = null;
 		this._usernameElement = null;
 		this._createToggleElement();
-		this._core.on('focus', this._onFocus, this);
-		this._core.on('dom.added.chatHeader', this._onAddedChatHeader, this);
+		if (this._settings[SETTING_IDS.ENABLED].value) {
+			this._enable();
+		}
 	}
 
 	static get id() {
 		return MODULE_ID;
 	}
 
-	_onSettingsChanged() {
+	_onSettingsChanged(settingId) {
+		switch (settingId) {
+			case SETTING_IDS.ENABLED:
+				if (this._settings[SETTING_IDS.ENABLED].value) {
+					this._enable();
+				} else {
+					this._disable();
+				}
+				break;
+		}
+	}
+
+	_enable() {
+		this._core.on('focus', this._onFocus, this);
+		this._core.on('dom.added.chatHeader', this._onAddedChatHeader, this);
+	}
+
+	_disable() {
+		this._core.removeListener('focus', this._onFocus, this);
+		this._core.removeListener('dom.added.chatHeader', this._onAddedChatHeader, this);
 	}
 
 	_createToggleElement() {

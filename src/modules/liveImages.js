@@ -1,18 +1,24 @@
 'use strict';
 
+import {SETTING_TYPES} from '../core/settings';
+
 const MODULE_ID = 'liveImages';
+
+const SETTING_IDS = {
+	ENABLED: 'enabled'
+};
 
 const DEFAULT_SETTINGS = {
 	name: 'Live Images',
 	id: MODULE_ID,
-	settings: {
-		enabled: {
-			name: 'Enabled',
-			description:'Turn the Live Images module on or off.',
-			type: 'boolean',
-			value: true
-		}
-	}
+	settings: {}
+};
+
+DEFAULT_SETTINGS.settings[SETTING_IDS.ENABLED] = {
+	name: 'Enabled',
+	description: 'Turn the Live Images module on or off.',
+	type: SETTING_TYPES.BOOLEAN,
+	value: true
 };
 
 const PLACEHOLDER_IMAGE_URL = 'https://cdn.fiction.live/h180-w320-cfill/images/1bfbkfv80_Feline_Heart.jpg';
@@ -22,15 +28,35 @@ export default class LiveImages {
 		this._core = core;
 		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS, this._onSettingsChanged.bind(this));
 		this._storyIdToImageMap = new Map();
-		this._core.on('net.received.liveStories', this._onLiveStories, this);
-		this._core.on('dom.added.storyItem', this._onAddedStoryItem, this);
+		if (this._settings[SETTING_IDS.ENABLED].value) {
+			this._enable();
+		}
 	}
 
 	static get id() {
 		return MODULE_ID;
 	}
 
-	_onSettingsChanged() {
+	_onSettingsChanged(settingId) {
+		switch (settingId) {
+			case SETTING_IDS.ENABLED:
+				if (this._settings[SETTING_IDS.ENABLED].value) {
+					this._enable();
+				} else {
+					this._disable();
+				}
+				break;
+		}
+	}
+
+	_enable() {
+		this._core.on('net.received.liveStories', this._onLiveStories, this);
+		this._core.on('dom.added.storyItem', this._onAddedStoryItem, this);
+	}
+
+	_disable() {
+		this._core.removeListener('net.received.liveStories', this._onLiveStories, this);
+		this._core.removeListener('dom.added.storyItem', this._onAddedStoryItem, this);
 	}
 
 	_fetchLiveData() {
@@ -41,13 +67,15 @@ export default class LiveImages {
 	}
 
 	_onLiveStories(json) {
-		for (let story of json['stories']) {
-			let imageUrl = story['i'] && story['i'][0];
-			this._storyIdToImageMap.set(story['_id'], imageUrl);
+		if (json && json['stories']) {
+			for (let story of json['stories']) {
+				let imageUrl = story['i'] && story['i'][0];
+				this._storyIdToImageMap.set(story['_id'], imageUrl);
+			}
+			document.querySelectorAll('.storyItem').forEach(nodeStoryItem => {
+				this._addImageToNode(nodeStoryItem);
+			});
 		}
-		document.querySelectorAll('.storyItem').forEach(nodeStoryItem => {
-			this._addImageToNode(nodeStoryItem);
-		});
 	}
 
 	_onAddedStoryItem(node) {
