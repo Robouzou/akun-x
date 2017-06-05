@@ -1,5 +1,6 @@
 'use strict';
 
+import {makeElastic} from './utils';
 import './settings.pcss';
 
 const LOCAL_STORAGE_KEY = 'akun-x';
@@ -98,6 +99,7 @@ export default class Settings {
 						valueNode.value = setting.value.join('\n');
 						settingNode.appendChild(descriptionNode);
 						settingNode.appendChild(valueNode);
+						makeElastic(valueNode);
 						break;
 				}
 			}

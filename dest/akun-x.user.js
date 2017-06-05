@@ -345,6 +345,37 @@ var index = createCommonjsModule(function (module) {
   }
 });
 
+var makeElastic = function makeElastic(node) {
+	function resize() {
+		// Gotta do this the long way since scrollHeight and it's kin are 0 if this is done when the element isn't visible
+		var computedStyle = window.getComputedStyle(node);
+		var lineCount = node.value.split('\n').length;
+		var lineHeight = parseInt(computedStyle.lineHeight, 10);
+		var borderTop = parseInt(computedStyle.borderTopWidth, 10);
+		var borderBottom = parseInt(computedStyle.borderBottomWidth, 10);
+		var paddingTop = parseInt(computedStyle.paddingTop, 10);
+		var paddingBottom = parseInt(computedStyle.paddingBottom, 10);
+		var height = lineCount * lineHeight + borderTop + paddingTop + paddingBottom + borderBottom;
+		node.style.height = 'auto';
+		node.style.height = height + 'px';
+	}
+
+	// 0-timeout to get the already changed text
+	function delayedResize() {
+		window.setTimeout(resize, 0);
+	}
+
+	node.addEventListener('change', resize, false);
+	node.addEventListener('cut', delayedResize, false);
+	node.addEventListener('paste', delayedResize, false);
+	node.addEventListener('drop', delayedResize, false);
+	node.addEventListener('keydown', delayedResize, false);
+
+	node.focus();
+	node.select();
+	delayedResize();
+};
+
 __$styleInject(".akun-x-settings-backdrop{position:fixed;top:0;right:0;bottom:0;left:0;z-index:9999;background-color:rgba(0,0,0,.5)}.akun-x-settings-horizontal-align{width:100%;height:100%}.akun-x-settings-horizontal-align,.akun-x-settings-vertical-align{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.akun-x-settings-vertical-align{-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;width:40%;min-width:700px}.akun-x-settings-theme-light .akun-x-settings{background:#fff;border-color:#f7f9fa;box-shadow:0 3px 7px rgba(0,0,0,.3)}.akun-x-settings-theme-light .akun-x-settings-header{border-color:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-header-exit:hover{background:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-module-list{border-color:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-module-list-item:hover{background-color:#eaeced}.akun-x-settings-theme-light .akun-x-settings-selected{background-color:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-header-exit{color:#272727;text-shadow:0 1px 0 #fff}.akun-x-settings-theme-dark .akun-x-settings{background:#2a2c3b;border-color:#323448;box-shadow:0 3px 7px rgba(0,0,0,.3)}.akun-x-settings-theme-dark .akun-x-settings-header{border-color:#323448}.akun-x-settings-theme-dark .akun-x-settings-header-exit:hover{background:#323448}.akun-x-settings-theme-dark .akun-x-settings-module-list{border-color:#323448}.akun-x-settings-theme-dark .akun-x-settings-module-list-item:hover{background-color:#4c4f6d}.akun-x-settings-theme-dark .akun-x-settings-selected{background-color:#323448}.akun-x-settings-theme-dark .akun-x-settings-header-exit{color:#d4d5d9;text-shadow:0 1px 0 #fff}.akun-x-settings{-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;height:50%;min-height:500px;border-radius:0;border-width:1px;border-style:solid;outline:0}.akun-x-settings,.akun-x-settings-header{display:-webkit-box;display:-ms-flexbox;display:flex}.akun-x-settings-header{-ms-flex-negative:0;flex-shrink:0;border-bottom-width:1px;border-style:solid}.akun-x-settings-header-title{margin:0;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1}.akun-x-settings-header-issues,.akun-x-settings-header-title{vertical-align:middle;padding:0 16px;line-height:50px}.akun-x-settings-header-exit{height:50px;width:50px;padding:0;border:0;margin:0;opacity:.2;background:transparent;cursor:pointer;font-size:20px;font-weight:700;line-height:20px;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;-webkit-appearance:none;vertical-align:middle;box-sizing:border-box;-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;text-align:center;text-rendering:auto;letter-spacing:normal;word-spacing:normal;text-transform:none;text-indent:0;display:inline-block}.akun-x-settings-header-exit:hover{opacity:.4}.akun-x-settings-body{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-webkit-box-align:stretch;-ms-flex-align:stretch;align-items:stretch}.akun-x-settings-module-list{overflow-y:auto;border-right-width:1px;border-style:solid}.akun-x-settings-module-list-item{padding:5px 16px;cursor:pointer}.akun-x-settings-module-details-container{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;overflow-y:auto;padding:15px}.akun-x-settings-module-details>div{padding-bottom:10px}.akun-x-settings-setting-name{font-weight:700}.akun-x-settings-hidden{display:none!important}", undefined);
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
@@ -530,6 +561,7 @@ var Settings = function () {
 							valueNode.value = setting.value.join('\n');
 							settingNode.appendChild(descriptionNode);
 							settingNode.appendChild(valueNode);
+							makeElastic(valueNode);
 							break;
 					}
 				}
