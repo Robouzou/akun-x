@@ -42,6 +42,8 @@ export default class ObserverDOM {
 		switch (type) {
 			case 'chapterButtonControls':
 				return document.querySelectorAll('.chapter .secondRow');
+			case 'chatHeader':
+				return document.querySelectorAll('.chatHeader');
 			default:
 				return [];
 		}
@@ -112,6 +114,9 @@ export default class ObserverDOM {
 					}
 					if (node.classList.contains('chatItemDetail')) {
 						this._eventEmitter.emit(EVENTS.MODAL_NODE_ADDED, node);
+						node.querySelectorAll('.chatHeader').forEach(nodeChatHeader => {
+							this._eventEmitter.emit(EVENTS.CHAT_HEADER_ADDED, nodeChatHeader);
+						})
 					}
 				}
 			}

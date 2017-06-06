@@ -31,9 +31,11 @@ export default class AnonToggle {
 		this._avatarElement = null;
 		this._usernameElement = null;
 		this._createToggleElement();
+		this._toggleElementPool = new Set();
 		if (this._settings[SETTING_IDS.ENABLED].value) {
 			this._enable();
 		}
+		this._boundToggleClickCallback = this._toggleClickCallback.bind(this);
 	}
 
 	static get id() {
@@ -55,6 +57,7 @@ export default class AnonToggle {
 	_enable() {
 		// Don't do anything if the user isn't logged in (and thus doesn't have any settings available)
 		if (this._core.currentUser) {
+			this._core.dom.nodes('chatHeader').forEach(this._onAddedChatHeader, this);
 			this._core.on('focus', this._onFocus, this);
 			this._core.on('dom.added.chatHeader', this._onAddedChatHeader, this);
 		}
@@ -63,20 +66,38 @@ export default class AnonToggle {
 	_disable() {
 		this._core.removeListener('focus', this._onFocus, this);
 		this._core.removeListener('dom.added.chatHeader', this._onAddedChatHeader, this);
+		document.querySelectorAll('.akun-x-anon-toggle').forEach(node => {
+			delete node.parentNode.dataset[AnonToggle.id];
+			node.parentNode.removeChild(node);
+		});
 	}
 
 	_createToggleElement() {
 		const toggleElement = document.createElement('div');
 		toggleElement.classList.add('akun-x-anon-toggle', 'noselect', 'btn', 'dim-font-color', 'hover-font-color');
-		toggleElement.addEventListener('click', this._toggleClickCallback.bind(this));
 		const avatarElement = document.createElement('img');
 		avatarElement.classList.add('avatar');
 		const usernameElement = document.createElement('span');
+		usernameElement.classList.add('username');
 		toggleElement.appendChild(avatarElement);
 		toggleElement.appendChild(usernameElement);
 		this._toggleElement = toggleElement;
 		this._avatarElement = avatarElement;
 		this._usernameElement = usernameElement;
+	}
+
+	_getToggleElement() {
+		for (let toggleElement of this._toggleElementPool) {
+			// Check if the node is a descendant of the document
+			if (!document.contains(toggleElement)) {
+				// If it isn't then recycle it
+				return toggleElement;
+			}
+		}
+		const toggleElement = this._toggleElement.cloneNode(true);
+		toggleElement.addEventListener('click', this._boundToggleClickCallback);
+		this._toggleElementPool.add(toggleElement);
+		return toggleElement;
 	}
 
 	_toggleClickCallback(e) {
@@ -96,7 +117,7 @@ export default class AnonToggle {
 	}
 
 	_onAddedChatHeader(node) {
-		node.querySelector('.pagination-dropdown').appendChild(this._toggleElement);
+		node.querySelector('.pagination-dropdown').appendChild(this._getToggleElement());
 		const currentUser = this._core.currentUser;
 		this._updateToggleElement(currentUser);
 	}
@@ -111,6 +132,10 @@ export default class AnonToggle {
 			this._onClickShouldSetToAnon = false;
 			this._usernameElement.textContent = 'Anon';
 			this._avatarElement.style.display = 'none';
+			for (let toggleElement of this._toggleElementPool) {
+				toggleElement.querySelector('.username').textContent = 'Anon';
+				toggleElement.querySelector('.avatar').style.display = 'none';
+			}
 		} else {
 			this._onClickShouldSetToAnon = true;
 			this._usernameElement.textContent = currentUser['username'];
@@ -123,6 +148,12 @@ export default class AnonToggle {
 				avatarSrc += '/convert?w=16&h=16&fit=crop&cache=true';
 			}
 			this._avatarElement.src = avatarSrc;
+			for (let toggleElement of this._toggleElementPool) {
+				toggleElement.querySelector('.username').textContent = currentUser['username'];
+				const avatarNode = toggleElement.querySelector('.avatar');
+				avatarNode.style.display = 'inline';
+				avatarNode.src = avatarSrc;
+			}
 		}
 	}
 }

@@ -779,6 +779,8 @@ var ObserverDOM = function () {
 			switch (type) {
 				case 'chapterButtonControls':
 					return document.querySelectorAll('.chapter .secondRow');
+				case 'chatHeader':
+					return document.querySelectorAll('.chatHeader');
 				default:
 					return [];
 			}
@@ -861,6 +863,9 @@ var ObserverDOM = function () {
 								}
 								if (node.classList.contains('chatItemDetail')) {
 									this._eventEmitter.emit(EVENTS$1.MODAL_NODE_ADDED, node);
+									node.querySelectorAll('.chatHeader').forEach(function (nodeChatHeader) {
+										_this2._eventEmitter.emit(EVENTS$1.CHAT_HEADER_ADDED, nodeChatHeader);
+									});
 								}
 							}
 						}
@@ -1128,9 +1133,11 @@ var AnonToggle = function () {
 		this._avatarElement = null;
 		this._usernameElement = null;
 		this._createToggleElement();
+		this._toggleElementPool = new Set();
 		if (this._settings[SETTING_IDS.ENABLED].value) {
 			this._enable();
 		}
+		this._boundToggleClickCallback = this._toggleClickCallback.bind(this);
 	}
 
 	createClass(AnonToggle, [{
@@ -1151,6 +1158,7 @@ var AnonToggle = function () {
 		value: function _enable() {
 			// Don't do anything if the user isn't logged in (and thus doesn't have any settings available)
 			if (this._core.currentUser) {
+				this._core.dom.nodes('chatHeader').forEach(this._onAddedChatHeader, this);
 				this._core.on('focus', this._onFocus, this);
 				this._core.on('dom.added.chatHeader', this._onAddedChatHeader, this);
 			}
@@ -1160,21 +1168,62 @@ var AnonToggle = function () {
 		value: function _disable() {
 			this._core.removeListener('focus', this._onFocus, this);
 			this._core.removeListener('dom.added.chatHeader', this._onAddedChatHeader, this);
+			document.querySelectorAll('.akun-x-anon-toggle').forEach(function (node) {
+				delete node.parentNode.dataset[AnonToggle.id];
+				node.parentNode.removeChild(node);
+			});
 		}
 	}, {
 		key: '_createToggleElement',
 		value: function _createToggleElement() {
 			var toggleElement = document.createElement('div');
 			toggleElement.classList.add('akun-x-anon-toggle', 'noselect', 'btn', 'dim-font-color', 'hover-font-color');
-			toggleElement.addEventListener('click', this._toggleClickCallback.bind(this));
 			var avatarElement = document.createElement('img');
 			avatarElement.classList.add('avatar');
 			var usernameElement = document.createElement('span');
+			usernameElement.classList.add('username');
 			toggleElement.appendChild(avatarElement);
 			toggleElement.appendChild(usernameElement);
 			this._toggleElement = toggleElement;
 			this._avatarElement = avatarElement;
 			this._usernameElement = usernameElement;
+		}
+	}, {
+		key: '_getToggleElement',
+		value: function _getToggleElement() {
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
+
+			try {
+				for (var _iterator = this._toggleElementPool[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					var _toggleElement = _step.value;
+
+					// Check if the node is a descendant of the document
+					if (!document.contains(_toggleElement)) {
+						// If it isn't then recycle it
+						return _toggleElement;
+					}
+				}
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
+				}
+			}
+
+			var toggleElement = this._toggleElement.cloneNode(true);
+			toggleElement.addEventListener('click', this._boundToggleClickCallback);
+			this._toggleElementPool.add(toggleElement);
+			return toggleElement;
 		}
 	}, {
 		key: '_toggleClickCallback',
@@ -1197,7 +1246,7 @@ var AnonToggle = function () {
 	}, {
 		key: '_onAddedChatHeader',
 		value: function _onAddedChatHeader(node) {
-			node.querySelector('.pagination-dropdown').appendChild(this._toggleElement);
+			node.querySelector('.pagination-dropdown').appendChild(this._getToggleElement());
 			var currentUser = this._core.currentUser;
 			this._updateToggleElement(currentUser);
 		}
@@ -1214,6 +1263,31 @@ var AnonToggle = function () {
 				this._onClickShouldSetToAnon = false;
 				this._usernameElement.textContent = 'Anon';
 				this._avatarElement.style.display = 'none';
+				var _iteratorNormalCompletion2 = true;
+				var _didIteratorError2 = false;
+				var _iteratorError2 = undefined;
+
+				try {
+					for (var _iterator2 = this._toggleElementPool[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+						var toggleElement = _step2.value;
+
+						toggleElement.querySelector('.username').textContent = 'Anon';
+						toggleElement.querySelector('.avatar').style.display = 'none';
+					}
+				} catch (err) {
+					_didIteratorError2 = true;
+					_iteratorError2 = err;
+				} finally {
+					try {
+						if (!_iteratorNormalCompletion2 && _iterator2.return) {
+							_iterator2.return();
+						}
+					} finally {
+						if (_didIteratorError2) {
+							throw _iteratorError2;
+						}
+					}
+				}
 			} else {
 				this._onClickShouldSetToAnon = true;
 				this._usernameElement.textContent = currentUser['username'];
@@ -1226,6 +1300,33 @@ var AnonToggle = function () {
 					avatarSrc += '/convert?w=16&h=16&fit=crop&cache=true';
 				}
 				this._avatarElement.src = avatarSrc;
+				var _iteratorNormalCompletion3 = true;
+				var _didIteratorError3 = false;
+				var _iteratorError3 = undefined;
+
+				try {
+					for (var _iterator3 = this._toggleElementPool[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+						var _toggleElement2 = _step3.value;
+
+						_toggleElement2.querySelector('.username').textContent = currentUser['username'];
+						var avatarNode = _toggleElement2.querySelector('.avatar');
+						avatarNode.style.display = 'inline';
+						avatarNode.src = avatarSrc;
+					}
+				} catch (err) {
+					_didIteratorError3 = true;
+					_iteratorError3 = err;
+				} finally {
+					try {
+						if (!_iteratorNormalCompletion3 && _iterator3.return) {
+							_iterator3.return();
+						}
+					} finally {
+						if (_didIteratorError3) {
+							throw _iteratorError3;
+						}
+					}
+				}
 			}
 		}
 	}], [{
