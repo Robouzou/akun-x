@@ -24,7 +24,7 @@ export default class Core extends EventEmitter {
 
 		window.onfocus = () => {
 			this.emit(EVENTS.FOCUS);
-		}
+		};
 	}
 
 	addModule(module) {
@@ -34,6 +34,14 @@ export default class Core extends EventEmitter {
 
 	get settings() {
 		return this._settings;
+	}
+
+	get dom() {
+		return this._observerDOM;
+	}
+
+	get net() {
+		return this._observerNet;
 	}
 
 	get currentUser() {
@@ -51,5 +59,19 @@ export default class Core extends EventEmitter {
 
 	get THEMES() {
 		return THEMES;
+	}
+
+	get isAuthor() {
+		return new Promise((resolve, reject) => {
+			const poll = () => {
+				const isAuthor = $(document)['scope']()['isAuthor'];
+				if (isAuthor === undefined) {
+					setTimeout(poll, 10);
+				} else {
+					resolve(isAuthor);
+				}
+			};
+			poll();
+		});
 	}
 }

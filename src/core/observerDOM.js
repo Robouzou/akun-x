@@ -38,6 +38,15 @@ export default class ObserverDOM {
 		});
 	}
 
+	nodes(type) {
+		switch (type) {
+			case 'chapterButtonControls':
+				return document.querySelectorAll('.chapter .secondRow');
+			default:
+				return [];
+		}
+	}
+
 	static _observe(node, callback, config) {
 		const observer = new MutationObserver(callback);
 		observer.observe(node, config);

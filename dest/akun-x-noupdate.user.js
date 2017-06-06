@@ -2,7 +2,7 @@
 // @name          AkunX
 // @description   Extends the functionality of Akun to enhance the experience
 // @author        Fiddlekins
-// @version       1.0.2
+// @version       1.0.3
 // @namespace     https://github.com/Fiddlekins/akun-x
 // @include       https://anonkun.com/*
 // @include       http://anonkun.com/*
@@ -774,6 +774,16 @@ var ObserverDOM = function () {
 	}
 
 	createClass(ObserverDOM, [{
+		key: 'nodes',
+		value: function nodes(type) {
+			switch (type) {
+				case 'chapterButtonControls':
+					return document.querySelectorAll('.chapter .secondRow');
+				default:
+					return [];
+			}
+		}
+	}, {
 		key: '_observeBody',
 		value: function _observeBody() {
 			ObserverDOM._observe(document.body, this._observerBodyFunction.bind(this), {
@@ -1036,6 +1046,16 @@ var Core = function (_EventEmitter) {
 			return this._settings;
 		}
 	}, {
+		key: 'dom',
+		get: function get$$1() {
+			return this._observerDOM;
+		}
+	}, {
+		key: 'net',
+		get: function get$$1() {
+			return this._observerNet;
+		}
+	}, {
 		key: 'currentUser',
 		get: function get$$1() {
 			// This returns reference to what Akun is using
@@ -1060,7 +1080,17 @@ var Core = function (_EventEmitter) {
 	}, {
 		key: 'isAuthor',
 		get: function get$$1() {
-			return $(document)['scope']()['isAuthor'];
+			return new Promise(function (resolve, reject) {
+				var poll = function poll() {
+					var isAuthor = $(document)['scope']()['isAuthor'];
+					if (isAuthor === undefined) {
+						setTimeout(poll, 10);
+					} else {
+						resolve(isAuthor);
+					}
+				};
+				poll();
+			});
 		}
 	}]);
 	return Core;
@@ -1255,14 +1285,25 @@ var ChapterHTMLEditor = function () {
 	}, {
 		key: '_enable',
 		value: function _enable() {
-			this._core.on('dom.added.chapter', this._onAddedChapter, this);
-			this._core.on('dom.added.chapterButtonControls', this._onAddedChapterButtonControls, this);
+			var _this = this;
+
+			this._core.isAuthor.then(function (isAuthor) {
+				if (isAuthor) {
+					_this._core.dom.nodes('chapterButtonControls').forEach(_this._onAddedChapterButtonControls, _this);
+					_this._core.on('dom.added.chapter', _this._onAddedChapter, _this);
+					_this._core.on('dom.added.chapterButtonControls', _this._onAddedChapterButtonControls, _this);
+				}
+			});
 		}
 	}, {
 		key: '_disable',
 		value: function _disable() {
 			this._core.removeListener('dom.added.chapter', this._onAddedChapter, this);
 			this._core.removeListener('dom.added.chapterButtonControls', this._onAddedChapterButtonControls, this);
+			document.querySelectorAll('.akun-x-chapter-html-editor-edit').forEach(function (node) {
+				delete node.parentNode.dataset[ChapterHTMLEditor.id];
+				node.parentNode.removeChild(node);
+			});
 		}
 	}, {
 		key: '_onAddedChapter',
