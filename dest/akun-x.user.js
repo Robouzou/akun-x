@@ -1057,6 +1057,11 @@ var Core = function (_EventEmitter) {
 		get: function get$$1() {
 			return THEMES;
 		}
+	}, {
+		key: 'isAuthor',
+		get: function get$$1() {
+			return $(document)['scope']()['isAuthor'];
+		}
 	}]);
 	return Core;
 }(index);
@@ -1298,9 +1303,14 @@ var ChapterHTMLEditor = function () {
 			var chapterNode = e.target.closest('.chapter');
 			var buttonGroupNode = chapterNode.querySelector('.editChapter .btn-group');
 			buttonGroupNode.classList.add('akun-x-chapter-html-editor-disabled');
+			// Set user HTML input to be innerHTML of an element disconnected from the document
+			// This forces the browser to validate the HTML effectively, converting it into something that won't break the
+			//   rest of the page if there were mismatched tags.
+			var tempNode = document.createElement('div');
+			tempNode.innerHTML = chapterNode.querySelector('.fieldEditor').textContent;
 			ty.post('anonkun/editChapter', {
 				'_id': chapterNode.dataset.id,
-				'update[$set][b]': chapterNode.querySelector('.fieldEditor').textContent,
+				'update[$set][b]': tempNode.innerHTML,
 				'update[$set][t]': undefined
 			}, function (response) {
 				buttonGroupNode.classList.remove('akun-x-chapter-html-editor-disabled');

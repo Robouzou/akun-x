@@ -97,9 +97,14 @@ export default class ChapterHTMLEditor {
 		const chapterNode = e.target.closest('.chapter');
 		const buttonGroupNode = chapterNode.querySelector('.editChapter .btn-group');
 		buttonGroupNode.classList.add('akun-x-chapter-html-editor-disabled');
+		// Set user HTML input to be innerHTML of an element disconnected from the document
+		// This forces the browser to validate the HTML effectively, converting it into something that won't break the
+		//   rest of the page if there were mismatched tags.
+		const tempNode = document.createElement('div');
+		tempNode.innerHTML = chapterNode.querySelector('.fieldEditor').textContent;
 		ty.post('anonkun/editChapter', {
 			'_id': chapterNode.dataset.id,
-			'update[$set][b]': chapterNode.querySelector('.fieldEditor').textContent,
+			'update[$set][b]': tempNode.innerHTML,
 			'update[$set][t]': undefined
 		}, response => {
 			buttonGroupNode.classList.remove('akun-x-chapter-html-editor-disabled');
