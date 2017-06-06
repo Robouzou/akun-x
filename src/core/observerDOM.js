@@ -21,21 +21,16 @@ export default class ObserverDOM {
 		// jQuery already present on page
 		$(document).ready(() => {
 			this._observeBody();
-			document.querySelectorAll('.logItem').forEach(nodeLogItem => {
-				this._eventEmitter.emit(EVENTS.CHAT_NODE_ADDED, nodeLogItem);
-				let nodeMessage = nodeLogItem.querySelector('.message');
-				if (nodeMessage) {
-					this._eventEmitter.emit(EVENTS.CHAT_NODE_MESSAGE_ADDED, nodeMessage);
-				}
-			});
-			document.querySelectorAll('.chapter').forEach(nodeChapter => {
-				this._eventEmitter.emit(EVENTS.CHAPTER_NODE_ADDED, nodeChapter);
-			});
-			document.querySelectorAll('.storyItem').forEach(nodeStoryItem => {
-				this._eventEmitter.emit(EVENTS.STORY_NODE_ADDED, nodeStoryItem);
-			});
-			this._eventEmitter.emit(EVENTS.MAIN_MENU_ADDED, document.getElementById('mainMenu'));
 		});
+	}
+
+	node(type) {
+		switch (type) {
+			case 'mainMenu':
+				return document.getElementById('mainMenu');
+			default:
+				return null;
+		}
 	}
 
 	nodes(type) {
@@ -44,6 +39,16 @@ export default class ObserverDOM {
 				return document.querySelectorAll('.chapter .secondRow');
 			case 'chatHeader':
 				return document.querySelectorAll('.chatHeader');
+			case 'storyItem':
+				return document.querySelectorAll('.storyItem');
+			case 'chapter':
+				return document.querySelectorAll('.chapter');
+			case 'logItem':
+				return document.querySelectorAll('.logItem');
+			case 'message':
+				return document.querySelectorAll('.logItem .message');
+			case 'mainMenu':
+				return [document.getElementById('mainMenu')];
 			default:
 				return [];
 		}

@@ -2,7 +2,7 @@
 // @name          AkunX
 // @description   Extends the functionality of Akun to enhance the experience
 // @author        Fiddlekins
-// @version       1.0.3
+// @version       1.0.4
 // @namespace     https://github.com/Fiddlekins/akun-x
 // @include       https://anonkun.com/*
 // @include       http://anonkun.com/*
@@ -500,6 +500,7 @@ var Settings = function () {
 		this._createMenu();
 		this._hideMenu();
 		document.body.appendChild(this._backdropNode);
+		this._onAddedMainMenu(this._core.dom.node('mainMenu'));
 		this._core.on('dom.added.mainMenu', this._onAddedMainMenu.bind(this));
 	}
 
@@ -758,24 +759,20 @@ var ObserverDOM = function () {
 		// jQuery already present on page
 		$(document).ready(function () {
 			_this._observeBody();
-			document.querySelectorAll('.logItem').forEach(function (nodeLogItem) {
-				_this._eventEmitter.emit(EVENTS$1.CHAT_NODE_ADDED, nodeLogItem);
-				var nodeMessage = nodeLogItem.querySelector('.message');
-				if (nodeMessage) {
-					_this._eventEmitter.emit(EVENTS$1.CHAT_NODE_MESSAGE_ADDED, nodeMessage);
-				}
-			});
-			document.querySelectorAll('.chapter').forEach(function (nodeChapter) {
-				_this._eventEmitter.emit(EVENTS$1.CHAPTER_NODE_ADDED, nodeChapter);
-			});
-			document.querySelectorAll('.storyItem').forEach(function (nodeStoryItem) {
-				_this._eventEmitter.emit(EVENTS$1.STORY_NODE_ADDED, nodeStoryItem);
-			});
-			_this._eventEmitter.emit(EVENTS$1.MAIN_MENU_ADDED, document.getElementById('mainMenu'));
 		});
 	}
 
 	createClass(ObserverDOM, [{
+		key: 'node',
+		value: function node(type) {
+			switch (type) {
+				case 'mainMenu':
+					return document.getElementById('mainMenu');
+				default:
+					return null;
+			}
+		}
+	}, {
 		key: 'nodes',
 		value: function nodes(type) {
 			switch (type) {
@@ -783,6 +780,16 @@ var ObserverDOM = function () {
 					return document.querySelectorAll('.chapter .secondRow');
 				case 'chatHeader':
 					return document.querySelectorAll('.chatHeader');
+				case 'storyItem':
+					return document.querySelectorAll('.storyItem');
+				case 'chapter':
+					return document.querySelectorAll('.chapter');
+				case 'logItem':
+					return document.querySelectorAll('.logItem');
+				case 'message':
+					return document.querySelectorAll('.logItem .message');
+				case 'mainMenu':
+					return [document.getElementById('mainMenu')];
 				default:
 					return [];
 			}
@@ -1030,9 +1037,9 @@ var Core = function (_EventEmitter) {
 
 		var _this = possibleConstructorReturn(this, (Core.__proto__ || Object.getPrototypeOf(Core)).call(this));
 
-		_this._settings = new Settings(_this);
 		_this._observerDOM = new ObserverDOM(_this);
 		_this._observerNet = new ObserverNet(_this);
+		_this._settings = new Settings(_this);
 		_this._modules = {};
 
 		window.onfocus = function () {
@@ -1548,6 +1555,32 @@ var Linker = function () {
 						this._disable();
 					}
 					break;
+				case SETTING_IDS$2.EMBED_IMAGES:
+					if (this._settings[SETTING_IDS$2.EMBED_IMAGES].value) {
+						this._disable();
+						if (this._settings[SETTING_IDS$2.ENABLED].value) {
+							this._enable();
+						}
+					} else {
+						this._disableImages();
+						if (this._settings[SETTING_IDS$2.ENABLED].value) {
+							this._enable();
+						}
+					}
+					break;
+				case SETTING_IDS$2.EMBED_VIDEOS:
+					if (this._settings[SETTING_IDS$2.EMBED_VIDEOS].value) {
+						this._disable();
+						if (this._settings[SETTING_IDS$2.ENABLED].value) {
+							this._enable();
+						}
+					} else {
+						this._disableVideos();
+						if (this._settings[SETTING_IDS$2.ENABLED].value) {
+							this._enable();
+						}
+					}
+					break;
 				case SETTING_IDS$2.MEDIA_SITES:
 					this._updateMediaRegex();
 					break;
@@ -1556,6 +1589,8 @@ var Linker = function () {
 	}, {
 		key: '_enable',
 		value: function _enable() {
+			this._core.dom.nodes('message').forEach(this._onAddedChatItemMessage, this);
+			this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this);
 			this._core.on('dom.added.chatItemMessage', this._onAddedChatItemMessage, this);
 			this._core.on('dom.added.chatItemFieldBody', this._onAddedChatItemFieldBody, this);
 			this._core.on('dom.added.chapter', this._onAddedChapter, this);
@@ -1566,6 +1601,36 @@ var Linker = function () {
 			this._core.removeListener('dom.added.chatItemMessage', this._onAddedChatItemMessage, this);
 			this._core.removeListener('dom.added.chatItemFieldBody', this._onAddedChatItemFieldBody, this);
 			this._core.removeListener('dom.added.chapter', this._onAddedChapter, this);
+			this._disableLinks();
+			this._disableImages();
+			this._disableVideos();
+		}
+	}, {
+		key: '_disableLinks',
+		value: function _disableLinks() {
+			document.querySelectorAll('.akun-x-linker-link').forEach(function (node) {
+				delete node.parentNode.dataset[Linker.id];
+				var textNode = document.createTextNode(node.href);
+				node.parentNode.replaceChild(textNode, node);
+			});
+		}
+	}, {
+		key: '_disableImages',
+		value: function _disableImages() {
+			document.querySelectorAll('.akun-x-linker-image').forEach(function (node) {
+				delete node.parentNode.dataset[Linker.id];
+				var textNode = document.createTextNode(node.src);
+				node.parentNode.replaceChild(textNode, node);
+			});
+		}
+	}, {
+		key: '_disableVideos',
+		value: function _disableVideos() {
+			document.querySelectorAll('.akun-x-linker-video').forEach(function (node) {
+				delete node.parentNode.dataset[Linker.id];
+				var textNode = document.createTextNode(node.dataset.src);
+				node.parentNode.replaceChild(textNode, node);
+			});
 		}
 	}, {
 		key: '_updateMediaRegex',
@@ -1650,6 +1715,7 @@ var Linker = function () {
 		value: function _getWrappedLink(url) {
 			if (this._settings[SETTING_IDS$2.EMBED_IMAGES].value && this.isImageUrl(url)) {
 				var img = document.createElement('img');
+				img.classList.add('akun-x-linker-image');
 				img.src = url.replace(/^https?:\/\//, 'https://'); // Make it https
 				img.onerror = function () {
 					this.onerror = null;
@@ -1662,6 +1728,8 @@ var Linker = function () {
 				var type = this._videoTypeRegex.exec(url);
 				type = type && type[1];
 				var vid = document.createElement('video');
+				vid.classList.add('akun-x-linker-video');
+				vid.dataset.src = url;
 				vid.setAttribute('controls', 'controls');
 				if (type === 'gifv') {
 					// Handle Imgur's dumb idea
@@ -1683,6 +1751,7 @@ var Linker = function () {
 			}
 
 			var link = document.createElement('a');
+			link.classList.add('akun-x-linker-link');
 			link.textContent = url;
 			link.href = url;
 			return link;
@@ -1755,6 +1824,7 @@ var LiveImages = function () {
 	}, {
 		key: '_enable',
 		value: function _enable() {
+			this._core.dom.nodes('storyItem').forEach(this._onAddedStoryItem, this);
 			this._core.on('net.received.liveStories', this._onLiveStories, this);
 			this._core.on('dom.added.storyItem', this._onAddedStoryItem, this);
 		}
@@ -1763,6 +1833,10 @@ var LiveImages = function () {
 		value: function _disable() {
 			this._core.removeListener('net.received.liveStories', this._onLiveStories, this);
 			this._core.removeListener('dom.added.storyItem', this._onAddedStoryItem, this);
+			document.querySelectorAll('.akun-x-live-images').forEach(function (node) {
+				delete node.closest('.storyItem').dataset[LiveImages.id];
+				node.parentNode.removeChild(node);
+			});
 		}
 	}, {
 		key: '_fetchLiveData',

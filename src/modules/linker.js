@@ -80,6 +80,32 @@ export default class Linker {
 					this._disable();
 				}
 				break;
+			case SETTING_IDS.EMBED_IMAGES:
+				if (this._settings[SETTING_IDS.EMBED_IMAGES].value) {
+					this._disable();
+					if (this._settings[SETTING_IDS.ENABLED].value) {
+						this._enable();
+					}
+				} else {
+					this._disableImages();
+					if (this._settings[SETTING_IDS.ENABLED].value) {
+						this._enable();
+					}
+				}
+				break;
+			case SETTING_IDS.EMBED_VIDEOS:
+				if (this._settings[SETTING_IDS.EMBED_VIDEOS].value) {
+					this._disable();
+					if (this._settings[SETTING_IDS.ENABLED].value) {
+						this._enable();
+					}
+				} else {
+					this._disableVideos();
+					if (this._settings[SETTING_IDS.ENABLED].value) {
+						this._enable();
+					}
+				}
+				break;
 			case SETTING_IDS.MEDIA_SITES:
 				this._updateMediaRegex();
 				break;
@@ -87,6 +113,8 @@ export default class Linker {
 	}
 
 	_enable() {
+		this._core.dom.nodes('message').forEach(this._onAddedChatItemMessage, this);
+		this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this);
 		this._core.on('dom.added.chatItemMessage', this._onAddedChatItemMessage, this);
 		this._core.on('dom.added.chatItemFieldBody', this._onAddedChatItemFieldBody, this);
 		this._core.on('dom.added.chapter', this._onAddedChapter, this);
@@ -96,6 +124,33 @@ export default class Linker {
 		this._core.removeListener('dom.added.chatItemMessage', this._onAddedChatItemMessage, this);
 		this._core.removeListener('dom.added.chatItemFieldBody', this._onAddedChatItemFieldBody, this);
 		this._core.removeListener('dom.added.chapter', this._onAddedChapter, this);
+		this._disableLinks();
+		this._disableImages();
+		this._disableVideos();
+	}
+
+	_disableLinks() {
+		document.querySelectorAll('.akun-x-linker-link').forEach(node => {
+			delete node.parentNode.dataset[Linker.id];
+			const textNode = document.createTextNode(node.href);
+			node.parentNode.replaceChild(textNode, node);
+		});
+	}
+
+	_disableImages() {
+		document.querySelectorAll('.akun-x-linker-image').forEach(node => {
+			delete node.parentNode.dataset[Linker.id];
+			const textNode = document.createTextNode(node.src);
+			node.parentNode.replaceChild(textNode, node);
+		});
+	}
+
+	_disableVideos() {
+		document.querySelectorAll('.akun-x-linker-video').forEach(node => {
+			delete node.parentNode.dataset[Linker.id];
+			const textNode = document.createTextNode(node.dataset.src);
+			node.parentNode.replaceChild(textNode, node);
+		});
 	}
 
 	_updateMediaRegex() {
@@ -153,6 +208,7 @@ export default class Linker {
 	_getWrappedLink(url) {
 		if (this._settings[SETTING_IDS.EMBED_IMAGES].value && this.isImageUrl(url)) {
 			let img = document.createElement('img');
+			img.classList.add('akun-x-linker-image');
 			img.src = url.replace(/^https?:\/\//, 'https://'); // Make it https
 			img.onerror = function () {
 				this.onerror = null;
@@ -165,6 +221,8 @@ export default class Linker {
 			let type = this._videoTypeRegex.exec(url);
 			type = type && type[1];
 			let vid = document.createElement('video');
+			vid.classList.add('akun-x-linker-video');
+			vid.dataset.src = url;
 			vid.setAttribute('controls', 'controls');
 			if (type === 'gifv') {
 				// Handle Imgur's dumb idea
@@ -186,6 +244,7 @@ export default class Linker {
 		}
 
 		let link = document.createElement('a');
+		link.classList.add('akun-x-linker-link');
 		link.textContent = url;
 		link.href = url;
 		return link;

@@ -17,9 +17,9 @@ const THEMES = {
 export default class Core extends EventEmitter {
 	constructor() {
 		super();
-		this._settings = new Settings(this);
 		this._observerDOM = new ObserverDOM(this);
 		this._observerNet = new ObserverNet(this);
+		this._settings = new Settings(this);
 		this._modules = {};
 
 		window.onfocus = () => {

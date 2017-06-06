@@ -39,6 +39,7 @@ export default class Settings {
 		this._createMenu();
 		this._hideMenu();
 		document.body.appendChild(this._backdropNode);
+		this._onAddedMainMenu(this._core.dom.node('mainMenu'));
 		this._core.on('dom.added.mainMenu', this._onAddedMainMenu.bind(this));
 	}
 

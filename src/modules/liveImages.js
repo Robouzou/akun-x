@@ -50,6 +50,7 @@ export default class LiveImages {
 	}
 
 	_enable() {
+		this._core.dom.nodes('storyItem').forEach(this._onAddedStoryItem, this);
 		this._core.on('net.received.liveStories', this._onLiveStories, this);
 		this._core.on('dom.added.storyItem', this._onAddedStoryItem, this);
 	}
@@ -57,6 +58,10 @@ export default class LiveImages {
 	_disable() {
 		this._core.removeListener('net.received.liveStories', this._onLiveStories, this);
 		this._core.removeListener('dom.added.storyItem', this._onAddedStoryItem, this);
+		document.querySelectorAll('.akun-x-live-images').forEach(node => {
+			delete node.closest('.storyItem').dataset[LiveImages.id];
+			node.parentNode.removeChild(node);
+		});
 	}
 
 	_fetchLiveData() {
