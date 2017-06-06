@@ -108,6 +108,10 @@ export default class Linker {
 				break;
 			case SETTING_IDS.MEDIA_SITES:
 				this._updateMediaRegex();
+				if (this._settings[SETTING_IDS.ENABLED].value) {
+					this._disable();
+					this._enable();
+				}
 				break;
 		}
 	}
