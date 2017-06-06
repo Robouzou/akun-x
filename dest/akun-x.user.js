@@ -2,7 +2,7 @@
 // @name          AkunX
 // @description   Extends the functionality of Akun to enhance the experience
 // @author        Fiddlekins
-// @version       1.0.1
+// @version       1.0.2
 // @namespace     https://github.com/Fiddlekins/akun-x
 // @include       https://anonkun.com/*
 // @include       http://anonkun.com/*
@@ -1190,7 +1190,14 @@ var AnonToggle = function () {
 				this._onClickShouldSetToAnon = true;
 				this._usernameElement.textContent = currentUser['username'];
 				this._avatarElement.style.display = 'inline';
-				this._avatarElement.src = currentUser['profile']['image'] + '/convert?w=16&h=16&fit=crop&cache=true';
+				var avatarSrc = currentUser['profile']['image'];
+				if (/cloudfront\.net/.test(avatarSrc)) {
+					var match = avatarSrc.match(/cloudfront.net\/images\/([A-z0-9_\.]+)/);
+					avatarSrc = 'https://cdn.fiction.live/h16-w16-cfill/images/' + (match && match[1]);
+				} else if (/filepicker\.io/.test(avatarSrc)) {
+					avatarSrc += '/convert?w=16&h=16&fit=crop&cache=true';
+				}
+				this._avatarElement.src = avatarSrc;
 			}
 		}
 	}], [{

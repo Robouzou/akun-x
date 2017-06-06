@@ -115,7 +115,14 @@ export default class AnonToggle {
 			this._onClickShouldSetToAnon = true;
 			this._usernameElement.textContent = currentUser['username'];
 			this._avatarElement.style.display = 'inline';
-			this._avatarElement.src = `${currentUser['profile']['image']}/convert?w=16&h=16&fit=crop&cache=true`;
+			let avatarSrc = currentUser['profile']['image'];
+			if (/cloudfront\.net/.test(avatarSrc)) {
+				const match = avatarSrc.match(/cloudfront.net\/images\/([A-z0-9_\.]+)/);
+				avatarSrc = `https://cdn.fiction.live/h16-w16-cfill/images/${match && match[1]}`;
+			} else if (/filepicker\.io/.test(avatarSrc)) {
+				avatarSrc += '/convert?w=16&h=16&fit=crop&cache=true';
+			}
+			this._avatarElement.src = avatarSrc;
 		}
 	}
 }
