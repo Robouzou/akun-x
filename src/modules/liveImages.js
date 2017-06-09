@@ -21,7 +21,7 @@ DEFAULT_SETTINGS.settings[SETTING_IDS.ENABLED] = {
 	value: true
 };
 
-const PLACEHOLDER_IMAGE_URL = 'https://cdn.fiction.live/h180-w320-cfill/images/1bfbkfv80_Feline_Heart.jpg';
+const PLACEHOLDER_IMAGE_URL = '//placekitten.com/g/320/180';
 
 export default class LiveImages {
 	constructor(core) {

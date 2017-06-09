@@ -2,7 +2,7 @@
 // @name          AkunX
 // @description   Extends the functionality of Akun to enhance the experience
 // @author        Fiddlekins
-// @version       1.0.4
+// @version       1.0.5
 // @namespace     https://github.com/Fiddlekins/akun-x
 // @include       https://anonkun.com/*
 // @include       http://anonkun.com/*
@@ -1583,6 +1583,10 @@ var Linker = function () {
 					break;
 				case SETTING_IDS$2.MEDIA_SITES:
 					this._updateMediaRegex();
+					if (this._settings[SETTING_IDS$2.ENABLED].value) {
+						this._disable();
+						this._enable();
+					}
 					break;
 			}
 		}
@@ -1794,7 +1798,7 @@ DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.ENABLED] = {
 	value: true
 };
 
-var PLACEHOLDER_IMAGE_URL = 'https://cdn.fiction.live/h180-w320-cfill/images/1bfbkfv80_Feline_Heart.jpg';
+var PLACEHOLDER_IMAGE_URL = '//placekitten.com/g/320/180';
 
 var LiveImages = function () {
 	function LiveImages(core) {
