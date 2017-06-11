@@ -1,6 +1,7 @@
 'use strict';
 
 import {SETTING_TYPES} from '../core/settings';
+import {doesObjectShareValues} from '../core/utils';
 
 const MODULE_ID = 'imageToggle';
 
@@ -181,12 +182,7 @@ export default class ImageToggle {
 
 	_onKeypress(eKeybind, e) {
 		const keybind = this._settings[SETTING_IDS.KEYBIND].value;
-		if (keybind.key === eKeybind.key &&
-			keybind.ctrl === eKeybind.ctrl &&
-			keybind.alt === eKeybind.alt &&
-			keybind.shift === eKeybind.shift &&
-			keybind.meta === eKeybind.meta
-		) {
+		if (doesObjectShareValues(eKeybind, keybind)) {
 			this._core.settings.setSetting(ImageToggle.id, SETTING_IDS.ENABLED, !this._settings[SETTING_IDS.ENABLED].value);
 		}
 	}

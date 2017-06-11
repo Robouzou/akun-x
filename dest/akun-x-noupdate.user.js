@@ -2,7 +2,7 @@
 // @name          AkunX
 // @description   Extends the functionality of Akun to enhance the experience
 // @author        Fiddlekins
-// @version       1.0.5
+// @version       1.1.0
 // @namespace     https://github.com/Fiddlekins/akun-x
 // @include       https://anonkun.com/*
 // @include       http://anonkun.com/*
@@ -376,6 +376,19 @@ var makeElastic = function makeElastic(node) {
 	delayedResize();
 };
 
+
+
+var doesObjectShareValues = function doesObjectShareValues(obj1, obj2) {
+	for (var property in obj1) {
+		if (obj1.hasOwnProperty(property) && obj2[property] !== obj1[property]) {
+			return false;
+		}
+	}
+	return true;
+};
+
+__$styleInject(".akun-x-settings-backdrop{position:fixed;top:0;right:0;bottom:0;left:0;z-index:9999;background-color:rgba(0,0,0,.5)}.akun-x-settings-horizontal-align{width:100%;height:100%}.akun-x-settings-horizontal-align,.akun-x-settings-vertical-align{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.akun-x-settings-vertical-align{-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;width:40%;min-width:700px}.akun-x-settings-theme-light .akun-x-settings{background:#fff;border-color:#f7f9fa;box-shadow:0 3px 7px rgba(0,0,0,.3)}.akun-x-settings-theme-light .akun-x-settings-header{border-color:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-header-exit:hover{background:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-module-list{border-color:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-module-list-item:hover{background-color:#eaeced}.akun-x-settings-theme-light .akun-x-settings-selected{background-color:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-header-exit{color:#272727;text-shadow:0 1px 0 #fff}.akun-x-settings-theme-dark .akun-x-settings{background:#2a2c3b;border-color:#323448;box-shadow:0 3px 7px rgba(0,0,0,.3)}.akun-x-settings-theme-dark .akun-x-settings-header{border-color:#323448}.akun-x-settings-theme-dark .akun-x-settings-header-exit:hover{background:#323448}.akun-x-settings-theme-dark .akun-x-settings-module-list{border-color:#323448}.akun-x-settings-theme-dark .akun-x-settings-module-list-item:hover{background-color:#4c4f6d}.akun-x-settings-theme-dark .akun-x-settings-selected{background-color:#323448}.akun-x-settings-theme-dark .akun-x-settings-header-exit{color:#d4d5d9;text-shadow:0 1px 0 #fff}.akun-x-settings{-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;height:50%;min-height:500px;border-radius:0;border-width:1px;border-style:solid;outline:0}.akun-x-settings,.akun-x-settings-header{display:-webkit-box;display:-ms-flexbox;display:flex}.akun-x-settings-header{-ms-flex-negative:0;flex-shrink:0;border-bottom-width:1px;border-style:solid}.akun-x-settings-header-title{margin:0;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1}.akun-x-settings-header-issues,.akun-x-settings-header-title{vertical-align:middle;padding:0 16px;line-height:50px}.akun-x-settings-header-exit{height:50px;width:50px;padding:0;border:0;margin:0;opacity:.2;background:transparent;cursor:pointer;font-size:20px;font-weight:700;line-height:20px;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;-webkit-appearance:none;vertical-align:middle;box-sizing:border-box;-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;text-align:center;text-rendering:auto;letter-spacing:normal;word-spacing:normal;text-transform:none;text-indent:0;display:inline-block}.akun-x-settings-header-exit:hover{opacity:.4}.akun-x-settings-body{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-webkit-box-align:stretch;-ms-flex-align:stretch;align-items:stretch}.akun-x-settings-module-list{-ms-flex-negative:0;flex-shrink:0;overflow-y:auto;border-right-width:1px;border-style:solid}.akun-x-settings-module-list-item{padding:5px 16px;cursor:pointer}.akun-x-settings-module-details-container{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;overflow-y:auto;padding:15px}.akun-x-settings-module-details>div{padding-bottom:10px}.akun-x-settings-setting-name{font-weight:700}.akun-x-settings-hidden{display:none!important}", undefined);
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
 } : function (obj) {
@@ -458,71 +471,6 @@ var possibleConstructorReturn = function (self, call) {
   return call && (typeof call === "object" || typeof call === "function") ? call : self;
 };
 
-var EVENTS$1 = {
-	INPUT: {
-		KEYBIND: 'keybind'
-	}
-};
-
-var ObserverInput = function () {
-	function ObserverInput(eventEmitter) {
-		classCallCheck(this, ObserverInput);
-
-		this._eventEmitter = eventEmitter;
-
-		document.addEventListener('keyup', this._onKeyPress.bind(this));
-	}
-
-	createClass(ObserverInput, [{
-		key: '_onKeyPress',
-		value: function _onKeyPress(e) {
-			if (!ObserverInput._isTextInput(e.target)) {
-				console.log(e);
-				var keybind = ObserverInput.getKeyBindFromEvent(e);
-				if (keybind) {
-					this._eventEmitter.emit(EVENTS$1.INPUT.KEYBIND, keybind, e);
-				}
-			}
-		}
-	}], [{
-		key: 'getKeyBindFromEvent',
-		value: function getKeyBindFromEvent(e) {
-			var keyMatch = e.code.match(/^key([A-z]+)/i);
-			if (!keyMatch) {
-				return null;
-			}
-			// Use undefined instead of false to reduce size of settings in localStorage
-			return {
-				key: keyMatch[1].toLowerCase(),
-				ctrl: e.ctrlKey ? true : undefined,
-				shift: e.shiftKey ? true : undefined,
-				alt: e.altKey ? true : undefined,
-				meta: e.metaKey ? true : undefined
-			};
-		}
-	}, {
-		key: '_isTextInput',
-		value: function _isTextInput(node) {
-			if (node.nodeName === 'INPUT') {
-				return true;
-			}
-			if (node.nodeName === 'TEXTAREA') {
-				return true;
-			}
-			if (node.classList.contains('chatInput')) {
-				return true;
-			}
-			if (node.classList.contains('fieldEditor')) {
-				return true;
-			}
-			return false;
-		}
-	}]);
-	return ObserverInput;
-}();
-
-__$styleInject(".akun-x-settings-backdrop{position:fixed;top:0;right:0;bottom:0;left:0;z-index:9999;background-color:rgba(0,0,0,.5)}.akun-x-settings-horizontal-align{width:100%;height:100%}.akun-x-settings-horizontal-align,.akun-x-settings-vertical-align{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.akun-x-settings-vertical-align{-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;width:40%;min-width:700px}.akun-x-settings-theme-light .akun-x-settings{background:#fff;border-color:#f7f9fa;box-shadow:0 3px 7px rgba(0,0,0,.3)}.akun-x-settings-theme-light .akun-x-settings-header{border-color:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-header-exit:hover{background:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-module-list{border-color:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-module-list-item:hover{background-color:#eaeced}.akun-x-settings-theme-light .akun-x-settings-selected{background-color:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-header-exit{color:#272727;text-shadow:0 1px 0 #fff}.akun-x-settings-theme-dark .akun-x-settings{background:#2a2c3b;border-color:#323448;box-shadow:0 3px 7px rgba(0,0,0,.3)}.akun-x-settings-theme-dark .akun-x-settings-header{border-color:#323448}.akun-x-settings-theme-dark .akun-x-settings-header-exit:hover{background:#323448}.akun-x-settings-theme-dark .akun-x-settings-module-list{border-color:#323448}.akun-x-settings-theme-dark .akun-x-settings-module-list-item:hover{background-color:#4c4f6d}.akun-x-settings-theme-dark .akun-x-settings-selected{background-color:#323448}.akun-x-settings-theme-dark .akun-x-settings-header-exit{color:#d4d5d9;text-shadow:0 1px 0 #fff}.akun-x-settings{-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;height:50%;min-height:500px;border-radius:0;border-width:1px;border-style:solid;outline:0}.akun-x-settings,.akun-x-settings-header{display:-webkit-box;display:-ms-flexbox;display:flex}.akun-x-settings-header{-ms-flex-negative:0;flex-shrink:0;border-bottom-width:1px;border-style:solid}.akun-x-settings-header-title{margin:0;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1}.akun-x-settings-header-issues,.akun-x-settings-header-title{vertical-align:middle;padding:0 16px;line-height:50px}.akun-x-settings-header-exit{height:50px;width:50px;padding:0;border:0;margin:0;opacity:.2;background:transparent;cursor:pointer;font-size:20px;font-weight:700;line-height:20px;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;-webkit-appearance:none;vertical-align:middle;box-sizing:border-box;-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;text-align:center;text-rendering:auto;letter-spacing:normal;word-spacing:normal;text-transform:none;text-indent:0;display:inline-block}.akun-x-settings-header-exit:hover{opacity:.4}.akun-x-settings-body{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-webkit-box-align:stretch;-ms-flex-align:stretch;align-items:stretch}.akun-x-settings-module-list{-ms-flex-negative:0;flex-shrink:0;overflow-y:auto;border-right-width:1px;border-style:solid}.akun-x-settings-module-list-item{padding:5px 16px;cursor:pointer}.akun-x-settings-module-details-container{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;overflow-y:auto;padding:15px}.akun-x-settings-module-details>div{padding-bottom:10px}.akun-x-settings-setting-name{font-weight:700}.akun-x-settings-hidden{display:none!important}", undefined);
-
 var LOCAL_STORAGE_KEY = 'akun-x';
 
 var THEME_CLASS = {
@@ -534,6 +482,33 @@ var SETTING_TYPES = {
 	BOOLEAN: 'boolean',
 	ARRAY: 'array',
 	KEYBIND: 'keybind'
+};
+
+var SETTING_IDS = {
+	KEYBIND_OPEN: 'keybind_open',
+	KEYBIND_CLOSE: 'keybind_close'
+};
+
+var THIS_ID = 'settings';
+
+var DEFAULT_SETTINGS = {
+	name: 'Settings',
+	id: THIS_ID,
+	settings: {}
+};
+
+DEFAULT_SETTINGS.settings[SETTING_IDS.KEYBIND_OPEN] = {
+	name: 'Open Keybind',
+	description: 'The keybind used to open the settings menu.',
+	type: SETTING_TYPES.KEYBIND,
+	value: { key: 'o' }
+};
+
+DEFAULT_SETTINGS.settings[SETTING_IDS.KEYBIND_CLOSE] = {
+	name: 'Close Keybind',
+	description: 'The keybind used to close the settings menu.',
+	type: SETTING_TYPES.KEYBIND,
+	value: { key: 'escape' }
 };
 
 /* Modules have default settings. When loading the locally stored settings, these defaults should be overridden where
@@ -564,6 +539,8 @@ var Settings = function () {
 		document.body.appendChild(this._backdropNode);
 		this._onAddedMainMenu(this._core.dom.node('mainMenu'));
 		this._core.on(this._core.EVENTS.DOM.ADDED.MAIN_MENU, this._onAddedMainMenu.bind(this));
+		this._core.on(this._core.EVENTS.INPUT.KEYBIND, this._onKeypress, this);
+		this.addModule(DEFAULT_SETTINGS, this._onSettingsChanged.bind(this));
 	}
 
 	createClass(Settings, [{
@@ -586,6 +563,9 @@ var Settings = function () {
 			this._moduleCallbacks[moduleId] = callback;
 			return settings;
 		}
+	}, {
+		key: '_onSettingsChanged',
+		value: function _onSettingsChanged(settingId) {}
 	}, {
 		key: '_createModuleHTML',
 		value: function _createModuleHTML(moduleSettings) {
@@ -823,6 +803,16 @@ var Settings = function () {
 				});
 			}
 		}
+	}, {
+		key: '_onKeypress',
+		value: function _onKeypress(keybind, e) {
+			if (doesObjectShareValues(keybind, this._settings[THIS_ID][SETTING_IDS.KEYBIND_OPEN].value)) {
+				this._showMenu();
+			}
+			if (doesObjectShareValues(keybind, this._settings[THIS_ID][SETTING_IDS.KEYBIND_CLOSE].value)) {
+				this._hideMenu();
+			}
+		}
 	}], [{
 		key: '_setSettingNodeValue',
 		value: function _setSettingNodeValue(node, type, value) {
@@ -855,7 +845,7 @@ var Settings = function () {
 
 var MutationObserver$1 = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
 
-var EVENTS$2 = {
+var EVENTS$1 = {
 	DOM: {
 		ADDED: {
 			CHAT_ITEM: 'dom.added.chatItem',
@@ -948,55 +938,55 @@ var ObserverDOM = function () {
 							// console.log(node);
 							if (node.classList) {
 								if (node.classList.contains('logItem')) {
-									this._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_ITEM, node);
+									this._eventEmitter.emit(EVENTS$1.DOM.ADDED.CHAT_ITEM, node);
 									var nodeMessage = node.querySelector('.message');
 									if (nodeMessage) {
-										this._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_ITEM_MESSAGE, nodeMessage);
+										this._eventEmitter.emit(EVENTS$1.DOM.ADDED.CHAT_ITEM_MESSAGE, nodeMessage);
 									}
 								}
 								if (node.classList.contains('message')) {
-									this._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_ITEM_MESSAGE, node);
+									this._eventEmitter.emit(EVENTS$1.DOM.ADDED.CHAT_ITEM_MESSAGE, node);
 								}
 								if (node.classList.contains('jadeRepeat')) {
 									node.querySelectorAll('.logItem').forEach(function (nodeLogItem) {
-										_this2._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_ITEM, nodeLogItem);
+										_this2._eventEmitter.emit(EVENTS$1.DOM.ADDED.CHAT_ITEM, nodeLogItem);
 										var nodeMessage = nodeLogItem.querySelector('.message');
 										if (nodeMessage) {
-											_this2._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_ITEM_MESSAGE, nodeMessage);
+											_this2._eventEmitter.emit(EVENTS$1.DOM.ADDED.CHAT_ITEM_MESSAGE, nodeMessage);
 										}
 									});
 									node.querySelectorAll('.chapter').forEach(function (nodeChapter) {
-										_this2._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAPTER, nodeChapter);
+										_this2._eventEmitter.emit(EVENTS$1.DOM.ADDED.CHAPTER, nodeChapter);
 									});
 								}
 								if (node.classList.contains('chapter')) {
-									this._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAPTER, node);
+									this._eventEmitter.emit(EVENTS$1.DOM.ADDED.CHAPTER, node);
 								}
 								if (node.classList.contains('fieldBody')) {
-									this._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_ITEM_FIELD_BODY, node);
+									this._eventEmitter.emit(EVENTS$1.DOM.ADDED.CHAT_ITEM_FIELD_BODY, node);
 								}
 								if (node.classList.contains('storyItem')) {
-									this._eventEmitter.emit(EVENTS$2.DOM.ADDED.STORY, node);
+									this._eventEmitter.emit(EVENTS$1.DOM.ADDED.STORY, node);
 								}
 								if (node.classList.contains('chatContainer')) {
-									this._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_HEADER, node.querySelector('.chatHeader'));
+									this._eventEmitter.emit(EVENTS$1.DOM.ADDED.CHAT_HEADER, node.querySelector('.chatHeader'));
 								}
 								if (node.classList.contains('secondRow')) {
-									this._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAPTER_BUTTON_CONTROLS, node);
+									this._eventEmitter.emit(EVENTS$1.DOM.ADDED.CHAPTER_BUTTON_CONTROLS, node);
 								}
 								if (node.classList.contains('chatLight')) {
 									node.querySelectorAll('.logItem').forEach(function (nodeLogItem) {
-										_this2._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_ITEM, nodeLogItem);
+										_this2._eventEmitter.emit(EVENTS$1.DOM.ADDED.CHAT_ITEM, nodeLogItem);
 										var nodeMessage = nodeLogItem.querySelector('.message');
 										if (nodeMessage) {
-											_this2._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_ITEM_MESSAGE, nodeMessage);
+											_this2._eventEmitter.emit(EVENTS$1.DOM.ADDED.CHAT_ITEM_MESSAGE, nodeMessage);
 										}
 									});
 								}
 								if (node.classList.contains('chatItemDetail')) {
-									this._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_MODAL, node);
+									this._eventEmitter.emit(EVENTS$1.DOM.ADDED.CHAT_MODAL, node);
 									node.querySelectorAll('.chatHeader').forEach(function (nodeChatHeader) {
-										_this2._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_HEADER, nodeChatHeader);
+										_this2._eventEmitter.emit(EVENTS$1.DOM.ADDED.CHAT_HEADER, nodeChatHeader);
 									});
 								}
 							}
@@ -1039,6 +1029,74 @@ var ObserverDOM = function () {
 		}
 	}]);
 	return ObserverDOM;
+}();
+
+var EVENTS$2 = {
+	INPUT: {
+		KEYBIND: 'keybind'
+	}
+};
+
+var EXTRA_ACCEPTED_CODES = ['escape', 'enter'];
+
+var ObserverInput = function () {
+	function ObserverInput(eventEmitter) {
+		classCallCheck(this, ObserverInput);
+
+		this._eventEmitter = eventEmitter;
+
+		document.addEventListener('keyup', this._onKeyPress.bind(this));
+	}
+
+	createClass(ObserverInput, [{
+		key: '_onKeyPress',
+		value: function _onKeyPress(e) {
+			if (!ObserverInput._isTextInput(e.target)) {
+				// console.log(e);
+				var keybind = ObserverInput.getKeyBindFromEvent(e);
+				if (keybind) {
+					this._eventEmitter.emit(EVENTS$2.INPUT.KEYBIND, keybind, e);
+				}
+			}
+		}
+	}], [{
+		key: 'getKeyBindFromEvent',
+		value: function getKeyBindFromEvent(e) {
+			var code = e.code.toLowerCase();
+			var keyMatch = code.match(/^key([A-z]+)/i);
+			if (keyMatch) {
+				code = keyMatch[1];
+			} else if (EXTRA_ACCEPTED_CODES.indexOf(code) === -1) {
+				return null;
+			}
+			// Use undefined instead of false to reduce size of settings in localStorage
+			return {
+				key: code,
+				ctrl: e.ctrlKey ? true : undefined,
+				shift: e.shiftKey ? true : undefined,
+				alt: e.altKey ? true : undefined,
+				meta: e.metaKey ? true : undefined
+			};
+		}
+	}, {
+		key: '_isTextInput',
+		value: function _isTextInput(node) {
+			if (node.nodeName === 'INPUT') {
+				return true;
+			}
+			if (node.nodeName === 'TEXTAREA') {
+				return true;
+			}
+			if (node.classList.contains('chatInput')) {
+				return true;
+			}
+			if (node.classList.contains('fieldEditor')) {
+				return true;
+			}
+			return false;
+		}
+	}]);
+	return ObserverInput;
 }();
 
 var EVENTS$3 = {
@@ -1152,7 +1210,7 @@ var ObserverNet = function () {
 var EVENTS$$1 = {
 	FOCUS: 'focus'
 };
-Object.assign(EVENTS$$1, EVENTS$2, EVENTS$1, EVENTS$3);
+Object.assign(EVENTS$$1, EVENTS$1, EVENTS$2, EVENTS$3);
 
 var THEMES = {
 	LIGHT: 'snowdrift',
@@ -1250,17 +1308,17 @@ __$styleInject(".akun-x-anon-toggle{-webkit-touch-callout:none;-webkit-user-sele
 
 var MODULE_ID = 'anonToggle';
 
-var SETTING_IDS = {
+var SETTING_IDS$1 = {
 	ENABLED: 'enabled'
 };
 
-var DEFAULT_SETTINGS = {
+var DEFAULT_SETTINGS$1 = {
 	name: 'Anon Toggle',
 	id: MODULE_ID,
 	settings: {}
 };
 
-DEFAULT_SETTINGS.settings[SETTING_IDS.ENABLED] = {
+DEFAULT_SETTINGS$1.settings[SETTING_IDS$1.ENABLED] = {
 	name: 'Enabled',
 	description: 'Turn the Anon Toggle module on or off.',
 	type: SETTING_TYPES.BOOLEAN,
@@ -1272,14 +1330,14 @@ var AnonToggle = function () {
 		classCallCheck(this, AnonToggle);
 
 		this._core = core;
-		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS, this._onSettingsChanged.bind(this));
+		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS$1, this._onSettingsChanged.bind(this));
 		this._onClickShouldSetToAnon = false;
 		this._toggleElement = null;
 		this._avatarElement = null;
 		this._usernameElement = null;
 		this._createToggleElement();
 		this._toggleElementPool = new Set();
-		if (this._settings[SETTING_IDS.ENABLED].value) {
+		if (this._settings[SETTING_IDS$1.ENABLED].value) {
 			this._enable();
 		}
 		this._boundToggleClickCallback = this._toggleClickCallback.bind(this);
@@ -1289,8 +1347,8 @@ var AnonToggle = function () {
 		key: '_onSettingsChanged',
 		value: function _onSettingsChanged(settingId) {
 			switch (settingId) {
-				case SETTING_IDS.ENABLED:
-					if (this._settings[SETTING_IDS.ENABLED].value) {
+				case SETTING_IDS$1.ENABLED:
+					if (this._settings[SETTING_IDS$1.ENABLED].value) {
 						this._enable();
 					} else {
 						this._disable();
@@ -1487,17 +1545,17 @@ __$styleInject(".akun-x-chapter-html-editor-disabled{opacity:.5;pointer-events:n
 
 var MODULE_ID$1 = 'chapterHtmlEditor';
 
-var SETTING_IDS$1 = {
+var SETTING_IDS$2 = {
 	ENABLED: 'enabled'
 };
 
-var DEFAULT_SETTINGS$1 = {
+var DEFAULT_SETTINGS$2 = {
 	name: 'Chapter HTML Editor',
 	id: MODULE_ID$1,
 	settings: {}
 };
 
-DEFAULT_SETTINGS$1.settings[SETTING_IDS$1.ENABLED] = {
+DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.ENABLED] = {
 	name: 'Enabled',
 	description: 'Turn the Chapter HTML Editor module on or off.',
 	type: SETTING_TYPES.BOOLEAN,
@@ -1509,8 +1567,8 @@ var ChapterHTMLEditor = function () {
 		classCallCheck(this, ChapterHTMLEditor);
 
 		this._core = core;
-		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS$1, this._onSettingsChanged.bind(this));
-		if (this._settings[SETTING_IDS$1.ENABLED].value) {
+		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS$2, this._onSettingsChanged.bind(this));
+		if (this._settings[SETTING_IDS$2.ENABLED].value) {
 			this._enable();
 		}
 	}
@@ -1519,8 +1577,8 @@ var ChapterHTMLEditor = function () {
 		key: '_onSettingsChanged',
 		value: function _onSettingsChanged(settingId) {
 			switch (settingId) {
-				case SETTING_IDS$1.ENABLED:
-					if (this._settings[SETTING_IDS$1.ENABLED].value) {
+				case SETTING_IDS$2.ENABLED:
+					if (this._settings[SETTING_IDS$2.ENABLED].value) {
 						this._enable();
 					} else {
 						this._disable();
@@ -1622,7 +1680,7 @@ var ChapterHTMLEditor = function () {
 
 var MODULE_ID$2 = 'imageToggle';
 
-var SETTING_IDS$2 = {
+var SETTING_IDS$3 = {
 	ENABLED: 'enabled',
 	KEYBIND: 'keybind',
 	ALL: 'all',
@@ -1636,83 +1694,83 @@ var SETTING_IDS$2 = {
 	LIVE_STORIES: 'live_stories'
 };
 
-var DEFAULT_SETTINGS$2 = {
+var DEFAULT_SETTINGS$3 = {
 	name: 'Image Toggle',
 	id: MODULE_ID$2,
 	settings: {}
 };
 
-DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.ENABLED] = {
+DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.ENABLED] = {
 	name: 'Enabled',
 	description: 'Turn the Image Toggle module on or off.',
 	type: SETTING_TYPES.BOOLEAN,
 	value: false
 };
 
-DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.KEYBIND] = {
+DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.KEYBIND] = {
 	name: 'Keybind',
 	description: 'The keybind to enable or disable this module.',
 	type: SETTING_TYPES.KEYBIND,
 	value: { key: 'i' }
 };
 
-DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.ALL] = {
+DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.ALL] = {
 	name: 'All Images',
 	description: 'Every image on the site disappears. Has the potential to hide things you don\'t want hidden.',
 	type: SETTING_TYPES.BOOLEAN,
 	value: false
 };
 
-DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.STORY_COVERS] = {
+DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.STORY_COVERS] = {
 	name: 'Story Covers',
 	description: 'Hide the cover image for stories.',
 	type: SETTING_TYPES.BOOLEAN,
 	value: true
 };
 
-DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.STORY_BODY] = {
+DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.STORY_BODY] = {
 	name: 'Story Body',
 	description: 'Hide any images that are in story chapters.',
 	type: SETTING_TYPES.BOOLEAN,
 	value: true
 };
 
-DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.CHAT_MESSAGES] = {
+DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.CHAT_MESSAGES] = {
 	name: 'Chat Messages',
 	description: 'Hide images in chat.',
 	type: SETTING_TYPES.BOOLEAN,
 	value: true
 };
 
-DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.CHAT_MODALS] = {
+DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.CHAT_MODALS] = {
 	name: 'Chat Modals',
 	description: 'Hide images in the popout chat modals.',
 	type: SETTING_TYPES.BOOLEAN,
 	value: true
 };
 
-DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.TOPIC_COVERS] = {
+DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.TOPIC_COVERS] = {
 	name: 'Topic Covers',
 	description: 'Hide the topic cover images.',
 	type: SETTING_TYPES.BOOLEAN,
 	value: true
 };
 
-DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.TOPIC_OP] = {
+DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.TOPIC_OP] = {
 	name: 'Topic Opening Post',
 	description: 'Hide any images within the topic\'s opening post.',
 	type: SETTING_TYPES.BOOLEAN,
 	value: true
 };
 
-DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.PROFILE_AVATARS] = {
+DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.PROFILE_AVATARS] = {
 	name: 'Profile Avatar',
 	description: 'Hides the large avatar image displayed on a user\'s profile page.',
 	type: SETTING_TYPES.BOOLEAN,
 	value: true
 };
 
-DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.LIVE_STORIES] = {
+DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.LIVE_STORIES] = {
 	name: 'Live Story List',
 	description: 'Hides story cover images for stories listed in the live story list. Only has effect if you\'re using the Live Images AkunX module.',
 	type: SETTING_TYPES.BOOLEAN,
@@ -1724,12 +1782,12 @@ var ImageToggle = function () {
 		classCallCheck(this, ImageToggle);
 
 		this._core = core;
-		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS$2, this._onSettingsChanged.bind(this));
+		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS$3, this._onSettingsChanged.bind(this));
 		this._styleElement = document.createElement('style');
 		this._styleElement.id = 'akun-x-image-toggle';
 		document.head.appendChild(this._styleElement);
 		this._core.on(this._core.EVENTS.INPUT.KEYBIND, this._onKeypress, this);
-		if (this._settings[SETTING_IDS$2.ENABLED].value) {
+		if (this._settings[SETTING_IDS$3.ENABLED].value) {
 			this._enable();
 		}
 	}
@@ -1738,17 +1796,17 @@ var ImageToggle = function () {
 		key: '_onSettingsChanged',
 		value: function _onSettingsChanged(settingId) {
 			switch (settingId) {
-				case SETTING_IDS$2.ENABLED:
-					if (this._settings[SETTING_IDS$2.ENABLED].value) {
+				case SETTING_IDS$3.ENABLED:
+					if (this._settings[SETTING_IDS$3.ENABLED].value) {
 						this._enable();
 					} else {
 						this._disable();
 					}
 					break;
-				case SETTING_IDS$2.KEYBIND:
+				case SETTING_IDS$3.KEYBIND:
 					break;
 				default:
-					if (this._settings[SETTING_IDS$2.ENABLED].value) {
+					if (this._settings[SETTING_IDS$3.ENABLED].value) {
 						this._regenerateCurrentStyling();
 					}
 			}
@@ -1767,33 +1825,33 @@ var ImageToggle = function () {
 		key: '_regenerateCurrentStyling',
 		value: function _regenerateCurrentStyling() {
 			var css = '';
-			if (this._settings[SETTING_IDS$2.ALL].value) {
+			if (this._settings[SETTING_IDS$3.ALL].value) {
 				css += 'img {display: none!important;}';
 			} else {
-				if (this._settings[SETTING_IDS$2.STORY_COVERS].value) {
+				if (this._settings[SETTING_IDS$3.STORY_COVERS].value) {
 					css += '.storyImg, .imgWithBackground, .authorOf img, .storyListItem .imgContainer img {display: none!important;}';
 					css += '.storyImgContainer {min-height: 2em;}';
 					css += '.authorOf .storyListItem {height: inherit!important;}';
 				}
-				if (this._settings[SETTING_IDS$2.STORY_BODY].value) {
+				if (this._settings[SETTING_IDS$3.STORY_BODY].value) {
 					css += '#storyPosts img {display: none!important;}';
 				}
-				if (this._settings[SETTING_IDS$2.CHAT_MESSAGES].value) {
+				if (this._settings[SETTING_IDS$3.CHAT_MESSAGES].value) {
 					css += '#mainChat .message img, #page-body .message img {display: none!important;}';
 				}
-				if (this._settings[SETTING_IDS$2.CHAT_MODALS].value) {
+				if (this._settings[SETTING_IDS$3.CHAT_MODALS].value) {
 					css += '.chatModal .message img, .chatModal .postBody img {display: none!important;}';
 				}
-				if (this._settings[SETTING_IDS$2.TOPIC_COVERS].value) {
+				if (this._settings[SETTING_IDS$3.TOPIC_COVERS].value) {
 					css += '#threads td:not(:last-child) img, .newsFeed img {display: none!important;}';
 				}
-				if (this._settings[SETTING_IDS$2.TOPIC_OP].value) {
+				if (this._settings[SETTING_IDS$3.TOPIC_OP].value) {
 					css += '.page-head-body #page-body img {display: none!important;}';
 				}
-				if (this._settings[SETTING_IDS$2.PROFILE_AVATARS].value) {
+				if (this._settings[SETTING_IDS$3.PROFILE_AVATARS].value) {
 					css += '#userProfile .avatar img {display: none!important;}';
 				}
-				if (this._settings[SETTING_IDS$2.LIVE_STORIES].value) {
+				if (this._settings[SETTING_IDS$3.LIVE_STORIES].value) {
 					css += '.liveStories img {display: none!important;}';
 				}
 			}
@@ -1802,9 +1860,9 @@ var ImageToggle = function () {
 	}, {
 		key: '_onKeypress',
 		value: function _onKeypress(eKeybind, e) {
-			var keybind = this._settings[SETTING_IDS$2.KEYBIND].value;
-			if (keybind.key === eKeybind.key && keybind.ctrl === eKeybind.ctrl && keybind.alt === eKeybind.alt && keybind.shift === eKeybind.shift && keybind.meta === eKeybind.meta) {
-				this._core.settings.setSetting(ImageToggle.id, SETTING_IDS$2.ENABLED, !this._settings[SETTING_IDS$2.ENABLED].value);
+			var keybind = this._settings[SETTING_IDS$3.KEYBIND].value;
+			if (doesObjectShareValues(eKeybind, keybind)) {
+				this._core.settings.setSetting(ImageToggle.id, SETTING_IDS$3.ENABLED, !this._settings[SETTING_IDS$3.ENABLED].value);
 			}
 		}
 	}], [{
@@ -1820,41 +1878,41 @@ var MODULE_ID$3 = 'linker';
 var imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
 var videoExtensions = ['webm', 'mp4', 'gifv'];
 
-var SETTING_IDS$3 = {
+var SETTING_IDS$4 = {
 	ENABLED: 'enabled',
 	EMBED_IMAGES: 'embedImages',
 	EMBED_VIDEOS: 'embedVideos',
 	MEDIA_SITES: 'mediaSites'
 };
 
-var DEFAULT_SETTINGS$3 = {
+var DEFAULT_SETTINGS$4 = {
 	name: 'Linker',
 	id: MODULE_ID$3,
 	settings: {}
 };
 
-DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.ENABLED] = {
+DEFAULT_SETTINGS$4.settings[SETTING_IDS$4.ENABLED] = {
 	name: 'Enabled',
 	description: 'Turn the Linker module on or off.',
 	type: SETTING_TYPES.BOOLEAN,
 	value: true
 };
 
-DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.EMBED_IMAGES] = {
+DEFAULT_SETTINGS$4.settings[SETTING_IDS$4.EMBED_IMAGES] = {
 	name: 'Embed Images',
 	description: 'Embed links recognised to be images as images instead.',
 	type: SETTING_TYPES.BOOLEAN,
 	value: true
 };
 
-DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.EMBED_VIDEOS] = {
+DEFAULT_SETTINGS$4.settings[SETTING_IDS$4.EMBED_VIDEOS] = {
 	name: 'Embed Videos',
 	description: 'Embed links recognised to be videos as images instead.',
 	type: SETTING_TYPES.BOOLEAN,
 	value: true
 };
 
-DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.MEDIA_SITES] = {
+DEFAULT_SETTINGS$4.settings[SETTING_IDS$4.MEDIA_SITES] = {
 	name: 'Media Sites',
 	description: 'Define a list of sites to embed links as media from. Used as a regex pattern.',
 	type: SETTING_TYPES.ARRAY,
@@ -1866,12 +1924,12 @@ var Linker = function () {
 		classCallCheck(this, Linker);
 
 		this._core = core;
-		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS$3, this._onSettingsChanged.bind(this));
+		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS$4, this._onSettingsChanged.bind(this));
 		this._imageRegex = null;
 		this._videoRegex = null;
 		this._videoTypeRegex = null;
 		this._updateMediaRegex();
-		if (this._settings[SETTING_IDS$3.ENABLED].value) {
+		if (this._settings[SETTING_IDS$4.ENABLED].value) {
 			this._enable();
 		}
 	}
@@ -1880,42 +1938,42 @@ var Linker = function () {
 		key: '_onSettingsChanged',
 		value: function _onSettingsChanged(settingId) {
 			switch (settingId) {
-				case SETTING_IDS$3.ENABLED:
-					if (this._settings[SETTING_IDS$3.ENABLED].value) {
+				case SETTING_IDS$4.ENABLED:
+					if (this._settings[SETTING_IDS$4.ENABLED].value) {
 						this._enable();
 					} else {
 						this._disable();
 					}
 					break;
-				case SETTING_IDS$3.EMBED_IMAGES:
-					if (this._settings[SETTING_IDS$3.EMBED_IMAGES].value) {
+				case SETTING_IDS$4.EMBED_IMAGES:
+					if (this._settings[SETTING_IDS$4.EMBED_IMAGES].value) {
 						this._disable();
-						if (this._settings[SETTING_IDS$3.ENABLED].value) {
+						if (this._settings[SETTING_IDS$4.ENABLED].value) {
 							this._enable();
 						}
 					} else {
 						this._disableImages();
-						if (this._settings[SETTING_IDS$3.ENABLED].value) {
+						if (this._settings[SETTING_IDS$4.ENABLED].value) {
 							this._enable();
 						}
 					}
 					break;
-				case SETTING_IDS$3.EMBED_VIDEOS:
-					if (this._settings[SETTING_IDS$3.EMBED_VIDEOS].value) {
+				case SETTING_IDS$4.EMBED_VIDEOS:
+					if (this._settings[SETTING_IDS$4.EMBED_VIDEOS].value) {
 						this._disable();
-						if (this._settings[SETTING_IDS$3.ENABLED].value) {
+						if (this._settings[SETTING_IDS$4.ENABLED].value) {
 							this._enable();
 						}
 					} else {
 						this._disableVideos();
-						if (this._settings[SETTING_IDS$3.ENABLED].value) {
+						if (this._settings[SETTING_IDS$4.ENABLED].value) {
 							this._enable();
 						}
 					}
 					break;
-				case SETTING_IDS$3.MEDIA_SITES:
+				case SETTING_IDS$4.MEDIA_SITES:
 					this._updateMediaRegex();
-					if (this._settings[SETTING_IDS$3.ENABLED].value) {
+					if (this._settings[SETTING_IDS$4.ENABLED].value) {
 						this._disable();
 						this._enable();
 					}
@@ -1971,7 +2029,7 @@ var Linker = function () {
 	}, {
 		key: '_updateMediaRegex',
 		value: function _updateMediaRegex() {
-			var mediaSites = this._settings[SETTING_IDS$3.MEDIA_SITES].value.join('|');
+			var mediaSites = this._settings[SETTING_IDS$4.MEDIA_SITES].value.join('|');
 			this._imageRegex = new RegExp('https?://(' + mediaSites + ')/.+\\.(' + imageExtensions.join('|') + ')($|\\?)');
 			this._videoRegex = new RegExp('https?://(' + mediaSites + ')/.+\\.(' + videoExtensions.join('|') + ')($|\\?)');
 			this._videoTypeRegex = new RegExp('\\.(' + videoExtensions.join('|') + ')(?:$|\\?)');
@@ -2049,7 +2107,7 @@ var Linker = function () {
 	}, {
 		key: '_getWrappedLink',
 		value: function _getWrappedLink(url) {
-			if (this._settings[SETTING_IDS$3.EMBED_IMAGES].value && this.isImageUrl(url)) {
+			if (this._settings[SETTING_IDS$4.EMBED_IMAGES].value && this.isImageUrl(url)) {
 				var img = document.createElement('img');
 				img.classList.add('akun-x-linker-image');
 				img.src = url.replace(/^https?:\/\//, 'https://'); // Make it https
@@ -2060,7 +2118,7 @@ var Linker = function () {
 				return img;
 			}
 
-			if (this._settings[SETTING_IDS$3.EMBED_VIDEOS].value && this.isVideoUrl(url)) {
+			if (this._settings[SETTING_IDS$4.EMBED_VIDEOS].value && this.isVideoUrl(url)) {
 				var type = this._videoTypeRegex.exec(url);
 				type = type && type[1];
 				var vid = document.createElement('video');
@@ -2113,17 +2171,17 @@ var Linker = function () {
 
 var MODULE_ID$4 = 'liveImages';
 
-var SETTING_IDS$4 = {
+var SETTING_IDS$5 = {
 	ENABLED: 'enabled'
 };
 
-var DEFAULT_SETTINGS$4 = {
+var DEFAULT_SETTINGS$5 = {
 	name: 'Live Images',
 	id: MODULE_ID$4,
 	settings: {}
 };
 
-DEFAULT_SETTINGS$4.settings[SETTING_IDS$4.ENABLED] = {
+DEFAULT_SETTINGS$5.settings[SETTING_IDS$5.ENABLED] = {
 	name: 'Enabled',
 	description: 'Turn the Live Images module on or off.',
 	type: SETTING_TYPES.BOOLEAN,
@@ -2137,9 +2195,9 @@ var LiveImages = function () {
 		classCallCheck(this, LiveImages);
 
 		this._core = core;
-		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS$4, this._onSettingsChanged.bind(this));
+		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS$5, this._onSettingsChanged.bind(this));
 		this._storyIdToImageMap = new Map();
-		if (this._settings[SETTING_IDS$4.ENABLED].value) {
+		if (this._settings[SETTING_IDS$5.ENABLED].value) {
 			this._enable();
 		}
 	}
@@ -2148,8 +2206,8 @@ var LiveImages = function () {
 		key: '_onSettingsChanged',
 		value: function _onSettingsChanged(settingId) {
 			switch (settingId) {
-				case SETTING_IDS$4.ENABLED:
-					if (this._settings[SETTING_IDS$4.ENABLED].value) {
+				case SETTING_IDS$5.ENABLED:
+					if (this._settings[SETTING_IDS$5.ENABLED].value) {
 						this._enable();
 					} else {
 						this._disable();

@@ -6,6 +6,11 @@ export const EVENTS = {
 	}
 };
 
+const EXTRA_ACCEPTED_CODES = [
+	'escape',
+	'enter'
+];
+
 export default class ObserverInput {
 	constructor(eventEmitter) {
 		this._eventEmitter = eventEmitter;
@@ -24,13 +29,16 @@ export default class ObserverInput {
 	}
 
 	static getKeyBindFromEvent(e) {
-		const keyMatch = e.code.match(/^key([A-z]+)/i);
-		if (!keyMatch) {
+		let code = e.code.toLowerCase();
+		const keyMatch = code.match(/^key([A-z]+)/i);
+		if (keyMatch) {
+			code = keyMatch[1];
+		} else if (EXTRA_ACCEPTED_CODES.indexOf(code) === -1) {
 			return null;
 		}
 		// Use undefined instead of false to reduce size of settings in localStorage
 		return {
-			key: keyMatch[1].toLowerCase(),
+			key: code,
 			ctrl: e.ctrlKey ? true : undefined,
 			shift: e.shiftKey ? true : undefined,
 			alt: e.altKey ? true : undefined,

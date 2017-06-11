@@ -30,3 +30,16 @@ export const makeElastic = (node) => {
 	node.select();
 	delayedResize();
 };
+
+export const areObjectsEquivalent = (obj1, obj2) => {
+	return doesObjectShareValues(obj1, obj2) && doesObjectShareValues(obj2, obj1);
+};
+
+export const doesObjectShareValues = (obj1, obj2) => {
+	for (let property in obj1) {
+		if (obj1.hasOwnProperty(property) && obj2[property] !== obj1[property]) {
+			return false;
+		}
+	}
+	return true;
+};

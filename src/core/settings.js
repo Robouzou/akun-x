@@ -1,7 +1,6 @@
 'use strict';
 
-import {makeElastic} from './utils';
-import ObserverInput from './observerInput';
+import {makeElastic, doesObjectShareValues} from './utils';
 import './settings.pcss';
 
 const LOCAL_STORAGE_KEY = 'akun-x';
@@ -15,6 +14,33 @@ export const SETTING_TYPES = {
 	BOOLEAN: 'boolean',
 	ARRAY: 'array',
 	KEYBIND: 'keybind'
+};
+
+const SETTING_IDS = {
+	KEYBIND_OPEN: 'keybind_open',
+	KEYBIND_CLOSE: 'keybind_close'
+};
+
+const THIS_ID = 'settings';
+
+const DEFAULT_SETTINGS = {
+	name: 'Settings',
+	id: THIS_ID,
+	settings: {}
+};
+
+DEFAULT_SETTINGS.settings[SETTING_IDS.KEYBIND_OPEN] = {
+	name: 'Open Keybind',
+	description: 'The keybind used to open the settings menu.',
+	type: SETTING_TYPES.KEYBIND,
+	value: { key: 'o' }
+};
+
+DEFAULT_SETTINGS.settings[SETTING_IDS.KEYBIND_CLOSE] = {
+	name: 'Close Keybind',
+	description: 'The keybind used to close the settings menu.',
+	type: SETTING_TYPES.KEYBIND,
+	value: { key: 'escape' }
 };
 
 /* Modules have default settings. When loading the locally stored settings, these defaults should be overridden where
@@ -43,6 +69,8 @@ export default class Settings {
 		document.body.appendChild(this._backdropNode);
 		this._onAddedMainMenu(this._core.dom.node('mainMenu'));
 		this._core.on(this._core.EVENTS.DOM.ADDED.MAIN_MENU, this._onAddedMainMenu.bind(this));
+		this._core.on(this._core.EVENTS.INPUT.KEYBIND, this._onKeypress, this);
+		this.addModule(DEFAULT_SETTINGS, this._onSettingsChanged.bind(this));
 	}
 
 	addModule(moduleSettings, callback) {
@@ -62,6 +90,9 @@ export default class Settings {
 		this._createModuleHTML(moduleSettings);
 		this._moduleCallbacks[moduleId] = callback;
 		return settings;
+	}
+
+	_onSettingsChanged(settingId) {
 	}
 
 	_createModuleHTML(moduleSettings) {
@@ -309,5 +340,14 @@ export default class Settings {
 		if (keybind.meta) keys.push('meta');
 		keys.push(keybind.key.toUpperCase());
 		return keys.join(' + ');
+	}
+
+	_onKeypress(keybind, e) {
+		if (doesObjectShareValues(keybind, this._settings[THIS_ID][SETTING_IDS.KEYBIND_OPEN].value)) {
+			this._showMenu();
+		}
+		if (doesObjectShareValues(keybind, this._settings[THIS_ID][SETTING_IDS.KEYBIND_CLOSE].value)) {
+			this._hideMenu();
+		}
 	}
 }
