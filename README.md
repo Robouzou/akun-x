@@ -27,6 +27,9 @@ The following are modules included with the 'official' AkunX build:
 #### Chapter HTML Editor
  - Adds a button beside the chapter edit button that enables editing of the raw HTML used
 for the chapter
+#### Image Toggle
+ - Allows you to hide various types of image on the site (to avoid unwelcome PROMOTIONS)
+ - Has support for a keybind that quickly toggles it on and off
 #### Linker
  - Recognises plaintext URLs in posts and chapters and replaces them with hyperlinks
  - Can recognise images and videos hosted on sites specified in the settings and embed
