@@ -1482,45 +1482,222 @@ var ChapterHTMLEditor = function () {
 	return ChapterHTMLEditor;
 }();
 
-var MODULE_ID$2 = 'linker';
-var imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
-var videoExtensions = ['webm', 'mp4', 'gifv'];
+var MODULE_ID$2 = 'imageToggle';
 
 var SETTING_IDS$2 = {
 	ENABLED: 'enabled',
-	EMBED_IMAGES: 'embedImages',
-	EMBED_VIDEOS: 'embedVideos',
-	MEDIA_SITES: 'mediaSites'
+	ALL: 'all',
+	STORY_COVERS: 'STORY_COVERS',
+	STORY_BODY: 'story_body',
+	CHAT_MESSAGES: 'chat_messages',
+	CHAT_MODALS: 'chat_modals',
+	TOPIC_COVERS: 'TOPIC_COVERS',
+	TOPIC_OP: 'topic_op',
+	PROFILE_AVATARS: 'profile_avatars',
+	LIVE_STORIES: 'live_stories'
 };
 
 var DEFAULT_SETTINGS$2 = {
-	name: 'Linker',
+	name: 'Image Toggle',
 	id: MODULE_ID$2,
 	settings: {}
 };
 
 DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.ENABLED] = {
 	name: 'Enabled',
+	description: 'Turn the Image Toggle module on or off.',
+	type: SETTING_TYPES.BOOLEAN,
+	value: false
+};
+
+DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.ALL] = {
+	name: 'All Images',
+	description: 'Every image on the site disappears. Has the potential to hide things you don\'t want hidden.',
+	type: SETTING_TYPES.BOOLEAN,
+	value: false
+};
+
+DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.STORY_COVERS] = {
+	name: 'Story Covers',
+	description: 'Hide the cover image for stories.',
+	type: SETTING_TYPES.BOOLEAN,
+	value: true
+};
+
+DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.STORY_BODY] = {
+	name: 'Story Body',
+	description: 'Hide any images that are in story chapters.',
+	type: SETTING_TYPES.BOOLEAN,
+	value: true
+};
+
+DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.CHAT_MESSAGES] = {
+	name: 'Chat Messages',
+	description: 'Hide images in chat.',
+	type: SETTING_TYPES.BOOLEAN,
+	value: true
+};
+
+DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.CHAT_MODALS] = {
+	name: 'Chat Modals',
+	description: 'Hide images in the popout chat modals.',
+	type: SETTING_TYPES.BOOLEAN,
+	value: true
+};
+
+DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.TOPIC_COVERS] = {
+	name: 'Topic Covers',
+	description: 'Hide the topic cover images.',
+	type: SETTING_TYPES.BOOLEAN,
+	value: true
+};
+
+DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.TOPIC_OP] = {
+	name: 'Topic Opening Post',
+	description: 'Hide any images within the topic\'s opening post.',
+	type: SETTING_TYPES.BOOLEAN,
+	value: true
+};
+
+DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.PROFILE_AVATARS] = {
+	name: 'Profile Avatar',
+	description: 'Hides the large avatar image displayed on a user\'s profile page.',
+	type: SETTING_TYPES.BOOLEAN,
+	value: true
+};
+
+DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.LIVE_STORIES] = {
+	name: 'Live Story List',
+	description: 'Hides story cover images for stories listed in the live story list. Only has effect if you\'re using the Live Images AkunX module.',
+	type: SETTING_TYPES.BOOLEAN,
+	value: true
+};
+
+var ImageToggle = function () {
+	function ImageToggle(core) {
+		classCallCheck(this, ImageToggle);
+
+		this._core = core;
+		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS$2, this._onSettingsChanged.bind(this));
+		this._styleElement = document.createElement('style');
+		this._styleElement.id = 'akun-x-image-toggle';
+		document.head.appendChild(this._styleElement);
+		if (this._settings[SETTING_IDS$2.ENABLED].value) {
+			this._enable();
+		}
+	}
+
+	createClass(ImageToggle, [{
+		key: '_onSettingsChanged',
+		value: function _onSettingsChanged(settingId) {
+			switch (settingId) {
+				case SETTING_IDS$2.ENABLED:
+					if (this._settings[SETTING_IDS$2.ENABLED].value) {
+						this._enable();
+					} else {
+						this._disable();
+					}
+					break;
+				default:
+					if (this._settings[SETTING_IDS$2.ENABLED].value) {
+						this._regenerateCurrentStyling();
+					}
+			}
+		}
+	}, {
+		key: '_enable',
+		value: function _enable() {
+			this._regenerateCurrentStyling();
+		}
+	}, {
+		key: '_disable',
+		value: function _disable() {
+			this._styleElement.innerHTML = '';
+		}
+	}, {
+		key: '_regenerateCurrentStyling',
+		value: function _regenerateCurrentStyling() {
+			var css = '';
+			if (this._settings[SETTING_IDS$2.ALL].value) {
+				css += 'img {display: none!important;}';
+			} else {
+				if (this._settings[SETTING_IDS$2.STORY_COVERS].value) {
+					css += '.storyImg, .imgWithBackground, .authorOf img, .storyListItem .imgContainer img {display: none!important;}';
+					css += '.storyImgContainer {min-height: 2em;}';
+					css += '.authorOf .storyListItem {height: inherit!important;}';
+				}
+				if (this._settings[SETTING_IDS$2.STORY_BODY].value) {
+					css += '#storyPosts img {display: none!important;}';
+				}
+				if (this._settings[SETTING_IDS$2.CHAT_MESSAGES].value) {
+					css += '#mainChat .message img, #page-body .message img {display: none!important;}';
+				}
+				if (this._settings[SETTING_IDS$2.CHAT_MODALS].value) {
+					css += '.chatModal .message img, .chatModal .postBody img {display: none!important;}';
+				}
+				if (this._settings[SETTING_IDS$2.TOPIC_COVERS].value) {
+					css += '#threads td:not(:last-child) img, .newsFeed img {display: none!important;}';
+				}
+				if (this._settings[SETTING_IDS$2.TOPIC_OP].value) {
+					css += '.page-head-body #page-body img {display: none!important;}';
+				}
+				if (this._settings[SETTING_IDS$2.PROFILE_AVATARS].value) {
+					css += '#userProfile .avatar img {display: none!important;}';
+				}
+				if (this._settings[SETTING_IDS$2.LIVE_STORIES].value) {
+					css += '.liveStories img {display: none!important;}';
+				}
+			}
+			this._styleElement.innerHTML = css;
+		}
+	}], [{
+		key: 'id',
+		get: function get$$1() {
+			return MODULE_ID$2;
+		}
+	}]);
+	return ImageToggle;
+}();
+
+var MODULE_ID$3 = 'linker';
+var imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+var videoExtensions = ['webm', 'mp4', 'gifv'];
+
+var SETTING_IDS$3 = {
+	ENABLED: 'enabled',
+	EMBED_IMAGES: 'embedImages',
+	EMBED_VIDEOS: 'embedVideos',
+	MEDIA_SITES: 'mediaSites'
+};
+
+var DEFAULT_SETTINGS$3 = {
+	name: 'Linker',
+	id: MODULE_ID$3,
+	settings: {}
+};
+
+DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.ENABLED] = {
+	name: 'Enabled',
 	description: 'Turn the Linker module on or off.',
 	type: SETTING_TYPES.BOOLEAN,
 	value: true
 };
 
-DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.EMBED_IMAGES] = {
+DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.EMBED_IMAGES] = {
 	name: 'Embed Images',
 	description: 'Embed links recognised to be images as images instead.',
 	type: SETTING_TYPES.BOOLEAN,
 	value: true
 };
 
-DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.EMBED_VIDEOS] = {
+DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.EMBED_VIDEOS] = {
 	name: 'Embed Videos',
 	description: 'Embed links recognised to be videos as images instead.',
 	type: SETTING_TYPES.BOOLEAN,
 	value: true
 };
 
-DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.MEDIA_SITES] = {
+DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.MEDIA_SITES] = {
 	name: 'Media Sites',
 	description: 'Define a list of sites to embed links as media from. Used as a regex pattern.',
 	type: SETTING_TYPES.ARRAY,
@@ -1532,12 +1709,12 @@ var Linker = function () {
 		classCallCheck(this, Linker);
 
 		this._core = core;
-		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS$2, this._onSettingsChanged.bind(this));
+		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS$3, this._onSettingsChanged.bind(this));
 		this._imageRegex = null;
 		this._videoRegex = null;
 		this._videoTypeRegex = null;
 		this._updateMediaRegex();
-		if (this._settings[SETTING_IDS$2.ENABLED].value) {
+		if (this._settings[SETTING_IDS$3.ENABLED].value) {
 			this._enable();
 		}
 	}
@@ -1546,42 +1723,42 @@ var Linker = function () {
 		key: '_onSettingsChanged',
 		value: function _onSettingsChanged(settingId) {
 			switch (settingId) {
-				case SETTING_IDS$2.ENABLED:
-					if (this._settings[SETTING_IDS$2.ENABLED].value) {
+				case SETTING_IDS$3.ENABLED:
+					if (this._settings[SETTING_IDS$3.ENABLED].value) {
 						this._enable();
 					} else {
 						this._disable();
 					}
 					break;
-				case SETTING_IDS$2.EMBED_IMAGES:
-					if (this._settings[SETTING_IDS$2.EMBED_IMAGES].value) {
+				case SETTING_IDS$3.EMBED_IMAGES:
+					if (this._settings[SETTING_IDS$3.EMBED_IMAGES].value) {
 						this._disable();
-						if (this._settings[SETTING_IDS$2.ENABLED].value) {
+						if (this._settings[SETTING_IDS$3.ENABLED].value) {
 							this._enable();
 						}
 					} else {
 						this._disableImages();
-						if (this._settings[SETTING_IDS$2.ENABLED].value) {
+						if (this._settings[SETTING_IDS$3.ENABLED].value) {
 							this._enable();
 						}
 					}
 					break;
-				case SETTING_IDS$2.EMBED_VIDEOS:
-					if (this._settings[SETTING_IDS$2.EMBED_VIDEOS].value) {
+				case SETTING_IDS$3.EMBED_VIDEOS:
+					if (this._settings[SETTING_IDS$3.EMBED_VIDEOS].value) {
 						this._disable();
-						if (this._settings[SETTING_IDS$2.ENABLED].value) {
+						if (this._settings[SETTING_IDS$3.ENABLED].value) {
 							this._enable();
 						}
 					} else {
 						this._disableVideos();
-						if (this._settings[SETTING_IDS$2.ENABLED].value) {
+						if (this._settings[SETTING_IDS$3.ENABLED].value) {
 							this._enable();
 						}
 					}
 					break;
-				case SETTING_IDS$2.MEDIA_SITES:
+				case SETTING_IDS$3.MEDIA_SITES:
 					this._updateMediaRegex();
-					if (this._settings[SETTING_IDS$2.ENABLED].value) {
+					if (this._settings[SETTING_IDS$3.ENABLED].value) {
 						this._disable();
 						this._enable();
 					}
@@ -1637,7 +1814,7 @@ var Linker = function () {
 	}, {
 		key: '_updateMediaRegex',
 		value: function _updateMediaRegex() {
-			var mediaSites = this._settings[SETTING_IDS$2.MEDIA_SITES].value.join('|');
+			var mediaSites = this._settings[SETTING_IDS$3.MEDIA_SITES].value.join('|');
 			this._imageRegex = new RegExp('https?://(' + mediaSites + ')/.+\\.(' + imageExtensions.join('|') + ')($|\\?)');
 			this._videoRegex = new RegExp('https?://(' + mediaSites + ')/.+\\.(' + videoExtensions.join('|') + ')($|\\?)');
 			this._videoTypeRegex = new RegExp('\\.(' + videoExtensions.join('|') + ')(?:$|\\?)');
@@ -1715,7 +1892,7 @@ var Linker = function () {
 	}, {
 		key: '_getWrappedLink',
 		value: function _getWrappedLink(url) {
-			if (this._settings[SETTING_IDS$2.EMBED_IMAGES].value && this.isImageUrl(url)) {
+			if (this._settings[SETTING_IDS$3.EMBED_IMAGES].value && this.isImageUrl(url)) {
 				var img = document.createElement('img');
 				img.classList.add('akun-x-linker-image');
 				img.src = url.replace(/^https?:\/\//, 'https://'); // Make it https
@@ -1726,7 +1903,7 @@ var Linker = function () {
 				return img;
 			}
 
-			if (this._settings[SETTING_IDS$2.EMBED_VIDEOS].value && this.isVideoUrl(url)) {
+			if (this._settings[SETTING_IDS$3.EMBED_VIDEOS].value && this.isVideoUrl(url)) {
 				var type = this._videoTypeRegex.exec(url);
 				type = type && type[1];
 				var vid = document.createElement('video');
@@ -1771,25 +1948,25 @@ var Linker = function () {
 	}], [{
 		key: 'id',
 		get: function get$$1() {
-			return MODULE_ID$2;
+			return MODULE_ID$3;
 		}
 	}]);
 	return Linker;
 }();
 
-var MODULE_ID$3 = 'liveImages';
+var MODULE_ID$4 = 'liveImages';
 
-var SETTING_IDS$3 = {
+var SETTING_IDS$4 = {
 	ENABLED: 'enabled'
 };
 
-var DEFAULT_SETTINGS$3 = {
+var DEFAULT_SETTINGS$4 = {
 	name: 'Live Images',
-	id: MODULE_ID$3,
+	id: MODULE_ID$4,
 	settings: {}
 };
 
-DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.ENABLED] = {
+DEFAULT_SETTINGS$4.settings[SETTING_IDS$4.ENABLED] = {
 	name: 'Enabled',
 	description: 'Turn the Live Images module on or off.',
 	type: SETTING_TYPES.BOOLEAN,
@@ -1803,9 +1980,9 @@ var LiveImages = function () {
 		classCallCheck(this, LiveImages);
 
 		this._core = core;
-		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS$3, this._onSettingsChanged.bind(this));
+		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS$4, this._onSettingsChanged.bind(this));
 		this._storyIdToImageMap = new Map();
-		if (this._settings[SETTING_IDS$3.ENABLED].value) {
+		if (this._settings[SETTING_IDS$4.ENABLED].value) {
 			this._enable();
 		}
 	}
@@ -1814,8 +1991,8 @@ var LiveImages = function () {
 		key: '_onSettingsChanged',
 		value: function _onSettingsChanged(settingId) {
 			switch (settingId) {
-				case SETTING_IDS$3.ENABLED:
-					if (this._settings[SETTING_IDS$3.ENABLED].value) {
+				case SETTING_IDS$4.ENABLED:
+					if (this._settings[SETTING_IDS$4.ENABLED].value) {
 						this._enable();
 					} else {
 						this._disable();
@@ -1910,7 +2087,7 @@ var LiveImages = function () {
 	}], [{
 		key: 'id',
 		get: function get$$1() {
-			return MODULE_ID$3;
+			return MODULE_ID$4;
 		}
 	}]);
 	return LiveImages;
@@ -1920,6 +2097,7 @@ var core = new Core();
 
 core.addModule(AnonToggle);
 core.addModule(ChapterHTMLEditor);
+core.addModule(ImageToggle);
 core.addModule(Linker);
 core.addModule(LiveImages);
 
