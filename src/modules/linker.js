@@ -119,15 +119,15 @@ export default class Linker {
 	_enable() {
 		this._core.dom.nodes('message').forEach(this._onAddedChatItemMessage, this);
 		this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this);
-		this._core.on('dom.added.chatItemMessage', this._onAddedChatItemMessage, this);
-		this._core.on('dom.added.chatItemFieldBody', this._onAddedChatItemFieldBody, this);
-		this._core.on('dom.added.chapter', this._onAddedChapter, this);
+		this._core.on(this._core.EVENTS.DOM.ADDED.CHAT_ITEM_MESSAGE, this._onAddedChatItemMessage, this);
+		this._core.on(this._core.EVENTS.DOM.ADDED.CHAT_ITEM_FIELD_BODY, this._onAddedChatItemFieldBody, this);
+		this._core.on(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
 	}
 
 	_disable() {
-		this._core.removeListener('dom.added.chatItemMessage', this._onAddedChatItemMessage, this);
-		this._core.removeListener('dom.added.chatItemFieldBody', this._onAddedChatItemFieldBody, this);
-		this._core.removeListener('dom.added.chapter', this._onAddedChapter, this);
+		this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAT_ITEM_MESSAGE, this._onAddedChatItemMessage, this);
+		this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAT_ITEM_FIELD_BODY, this._onAddedChatItemFieldBody, this);
+		this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
 		this._disableLinks();
 		this._disableImages();
 		this._disableVideos();

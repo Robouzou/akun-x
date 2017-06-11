@@ -1,6 +1,7 @@
 'use strict';
 
 import {makeElastic} from './utils';
+import ObserverInput from './observerInput';
 import './settings.pcss';
 
 const LOCAL_STORAGE_KEY = 'akun-x';
@@ -12,7 +13,8 @@ const THEME_CLASS = {
 
 export const SETTING_TYPES = {
 	BOOLEAN: 'boolean',
-	ARRAY: 'array'
+	ARRAY: 'array',
+	KEYBIND: 'keybind'
 };
 
 /* Modules have default settings. When loading the locally stored settings, these defaults should be overridden where
@@ -40,7 +42,7 @@ export default class Settings {
 		this._hideMenu();
 		document.body.appendChild(this._backdropNode);
 		this._onAddedMainMenu(this._core.dom.node('mainMenu'));
-		this._core.on('dom.added.mainMenu', this._onAddedMainMenu.bind(this));
+		this._core.on(this._core.EVENTS.DOM.ADDED.MAIN_MENU, this._onAddedMainMenu.bind(this));
 	}
 
 	addModule(moduleSettings, callback) {
@@ -88,7 +90,6 @@ export default class Settings {
 						valueNode.type = 'checkbox';
 						valueNode.dataset.id = settingName;
 						valueNode.dataset.type = setting.type;
-						valueNode.checked = setting.value;
 						valueNode.style.float = 'left';
 						settingNode.appendChild(valueNode);
 						settingNode.appendChild(descriptionNode);
@@ -97,12 +98,20 @@ export default class Settings {
 						valueNode = document.createElement('textarea');
 						valueNode.dataset.id = settingName;
 						valueNode.dataset.type = setting.type;
-						valueNode.value = setting.value.join('\n');
 						settingNode.appendChild(descriptionNode);
 						settingNode.appendChild(valueNode);
 						makeElastic(valueNode);
 						break;
+					case SETTING_TYPES.KEYBIND:
+						valueNode = document.createElement('button');
+						valueNode.dataset.id = settingName;
+						valueNode.dataset.type = setting.type;
+						valueNode.classList.add('akun-x-settings-keybind-picker-button', 'btn');
+						settingNode.appendChild(descriptionNode);
+						settingNode.appendChild(valueNode);
+						break;
 				}
+				Settings._setSettingNodeValue(valueNode, setting.type, setting.value);
 			}
 		}
 		this._moduleListNode.appendChild(moduleListItemNode);
@@ -151,7 +160,8 @@ export default class Settings {
 
 		exitNode.addEventListener('click', this._exitCallback.bind(this));
 		moduleListNode.addEventListener('click', this._moduleListCallback.bind(this));
-		moduleDetailsContainerNode.addEventListener('change', this._moduleDetailsCallback.bind(this));
+		moduleDetailsContainerNode.addEventListener('change', this._moduleDetailsChangeCallback.bind(this));
+		moduleDetailsContainerNode.addEventListener('click', this._moduleDetailsClickCallback.bind(this));
 
 		this._backdropNode = backdropNode;
 		this._menuNode = menuNode;
@@ -240,7 +250,7 @@ export default class Settings {
 		}
 	}
 
-	_moduleDetailsCallback(e) {
+	_moduleDetailsChangeCallback(e) {
 		const type = e.target.dataset.type;
 		const settingId = e.target.dataset.id;
 		const moduleId = e.target.closest('.akun-x-settings-module-details').dataset.id;
@@ -253,8 +263,51 @@ export default class Settings {
 				newValue = e.target.value.split('\n');
 				break;
 		}
-		this._settings[moduleId][settingId].value = newValue;
+		this.setSetting(moduleId, settingId, newValue);
+	}
+
+	setSetting(moduleId, settingId, value) {
+		const valueNode = this._moduleDetailsContainerNode.querySelector(`[data-id="${moduleId}"] [data-id="${settingId}"]`);
+		const type = this._settings[moduleId][settingId].type;
+		Settings._setSettingNodeValue(valueNode, type, value);
+		this._settings[moduleId][settingId].value = value;
 		this._moduleCallbacks[moduleId](settingId);
 		this._saveSettings();
+	}
+
+	static _setSettingNodeValue(node, type, value) {
+		switch (type) {
+			case SETTING_TYPES.BOOLEAN:
+				node.checked = value;
+				break;
+			case SETTING_TYPES.ARRAY:
+				node.value = value.join('\n');
+				break;
+			case SETTING_TYPES.KEYBIND:
+				node.textContent = Settings._getKeybindButtonText(value);
+				break;
+		}
+	}
+
+	_moduleDetailsClickCallback(e) {
+		if (e.target.classList.contains('akun-x-settings-keybind-picker-button')) {
+			const keybindButton = e.target;
+			keybindButton.textContent = 'Please press new keybind';
+			const settingId = keybindButton.dataset.id;
+			const moduleId = keybindButton.closest('.akun-x-settings-module-details').dataset.id;
+			this._core.once(this._core.EVENTS.INPUT.KEYBIND, (keybind) => {
+				this.setSetting(moduleId, settingId, keybind);
+			});
+		}
+	}
+
+	static _getKeybindButtonText(keybind) {
+		let keys = [];
+		if (keybind.ctrl) keys.push('ctrl');
+		if (keybind.shift) keys.push('shift');
+		if (keybind.alt) keys.push('alt');
+		if (keybind.meta) keys.push('meta');
+		keys.push(keybind.key.toUpperCase());
+		return keys.join(' + ');
 	}
 }

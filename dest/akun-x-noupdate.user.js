@@ -376,8 +376,6 @@ var makeElastic = function makeElastic(node) {
 	delayedResize();
 };
 
-__$styleInject(".akun-x-settings-backdrop{position:fixed;top:0;right:0;bottom:0;left:0;z-index:9999;background-color:rgba(0,0,0,.5)}.akun-x-settings-horizontal-align{width:100%;height:100%}.akun-x-settings-horizontal-align,.akun-x-settings-vertical-align{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.akun-x-settings-vertical-align{-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;width:40%;min-width:700px}.akun-x-settings-theme-light .akun-x-settings{background:#fff;border-color:#f7f9fa;box-shadow:0 3px 7px rgba(0,0,0,.3)}.akun-x-settings-theme-light .akun-x-settings-header{border-color:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-header-exit:hover{background:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-module-list{border-color:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-module-list-item:hover{background-color:#eaeced}.akun-x-settings-theme-light .akun-x-settings-selected{background-color:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-header-exit{color:#272727;text-shadow:0 1px 0 #fff}.akun-x-settings-theme-dark .akun-x-settings{background:#2a2c3b;border-color:#323448;box-shadow:0 3px 7px rgba(0,0,0,.3)}.akun-x-settings-theme-dark .akun-x-settings-header{border-color:#323448}.akun-x-settings-theme-dark .akun-x-settings-header-exit:hover{background:#323448}.akun-x-settings-theme-dark .akun-x-settings-module-list{border-color:#323448}.akun-x-settings-theme-dark .akun-x-settings-module-list-item:hover{background-color:#4c4f6d}.akun-x-settings-theme-dark .akun-x-settings-selected{background-color:#323448}.akun-x-settings-theme-dark .akun-x-settings-header-exit{color:#d4d5d9;text-shadow:0 1px 0 #fff}.akun-x-settings{-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;height:50%;min-height:500px;border-radius:0;border-width:1px;border-style:solid;outline:0}.akun-x-settings,.akun-x-settings-header{display:-webkit-box;display:-ms-flexbox;display:flex}.akun-x-settings-header{-ms-flex-negative:0;flex-shrink:0;border-bottom-width:1px;border-style:solid}.akun-x-settings-header-title{margin:0;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1}.akun-x-settings-header-issues,.akun-x-settings-header-title{vertical-align:middle;padding:0 16px;line-height:50px}.akun-x-settings-header-exit{height:50px;width:50px;padding:0;border:0;margin:0;opacity:.2;background:transparent;cursor:pointer;font-size:20px;font-weight:700;line-height:20px;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;-webkit-appearance:none;vertical-align:middle;box-sizing:border-box;-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;text-align:center;text-rendering:auto;letter-spacing:normal;word-spacing:normal;text-transform:none;text-indent:0;display:inline-block}.akun-x-settings-header-exit:hover{opacity:.4}.akun-x-settings-body{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-webkit-box-align:stretch;-ms-flex-align:stretch;align-items:stretch}.akun-x-settings-module-list{overflow-y:auto;border-right-width:1px;border-style:solid}.akun-x-settings-module-list-item{padding:5px 16px;cursor:pointer}.akun-x-settings-module-details-container{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;overflow-y:auto;padding:15px}.akun-x-settings-module-details>div{padding-bottom:10px}.akun-x-settings-setting-name{font-weight:700}.akun-x-settings-hidden{display:none!important}", undefined);
-
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
 } : function (obj) {
@@ -460,6 +458,71 @@ var possibleConstructorReturn = function (self, call) {
   return call && (typeof call === "object" || typeof call === "function") ? call : self;
 };
 
+var EVENTS$1 = {
+	INPUT: {
+		KEYBIND: 'keybind'
+	}
+};
+
+var ObserverInput = function () {
+	function ObserverInput(eventEmitter) {
+		classCallCheck(this, ObserverInput);
+
+		this._eventEmitter = eventEmitter;
+
+		document.addEventListener('keyup', this._onKeyPress.bind(this));
+	}
+
+	createClass(ObserverInput, [{
+		key: '_onKeyPress',
+		value: function _onKeyPress(e) {
+			if (!ObserverInput._isTextInput(e.target)) {
+				console.log(e);
+				var keybind = ObserverInput.getKeyBindFromEvent(e);
+				if (keybind) {
+					this._eventEmitter.emit(EVENTS$1.INPUT.KEYBIND, keybind, e);
+				}
+			}
+		}
+	}], [{
+		key: 'getKeyBindFromEvent',
+		value: function getKeyBindFromEvent(e) {
+			var keyMatch = e.code.match(/^key([A-z]+)/i);
+			if (!keyMatch) {
+				return null;
+			}
+			// Use undefined instead of false to reduce size of settings in localStorage
+			return {
+				key: keyMatch[1].toLowerCase(),
+				ctrl: e.ctrlKey ? true : undefined,
+				shift: e.shiftKey ? true : undefined,
+				alt: e.altKey ? true : undefined,
+				meta: e.metaKey ? true : undefined
+			};
+		}
+	}, {
+		key: '_isTextInput',
+		value: function _isTextInput(node) {
+			if (node.nodeName === 'INPUT') {
+				return true;
+			}
+			if (node.nodeName === 'TEXTAREA') {
+				return true;
+			}
+			if (node.classList.contains('chatInput')) {
+				return true;
+			}
+			if (node.classList.contains('fieldEditor')) {
+				return true;
+			}
+			return false;
+		}
+	}]);
+	return ObserverInput;
+}();
+
+__$styleInject(".akun-x-settings-backdrop{position:fixed;top:0;right:0;bottom:0;left:0;z-index:9999;background-color:rgba(0,0,0,.5)}.akun-x-settings-horizontal-align{width:100%;height:100%}.akun-x-settings-horizontal-align,.akun-x-settings-vertical-align{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.akun-x-settings-vertical-align{-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;width:40%;min-width:700px}.akun-x-settings-theme-light .akun-x-settings{background:#fff;border-color:#f7f9fa;box-shadow:0 3px 7px rgba(0,0,0,.3)}.akun-x-settings-theme-light .akun-x-settings-header{border-color:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-header-exit:hover{background:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-module-list{border-color:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-module-list-item:hover{background-color:#eaeced}.akun-x-settings-theme-light .akun-x-settings-selected{background-color:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-header-exit{color:#272727;text-shadow:0 1px 0 #fff}.akun-x-settings-theme-dark .akun-x-settings{background:#2a2c3b;border-color:#323448;box-shadow:0 3px 7px rgba(0,0,0,.3)}.akun-x-settings-theme-dark .akun-x-settings-header{border-color:#323448}.akun-x-settings-theme-dark .akun-x-settings-header-exit:hover{background:#323448}.akun-x-settings-theme-dark .akun-x-settings-module-list{border-color:#323448}.akun-x-settings-theme-dark .akun-x-settings-module-list-item:hover{background-color:#4c4f6d}.akun-x-settings-theme-dark .akun-x-settings-selected{background-color:#323448}.akun-x-settings-theme-dark .akun-x-settings-header-exit{color:#d4d5d9;text-shadow:0 1px 0 #fff}.akun-x-settings{-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;height:50%;min-height:500px;border-radius:0;border-width:1px;border-style:solid;outline:0}.akun-x-settings,.akun-x-settings-header{display:-webkit-box;display:-ms-flexbox;display:flex}.akun-x-settings-header{-ms-flex-negative:0;flex-shrink:0;border-bottom-width:1px;border-style:solid}.akun-x-settings-header-title{margin:0;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1}.akun-x-settings-header-issues,.akun-x-settings-header-title{vertical-align:middle;padding:0 16px;line-height:50px}.akun-x-settings-header-exit{height:50px;width:50px;padding:0;border:0;margin:0;opacity:.2;background:transparent;cursor:pointer;font-size:20px;font-weight:700;line-height:20px;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;-webkit-appearance:none;vertical-align:middle;box-sizing:border-box;-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;text-align:center;text-rendering:auto;letter-spacing:normal;word-spacing:normal;text-transform:none;text-indent:0;display:inline-block}.akun-x-settings-header-exit:hover{opacity:.4}.akun-x-settings-body{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-webkit-box-align:stretch;-ms-flex-align:stretch;align-items:stretch}.akun-x-settings-module-list{-ms-flex-negative:0;flex-shrink:0;overflow-y:auto;border-right-width:1px;border-style:solid}.akun-x-settings-module-list-item{padding:5px 16px;cursor:pointer}.akun-x-settings-module-details-container{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;overflow-y:auto;padding:15px}.akun-x-settings-module-details>div{padding-bottom:10px}.akun-x-settings-setting-name{font-weight:700}.akun-x-settings-hidden{display:none!important}", undefined);
+
 var LOCAL_STORAGE_KEY = 'akun-x';
 
 var THEME_CLASS = {
@@ -469,7 +532,8 @@ var THEME_CLASS = {
 
 var SETTING_TYPES = {
 	BOOLEAN: 'boolean',
-	ARRAY: 'array'
+	ARRAY: 'array',
+	KEYBIND: 'keybind'
 };
 
 /* Modules have default settings. When loading the locally stored settings, these defaults should be overridden where
@@ -499,7 +563,7 @@ var Settings = function () {
 		this._hideMenu();
 		document.body.appendChild(this._backdropNode);
 		this._onAddedMainMenu(this._core.dom.node('mainMenu'));
-		this._core.on('dom.added.mainMenu', this._onAddedMainMenu.bind(this));
+		this._core.on(this._core.EVENTS.DOM.ADDED.MAIN_MENU, this._onAddedMainMenu.bind(this));
 	}
 
 	createClass(Settings, [{
@@ -550,7 +614,6 @@ var Settings = function () {
 							valueNode.type = 'checkbox';
 							valueNode.dataset.id = settingName;
 							valueNode.dataset.type = setting.type;
-							valueNode.checked = setting.value;
 							valueNode.style.float = 'left';
 							settingNode.appendChild(valueNode);
 							settingNode.appendChild(descriptionNode);
@@ -559,12 +622,20 @@ var Settings = function () {
 							valueNode = document.createElement('textarea');
 							valueNode.dataset.id = settingName;
 							valueNode.dataset.type = setting.type;
-							valueNode.value = setting.value.join('\n');
 							settingNode.appendChild(descriptionNode);
 							settingNode.appendChild(valueNode);
 							makeElastic(valueNode);
 							break;
+						case SETTING_TYPES.KEYBIND:
+							valueNode = document.createElement('button');
+							valueNode.dataset.id = settingName;
+							valueNode.dataset.type = setting.type;
+							valueNode.classList.add('akun-x-settings-keybind-picker-button', 'btn');
+							settingNode.appendChild(descriptionNode);
+							settingNode.appendChild(valueNode);
+							break;
 					}
+					Settings._setSettingNodeValue(valueNode, setting.type, setting.value);
 				}
 			}
 			this._moduleListNode.appendChild(moduleListItemNode);
@@ -614,7 +685,8 @@ var Settings = function () {
 
 			exitNode.addEventListener('click', this._exitCallback.bind(this));
 			moduleListNode.addEventListener('click', this._moduleListCallback.bind(this));
-			moduleDetailsContainerNode.addEventListener('change', this._moduleDetailsCallback.bind(this));
+			moduleDetailsContainerNode.addEventListener('change', this._moduleDetailsChangeCallback.bind(this));
+			moduleDetailsContainerNode.addEventListener('click', this._moduleDetailsClickCallback.bind(this));
 
 			this._backdropNode = backdropNode;
 			this._menuNode = menuNode;
@@ -710,8 +782,8 @@ var Settings = function () {
 			}
 		}
 	}, {
-		key: '_moduleDetailsCallback',
-		value: function _moduleDetailsCallback(e) {
+		key: '_moduleDetailsChangeCallback',
+		value: function _moduleDetailsChangeCallback(e) {
 			var type = e.target.dataset.type;
 			var settingId = e.target.dataset.id;
 			var moduleId = e.target.closest('.akun-x-settings-module-details').dataset.id;
@@ -724,9 +796,58 @@ var Settings = function () {
 					newValue = e.target.value.split('\n');
 					break;
 			}
-			this._settings[moduleId][settingId].value = newValue;
+			this.setSetting(moduleId, settingId, newValue);
+		}
+	}, {
+		key: 'setSetting',
+		value: function setSetting(moduleId, settingId, value) {
+			var valueNode = this._moduleDetailsContainerNode.querySelector('[data-id="' + moduleId + '"] [data-id="' + settingId + '"]');
+			var type = this._settings[moduleId][settingId].type;
+			Settings._setSettingNodeValue(valueNode, type, value);
+			this._settings[moduleId][settingId].value = value;
 			this._moduleCallbacks[moduleId](settingId);
 			this._saveSettings();
+		}
+	}, {
+		key: '_moduleDetailsClickCallback',
+		value: function _moduleDetailsClickCallback(e) {
+			var _this = this;
+
+			if (e.target.classList.contains('akun-x-settings-keybind-picker-button')) {
+				var keybindButton = e.target;
+				keybindButton.textContent = 'Please press new keybind';
+				var settingId = keybindButton.dataset.id;
+				var moduleId = keybindButton.closest('.akun-x-settings-module-details').dataset.id;
+				this._core.once(this._core.EVENTS.INPUT.KEYBIND, function (keybind) {
+					_this.setSetting(moduleId, settingId, keybind);
+				});
+			}
+		}
+	}], [{
+		key: '_setSettingNodeValue',
+		value: function _setSettingNodeValue(node, type, value) {
+			switch (type) {
+				case SETTING_TYPES.BOOLEAN:
+					node.checked = value;
+					break;
+				case SETTING_TYPES.ARRAY:
+					node.value = value.join('\n');
+					break;
+				case SETTING_TYPES.KEYBIND:
+					node.textContent = Settings._getKeybindButtonText(value);
+					break;
+			}
+		}
+	}, {
+		key: '_getKeybindButtonText',
+		value: function _getKeybindButtonText(keybind) {
+			var keys = [];
+			if (keybind.ctrl) keys.push('ctrl');
+			if (keybind.shift) keys.push('shift');
+			if (keybind.alt) keys.push('alt');
+			if (keybind.meta) keys.push('meta');
+			keys.push(keybind.key.toUpperCase());
+			return keys.join(' + ');
 		}
 	}]);
 	return Settings;
@@ -734,16 +855,20 @@ var Settings = function () {
 
 var MutationObserver$1 = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
 
-var EVENTS$1 = {
-	CHAT_NODE_ADDED: 'dom.added.chatItem',
-	CHAT_NODE_MESSAGE_ADDED: 'dom.added.chatItemMessage',
-	CHAT_NODE_FIELD_BODY_ADDED: 'dom.added.chatItemFieldBody',
-	CHAT_HEADER_ADDED: 'dom.added.chatHeader',
-	CHAPTER_NODE_ADDED: 'dom.added.chapter',
-	CHAPTER_BUTTON_CONTROLS_ADDED: 'dom.added.chapterButtonControls',
-	STORY_NODE_ADDED: 'dom.added.storyItem',
-	MODAL_NODE_ADDED: 'dom.added.chatModal',
-	MAIN_MENU_ADDED: 'dom.added.mainMenu'
+var EVENTS$2 = {
+	DOM: {
+		ADDED: {
+			CHAT_ITEM: 'dom.added.chatItem',
+			CHAT_ITEM_MESSAGE: 'dom.added.chatItemMessage',
+			CHAT_ITEM_FIELD_BODY: 'dom.added.chatItemFieldBody',
+			CHAT_HEADER: 'dom.added.chatHeader',
+			CHAPTER: 'dom.added.chapter',
+			CHAPTER_BUTTON_CONTROLS: 'dom.added.chapterButtonControls',
+			STORY: 'dom.added.storyItem',
+			CHAT_MODAL: 'dom.added.chatModal',
+			MAIN_MENU: 'dom.added.mainMenu'
+		}
+	}
 };
 
 var ObserverDOM = function () {
@@ -823,55 +948,55 @@ var ObserverDOM = function () {
 							// console.log(node);
 							if (node.classList) {
 								if (node.classList.contains('logItem')) {
-									this._eventEmitter.emit(EVENTS$1.CHAT_NODE_ADDED, node);
+									this._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_ITEM, node);
 									var nodeMessage = node.querySelector('.message');
 									if (nodeMessage) {
-										this._eventEmitter.emit(EVENTS$1.CHAT_NODE_MESSAGE_ADDED, nodeMessage);
+										this._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_ITEM_MESSAGE, nodeMessage);
 									}
 								}
 								if (node.classList.contains('message')) {
-									this._eventEmitter.emit(EVENTS$1.CHAT_NODE_MESSAGE_ADDED, node);
+									this._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_ITEM_MESSAGE, node);
 								}
 								if (node.classList.contains('jadeRepeat')) {
 									node.querySelectorAll('.logItem').forEach(function (nodeLogItem) {
-										_this2._eventEmitter.emit(EVENTS$1.CHAT_NODE_ADDED, nodeLogItem);
+										_this2._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_ITEM, nodeLogItem);
 										var nodeMessage = nodeLogItem.querySelector('.message');
 										if (nodeMessage) {
-											_this2._eventEmitter.emit(EVENTS$1.CHAT_NODE_MESSAGE_ADDED, nodeMessage);
+											_this2._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_ITEM_MESSAGE, nodeMessage);
 										}
 									});
 									node.querySelectorAll('.chapter').forEach(function (nodeChapter) {
-										_this2._eventEmitter.emit(EVENTS$1.CHAPTER_NODE_ADDED, nodeChapter);
+										_this2._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAPTER, nodeChapter);
 									});
 								}
 								if (node.classList.contains('chapter')) {
-									this._eventEmitter.emit(EVENTS$1.CHAPTER_NODE_ADDED, node);
+									this._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAPTER, node);
 								}
 								if (node.classList.contains('fieldBody')) {
-									this._eventEmitter.emit(EVENTS$1.CHAT_NODE_FIELD_BODY_ADDED, node);
+									this._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_ITEM_FIELD_BODY, node);
 								}
 								if (node.classList.contains('storyItem')) {
-									this._eventEmitter.emit(EVENTS$1.STORY_NODE_ADDED, node);
+									this._eventEmitter.emit(EVENTS$2.DOM.ADDED.STORY, node);
 								}
 								if (node.classList.contains('chatContainer')) {
-									this._eventEmitter.emit(EVENTS$1.CHAT_HEADER_ADDED, node.querySelector('.chatHeader'));
+									this._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_HEADER, node.querySelector('.chatHeader'));
 								}
 								if (node.classList.contains('secondRow')) {
-									this._eventEmitter.emit(EVENTS$1.CHAPTER_BUTTON_CONTROLS_ADDED, node);
+									this._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAPTER_BUTTON_CONTROLS, node);
 								}
 								if (node.classList.contains('chatLight')) {
 									node.querySelectorAll('.logItem').forEach(function (nodeLogItem) {
-										_this2._eventEmitter.emit(EVENTS$1.CHAT_NODE_ADDED, nodeLogItem);
+										_this2._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_ITEM, nodeLogItem);
 										var nodeMessage = nodeLogItem.querySelector('.message');
 										if (nodeMessage) {
-											_this2._eventEmitter.emit(EVENTS$1.CHAT_NODE_MESSAGE_ADDED, nodeMessage);
+											_this2._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_ITEM_MESSAGE, nodeMessage);
 										}
 									});
 								}
 								if (node.classList.contains('chatItemDetail')) {
-									this._eventEmitter.emit(EVENTS$1.MODAL_NODE_ADDED, node);
+									this._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_MODAL, node);
 									node.querySelectorAll('.chatHeader').forEach(function (nodeChatHeader) {
-										_this2._eventEmitter.emit(EVENTS$1.CHAT_HEADER_ADDED, nodeChatHeader);
+										_this2._eventEmitter.emit(EVENTS$2.DOM.ADDED.CHAT_HEADER, nodeChatHeader);
 									});
 								}
 							}
@@ -916,19 +1041,25 @@ var ObserverDOM = function () {
 	return ObserverDOM;
 }();
 
-var EVENTS$2 = {
-	LIVE_STORIES: 'net.received.liveStories',
-	BOARDS: 'net.received.boards',
-	FOLLOWING_LIST: 'net.received.followingList',
-	USER_COLLECTIONS: 'net.received.userCollections',
-	SAVES: 'net.received.saves',
-	REF_LATEST: 'net.received.refLatest',
-	REVIEW_PREVIEW: 'net.received.reviewPreview',
-	CHAPTER_THREADS: 'net.received.chapterThreads',
-	THREAD_PAGES: 'net.received.threadPages',
-	THREAD_MESSAGES: 'net.received.threadMessages',
-	POST_CHAPTER: 'net.posted.chapter',
-	POST_NODE: 'net.posted.node'
+var EVENTS$3 = {
+	NET: {
+		RECEIVED: {
+			LIVE_STORIES: 'net.received.liveStories',
+			BOARDS: 'net.received.boards',
+			FOLLOWING_LIST: 'net.received.followingList',
+			USER_COLLECTIONS: 'net.received.userCollections',
+			SAVES: 'net.received.saves',
+			REF_LATEST: 'net.received.refLatest',
+			REVIEW_PREVIEW: 'net.received.reviewPreview',
+			CHAPTER_THREADS: 'net.received.chapterThreads',
+			THREAD_PAGES: 'net.received.threadPages',
+			THREAD_MESSAGES: 'net.received.threadMessages'
+		},
+		POSTED: {
+			CHAPTER: 'net.posted.chapter',
+			NODE: 'net.posted.node'
+		}
+	}
 };
 
 var ObserverNet = function () {
@@ -953,51 +1084,51 @@ var ObserverNet = function () {
 							switch (urlFragments[2]) {
 								case 'board':
 									if (urlFragments[3] === 'live') {
-										this._eventEmitter.emit(EVENTS$2.LIVE_STORIES, request.responseJSON);
+										this._eventEmitter.emit(EVENTS$3.NET.RECEIVED.LIVE_STORIES, request.responseJSON);
 									} else {
 										console.log('Unhandled network request: ' + settings.url);
 									}
 									break;
 								case 'boards':
-									this._eventEmitter.emit(EVENTS$2.BOARDS, request.responseJSON, parseInt(urlFragments[3], 10));
+									this._eventEmitter.emit(EVENTS$3.NET.RECEIVED.BOARDS, request.responseJSON, parseInt(urlFragments[3], 10));
 									break;
 								case 'chapter':
-									this._eventEmitter.emit(EVENTS$2.POST_CHAPTER, request.responseJSON);
+									this._eventEmitter.emit(EVENTS$3.NET.POSTED.CHAPTER, request.responseJSON);
 									break;
 								case 'chapterThreads':
-									this._eventEmitter.emit(EVENTS$2.CHAPTER_THREADS, request.responseJSON);
+									this._eventEmitter.emit(EVENTS$3.NET.RECEIVED.CHAPTER_THREADS, request.responseJSON);
 									break;
 								case 'following':
-									this._eventEmitter.emit(EVENTS$2.FOLLOWING_LIST, request.responseJSON, urlFragments[3]);
+									this._eventEmitter.emit(EVENTS$3.NET.RECEIVED.FOLLOWING_LIST, request.responseJSON, urlFragments[3]);
 									break;
 								case 'refLatest':
-									this._eventEmitter.emit(EVENTS$2.REF_LATEST, request.responseJSON, urlFragments[3]);
+									this._eventEmitter.emit(EVENTS$3.NET.RECEIVED.REF_LATEST, request.responseJSON, urlFragments[3]);
 									break;
 								case 'review':
 									if (urlFragments[4] === 'preview') {
-										this._eventEmitter.emit(EVENTS$2.REVIEW_PREVIEW, request.responseJSON, urlFragments[3]);
+										this._eventEmitter.emit(EVENTS$3.NET.RECEIVED.REVIEW_PREVIEW, request.responseJSON, urlFragments[3]);
 									} else {
 										console.log('Unhandled network request: ' + settings.url);
 									}
 									break;
 								case 'saves':
-									this._eventEmitter.emit(EVENTS$2.SAVES, request.responseJSON, urlFragments[3]);
+									this._eventEmitter.emit(EVENTS$3.NET.RECEIVED.SAVES, request.responseJSON, urlFragments[3]);
 									break;
 								case 'userCollections':
-									this._eventEmitter.emit(EVENTS$2.USER_COLLECTIONS, request.responseJSON, urlFragments[3]);
+									this._eventEmitter.emit(EVENTS$3.NET.RECEIVED.USER_COLLECTIONS, request.responseJSON, urlFragments[3]);
 									break;
 								default:
 									console.log('Unhandled network request: ' + settings.url);
 							}
 							break;
 						case 'node':
-							this._eventEmitter.emit(EVENTS$2.POST_NODE, request.responseJSON);
+							this._eventEmitter.emit(EVENTS$3.NET.POSTED.NODE, request.responseJSON);
 							break;
 						case 'thread':
 							if (urlFragments[3] === 'pages') {
-								this._eventEmitter.emit(EVENTS$2.THREAD_PAGES, request.responseJSON, urlFragments[2]);
+								this._eventEmitter.emit(EVENTS$3.NET.RECEIVED.THREAD_PAGES, request.responseJSON, urlFragments[2]);
 							} else {
-								this._eventEmitter.emit(EVENTS$2.THREAD_MESSAGES, request.responseJSON, urlFragments[2], urlFragments[3], urlFragments[4]);
+								this._eventEmitter.emit(EVENTS$3.NET.RECEIVED.THREAD_MESSAGES, request.responseJSON, urlFragments[2], urlFragments[3], urlFragments[4]);
 							}
 							break;
 						default:
@@ -1018,9 +1149,10 @@ var ObserverNet = function () {
 	return ObserverNet;
 }();
 
-var EVENTS = {
+var EVENTS$$1 = {
 	FOCUS: 'focus'
 };
+Object.assign(EVENTS$$1, EVENTS$2, EVENTS$1, EVENTS$3);
 
 var THEMES = {
 	LIGHT: 'snowdrift',
@@ -1036,12 +1168,13 @@ var Core = function (_EventEmitter) {
 		var _this = possibleConstructorReturn(this, (Core.__proto__ || Object.getPrototypeOf(Core)).call(this));
 
 		_this._observerDOM = new ObserverDOM(_this);
+		_this._observerInput = new ObserverInput(_this);
 		_this._observerNet = new ObserverNet(_this);
 		_this._settings = new Settings(_this);
 		_this._modules = {};
 
 		window.onfocus = function () {
-			_this.emit(EVENTS.FOCUS);
+			_this.emit(EVENTS$$1.FOCUS);
 		};
 		return _this;
 	}
@@ -1063,6 +1196,11 @@ var Core = function (_EventEmitter) {
 			return this._observerDOM;
 		}
 	}, {
+		key: 'input',
+		get: function get$$1() {
+			return this._observerInput;
+		}
+	}, {
 		key: 'net',
 		get: function get$$1() {
 			return this._observerNet;
@@ -1082,7 +1220,7 @@ var Core = function (_EventEmitter) {
 	}, {
 		key: 'EVENTS',
 		get: function get$$1() {
-			return EVENTS;
+			return EVENTS$$1;
 		}
 	}, {
 		key: 'THEMES',
@@ -1166,15 +1304,15 @@ var AnonToggle = function () {
 			// Don't do anything if the user isn't logged in (and thus doesn't have any settings available)
 			if (this._core.currentUser) {
 				this._core.dom.nodes('chatHeader').forEach(this._onAddedChatHeader, this);
-				this._core.on('focus', this._onFocus, this);
-				this._core.on('dom.added.chatHeader', this._onAddedChatHeader, this);
+				this._core.on(this._core.EVENTS.FOCUS, this._onFocus, this);
+				this._core.on(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
 			}
 		}
 	}, {
 		key: '_disable',
 		value: function _disable() {
-			this._core.removeListener('focus', this._onFocus, this);
-			this._core.removeListener('dom.added.chatHeader', this._onAddedChatHeader, this);
+			this._core.removeListener(this._core.EVENTS.FOCUS, this._onFocus, this);
+			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
 			document.querySelectorAll('.akun-x-anon-toggle').forEach(function (node) {
 				delete node.parentNode.dataset[AnonToggle.id];
 				node.parentNode.removeChild(node);
@@ -1398,16 +1536,16 @@ var ChapterHTMLEditor = function () {
 			this._core.isAuthor.then(function (isAuthor) {
 				if (isAuthor) {
 					_this._core.dom.nodes('chapterButtonControls').forEach(_this._onAddedChapterButtonControls, _this);
-					_this._core.on('dom.added.chapter', _this._onAddedChapter, _this);
-					_this._core.on('dom.added.chapterButtonControls', _this._onAddedChapterButtonControls, _this);
+					_this._core.on(_this._core.EVENTS.DOM.ADDED.CHAPTER, _this._onAddedChapter, _this);
+					_this._core.on(_this._core.EVENTS.DOM.ADDED.CHAPTER_BUTTON_CONTROLS, _this._onAddedChapterButtonControls, _this);
 				}
 			});
 		}
 	}, {
 		key: '_disable',
 		value: function _disable() {
-			this._core.removeListener('dom.added.chapter', this._onAddedChapter, this);
-			this._core.removeListener('dom.added.chapterButtonControls', this._onAddedChapterButtonControls, this);
+			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
+			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAPTER_BUTTON_CONTROLS, this._onAddedChapterButtonControls, this);
 			document.querySelectorAll('.akun-x-chapter-html-editor-edit').forEach(function (node) {
 				delete node.parentNode.dataset[ChapterHTMLEditor.id];
 				node.parentNode.removeChild(node);
@@ -1486,6 +1624,7 @@ var MODULE_ID$2 = 'imageToggle';
 
 var SETTING_IDS$2 = {
 	ENABLED: 'enabled',
+	KEYBIND: 'keybind',
 	ALL: 'all',
 	STORY_COVERS: 'STORY_COVERS',
 	STORY_BODY: 'story_body',
@@ -1508,6 +1647,13 @@ DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.ENABLED] = {
 	description: 'Turn the Image Toggle module on or off.',
 	type: SETTING_TYPES.BOOLEAN,
 	value: false
+};
+
+DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.KEYBIND] = {
+	name: 'Keybind',
+	description: 'The keybind to enable or disable this module.',
+	type: SETTING_TYPES.KEYBIND,
+	value: { key: 'i' }
 };
 
 DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.ALL] = {
@@ -1582,6 +1728,7 @@ var ImageToggle = function () {
 		this._styleElement = document.createElement('style');
 		this._styleElement.id = 'akun-x-image-toggle';
 		document.head.appendChild(this._styleElement);
+		this._core.on(this._core.EVENTS.INPUT.KEYBIND, this._onKeypress, this);
 		if (this._settings[SETTING_IDS$2.ENABLED].value) {
 			this._enable();
 		}
@@ -1597,6 +1744,8 @@ var ImageToggle = function () {
 					} else {
 						this._disable();
 					}
+					break;
+				case SETTING_IDS$2.KEYBIND:
 					break;
 				default:
 					if (this._settings[SETTING_IDS$2.ENABLED].value) {
@@ -1649,6 +1798,14 @@ var ImageToggle = function () {
 				}
 			}
 			this._styleElement.innerHTML = css;
+		}
+	}, {
+		key: '_onKeypress',
+		value: function _onKeypress(eKeybind, e) {
+			var keybind = this._settings[SETTING_IDS$2.KEYBIND].value;
+			if (keybind.key === eKeybind.key && keybind.ctrl === eKeybind.ctrl && keybind.alt === eKeybind.alt && keybind.shift === eKeybind.shift && keybind.meta === eKeybind.meta) {
+				this._core.settings.setSetting(ImageToggle.id, SETTING_IDS$2.ENABLED, !this._settings[SETTING_IDS$2.ENABLED].value);
+			}
 		}
 	}], [{
 		key: 'id',
@@ -1770,16 +1927,16 @@ var Linker = function () {
 		value: function _enable() {
 			this._core.dom.nodes('message').forEach(this._onAddedChatItemMessage, this);
 			this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this);
-			this._core.on('dom.added.chatItemMessage', this._onAddedChatItemMessage, this);
-			this._core.on('dom.added.chatItemFieldBody', this._onAddedChatItemFieldBody, this);
-			this._core.on('dom.added.chapter', this._onAddedChapter, this);
+			this._core.on(this._core.EVENTS.DOM.ADDED.CHAT_ITEM_MESSAGE, this._onAddedChatItemMessage, this);
+			this._core.on(this._core.EVENTS.DOM.ADDED.CHAT_ITEM_FIELD_BODY, this._onAddedChatItemFieldBody, this);
+			this._core.on(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
 		}
 	}, {
 		key: '_disable',
 		value: function _disable() {
-			this._core.removeListener('dom.added.chatItemMessage', this._onAddedChatItemMessage, this);
-			this._core.removeListener('dom.added.chatItemFieldBody', this._onAddedChatItemFieldBody, this);
-			this._core.removeListener('dom.added.chapter', this._onAddedChapter, this);
+			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAT_ITEM_MESSAGE, this._onAddedChatItemMessage, this);
+			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAT_ITEM_FIELD_BODY, this._onAddedChatItemFieldBody, this);
+			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
 			this._disableLinks();
 			this._disableImages();
 			this._disableVideos();
@@ -2004,14 +2161,14 @@ var LiveImages = function () {
 		key: '_enable',
 		value: function _enable() {
 			this._core.dom.nodes('storyItem').forEach(this._onAddedStoryItem, this);
-			this._core.on('net.received.liveStories', this._onLiveStories, this);
-			this._core.on('dom.added.storyItem', this._onAddedStoryItem, this);
+			this._core.on(this._core.EVENTS.NET.RECEIVED.LIVE_STORIES, this._onLiveStories, this);
+			this._core.on(this._core.EVENTS.DOM.ADDED.STORY, this._onAddedStoryItem, this);
 		}
 	}, {
 		key: '_disable',
 		value: function _disable() {
-			this._core.removeListener('net.received.liveStories', this._onLiveStories, this);
-			this._core.removeListener('dom.added.storyItem', this._onAddedStoryItem, this);
+			this._core.removeListener(this._core.EVENTS.NET.RECEIVED.LIVE_STORIES, this._onLiveStories, this);
+			this._core.removeListener(this._core.EVENTS.DOM.ADDED.STORY, this._onAddedStoryItem, this);
 			document.querySelectorAll('.akun-x-live-images').forEach(function (node) {
 				delete node.closest('.storyItem').dataset[LiveImages.id];
 				node.parentNode.removeChild(node);

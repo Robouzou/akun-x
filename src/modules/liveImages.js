@@ -51,13 +51,13 @@ export default class LiveImages {
 
 	_enable() {
 		this._core.dom.nodes('storyItem').forEach(this._onAddedStoryItem, this);
-		this._core.on('net.received.liveStories', this._onLiveStories, this);
-		this._core.on('dom.added.storyItem', this._onAddedStoryItem, this);
+		this._core.on(this._core.EVENTS.NET.RECEIVED.LIVE_STORIES, this._onLiveStories, this);
+		this._core.on(this._core.EVENTS.DOM.ADDED.STORY, this._onAddedStoryItem, this);
 	}
 
 	_disable() {
-		this._core.removeListener('net.received.liveStories', this._onLiveStories, this);
-		this._core.removeListener('dom.added.storyItem', this._onAddedStoryItem, this);
+		this._core.removeListener(this._core.EVENTS.NET.RECEIVED.LIVE_STORIES, this._onLiveStories, this);
+		this._core.removeListener(this._core.EVENTS.DOM.ADDED.STORY, this._onAddedStoryItem, this);
 		document.querySelectorAll('.akun-x-live-images').forEach(node => {
 			delete node.closest('.storyItem').dataset[LiveImages.id];
 			node.parentNode.removeChild(node);

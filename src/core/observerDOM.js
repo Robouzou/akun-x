@@ -2,16 +2,20 @@
 
 const MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
 
-const EVENTS = {
-	CHAT_NODE_ADDED: 'dom.added.chatItem',
-	CHAT_NODE_MESSAGE_ADDED: 'dom.added.chatItemMessage',
-	CHAT_NODE_FIELD_BODY_ADDED: 'dom.added.chatItemFieldBody',
-	CHAT_HEADER_ADDED: 'dom.added.chatHeader',
-	CHAPTER_NODE_ADDED: 'dom.added.chapter',
-	CHAPTER_BUTTON_CONTROLS_ADDED: 'dom.added.chapterButtonControls',
-	STORY_NODE_ADDED: 'dom.added.storyItem',
-	MODAL_NODE_ADDED: 'dom.added.chatModal',
-	MAIN_MENU_ADDED: 'dom.added.mainMenu'
+export const EVENTS = {
+	DOM: {
+		ADDED: {
+			CHAT_ITEM: 'dom.added.chatItem',
+			CHAT_ITEM_MESSAGE: 'dom.added.chatItemMessage',
+			CHAT_ITEM_FIELD_BODY: 'dom.added.chatItemFieldBody',
+			CHAT_HEADER: 'dom.added.chatHeader',
+			CHAPTER: 'dom.added.chapter',
+			CHAPTER_BUTTON_CONTROLS: 'dom.added.chapterButtonControls',
+			STORY: 'dom.added.storyItem',
+			CHAT_MODAL: 'dom.added.chatModal',
+			MAIN_MENU: 'dom.added.mainMenu'
+		}
+	}
 };
 
 export default class ObserverDOM {
@@ -72,55 +76,55 @@ export default class ObserverDOM {
 				// console.log(node);
 				if (node.classList) {
 					if (node.classList.contains('logItem')) {
-						this._eventEmitter.emit(EVENTS.CHAT_NODE_ADDED, node);
+						this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_ITEM, node);
 						let nodeMessage = node.querySelector('.message');
 						if (nodeMessage) {
-							this._eventEmitter.emit(EVENTS.CHAT_NODE_MESSAGE_ADDED, nodeMessage);
+							this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_ITEM_MESSAGE, nodeMessage);
 						}
 					}
 					if (node.classList.contains('message')) {
-						this._eventEmitter.emit(EVENTS.CHAT_NODE_MESSAGE_ADDED, node);
+						this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_ITEM_MESSAGE, node);
 					}
 					if (node.classList.contains('jadeRepeat')) {
 						node.querySelectorAll('.logItem').forEach(nodeLogItem => {
-							this._eventEmitter.emit(EVENTS.CHAT_NODE_ADDED, nodeLogItem);
+							this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_ITEM, nodeLogItem);
 							let nodeMessage = nodeLogItem.querySelector('.message');
 							if (nodeMessage) {
-								this._eventEmitter.emit(EVENTS.CHAT_NODE_MESSAGE_ADDED, nodeMessage);
+								this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_ITEM_MESSAGE, nodeMessage);
 							}
 						});
 						node.querySelectorAll('.chapter').forEach(nodeChapter => {
-							this._eventEmitter.emit(EVENTS.CHAPTER_NODE_ADDED, nodeChapter);
+							this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAPTER, nodeChapter);
 						});
 					}
 					if (node.classList.contains('chapter')) {
-						this._eventEmitter.emit(EVENTS.CHAPTER_NODE_ADDED, node);
+						this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAPTER, node);
 					}
 					if (node.classList.contains('fieldBody')) {
-						this._eventEmitter.emit(EVENTS.CHAT_NODE_FIELD_BODY_ADDED, node);
+						this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_ITEM_FIELD_BODY, node);
 					}
 					if (node.classList.contains('storyItem')) {
-						this._eventEmitter.emit(EVENTS.STORY_NODE_ADDED, node);
+						this._eventEmitter.emit(EVENTS.DOM.ADDED.STORY, node);
 					}
 					if (node.classList.contains('chatContainer')) {
-						this._eventEmitter.emit(EVENTS.CHAT_HEADER_ADDED, node.querySelector('.chatHeader'));
+						this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_HEADER, node.querySelector('.chatHeader'));
 					}
 					if (node.classList.contains('secondRow')) {
-						this._eventEmitter.emit(EVENTS.CHAPTER_BUTTON_CONTROLS_ADDED, node);
+						this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAPTER_BUTTON_CONTROLS, node);
 					}
 					if (node.classList.contains('chatLight')) {
 						node.querySelectorAll('.logItem').forEach(nodeLogItem => {
-							this._eventEmitter.emit(EVENTS.CHAT_NODE_ADDED, nodeLogItem);
+							this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_ITEM, nodeLogItem);
 							let nodeMessage = nodeLogItem.querySelector('.message');
 							if (nodeMessage) {
-								this._eventEmitter.emit(EVENTS.CHAT_NODE_MESSAGE_ADDED, nodeMessage);
+								this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_ITEM_MESSAGE, nodeMessage);
 							}
 						});
 					}
 					if (node.classList.contains('chatItemDetail')) {
-						this._eventEmitter.emit(EVENTS.MODAL_NODE_ADDED, node);
+						this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_MODAL, node);
 						node.querySelectorAll('.chatHeader').forEach(nodeChatHeader => {
-							this._eventEmitter.emit(EVENTS.CHAT_HEADER_ADDED, nodeChatHeader);
+							this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_HEADER, nodeChatHeader);
 						})
 					}
 				}

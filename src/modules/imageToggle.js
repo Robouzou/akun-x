@@ -6,6 +6,7 @@ const MODULE_ID = 'imageToggle';
 
 const SETTING_IDS = {
 	ENABLED: 'enabled',
+	KEYBIND: 'keybind',
 	ALL: 'all',
 	STORY_COVERS: 'STORY_COVERS',
 	STORY_BODY: 'story_body',
@@ -28,6 +29,13 @@ DEFAULT_SETTINGS.settings[SETTING_IDS.ENABLED] = {
 	description: 'Turn the Image Toggle module on or off.',
 	type: SETTING_TYPES.BOOLEAN,
 	value: false
+};
+
+DEFAULT_SETTINGS.settings[SETTING_IDS.KEYBIND] = {
+	name: 'Keybind',
+	description: 'The keybind to enable or disable this module.',
+	type: SETTING_TYPES.KEYBIND,
+	value: { key: 'i' }
 };
 
 DEFAULT_SETTINGS.settings[SETTING_IDS.ALL] = {
@@ -100,6 +108,7 @@ export default class ImageToggle {
 		this._styleElement = document.createElement('style');
 		this._styleElement.id = 'akun-x-image-toggle';
 		document.head.appendChild(this._styleElement);
+		this._core.on(this._core.EVENTS.INPUT.KEYBIND, this._onKeypress, this);
 		if (this._settings[SETTING_IDS.ENABLED].value) {
 			this._enable();
 		}
@@ -117,6 +126,8 @@ export default class ImageToggle {
 				} else {
 					this._disable();
 				}
+				break;
+			case SETTING_IDS.KEYBIND:
 				break;
 			default:
 				if (this._settings[SETTING_IDS.ENABLED].value) {
@@ -166,5 +177,17 @@ export default class ImageToggle {
 			}
 		}
 		this._styleElement.innerHTML = css;
+	}
+
+	_onKeypress(eKeybind, e) {
+		const keybind = this._settings[SETTING_IDS.KEYBIND].value;
+		if (keybind.key === eKeybind.key &&
+			keybind.ctrl === eKeybind.ctrl &&
+			keybind.alt === eKeybind.alt &&
+			keybind.shift === eKeybind.shift &&
+			keybind.meta === eKeybind.meta
+		) {
+			this._core.settings.setSetting(ImageToggle.id, SETTING_IDS.ENABLED, !this._settings[SETTING_IDS.ENABLED].value);
+		}
 	}
 }

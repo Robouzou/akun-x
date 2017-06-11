@@ -2,12 +2,14 @@
 
 import EventEmitter from 'eventemitter3';
 import Settings from './settings';
-import ObserverDOM from './observerDOM';
-import ObserverNet from './observerNet';
+import {default as ObserverDOM, EVENTS as DOM_EVENTS} from './observerDOM';
+import {default as ObserverInput, EVENTS as INPUT_EVENTS} from './observerInput';
+import {default as ObserverNet, EVENTS as NET_EVENTS} from './observerNet';
 
 const EVENTS = {
 	FOCUS: 'focus'
 };
+Object.assign(EVENTS, DOM_EVENTS, INPUT_EVENTS, NET_EVENTS);
 
 const THEMES = {
 	LIGHT: 'snowdrift',
@@ -18,6 +20,7 @@ export default class Core extends EventEmitter {
 	constructor() {
 		super();
 		this._observerDOM = new ObserverDOM(this);
+		this._observerInput = new ObserverInput(this);
 		this._observerNet = new ObserverNet(this);
 		this._settings = new Settings(this);
 		this._modules = {};
@@ -38,6 +41,10 @@ export default class Core extends EventEmitter {
 
 	get dom() {
 		return this._observerDOM;
+	}
+
+	get input() {
+		return this._observerInput;
 	}
 
 	get net() {

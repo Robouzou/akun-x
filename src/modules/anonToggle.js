@@ -58,14 +58,14 @@ export default class AnonToggle {
 		// Don't do anything if the user isn't logged in (and thus doesn't have any settings available)
 		if (this._core.currentUser) {
 			this._core.dom.nodes('chatHeader').forEach(this._onAddedChatHeader, this);
-			this._core.on('focus', this._onFocus, this);
-			this._core.on('dom.added.chatHeader', this._onAddedChatHeader, this);
+			this._core.on(this._core.EVENTS.FOCUS, this._onFocus, this);
+			this._core.on(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
 		}
 	}
 
 	_disable() {
-		this._core.removeListener('focus', this._onFocus, this);
-		this._core.removeListener('dom.added.chatHeader', this._onAddedChatHeader, this);
+		this._core.removeListener(this._core.EVENTS.FOCUS, this._onFocus, this);
+		this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
 		document.querySelectorAll('.akun-x-anon-toggle').forEach(node => {
 			delete node.parentNode.dataset[AnonToggle.id];
 			node.parentNode.removeChild(node);

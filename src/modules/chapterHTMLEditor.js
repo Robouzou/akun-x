@@ -51,15 +51,15 @@ export default class ChapterHTMLEditor {
 		this._core.isAuthor.then((isAuthor) => {
 			if (isAuthor) {
 				this._core.dom.nodes('chapterButtonControls').forEach(this._onAddedChapterButtonControls, this);
-				this._core.on('dom.added.chapter', this._onAddedChapter, this);
-				this._core.on('dom.added.chapterButtonControls', this._onAddedChapterButtonControls, this);
+				this._core.on(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
+				this._core.on(this._core.EVENTS.DOM.ADDED.CHAPTER_BUTTON_CONTROLS, this._onAddedChapterButtonControls, this);
 			}
 		});
 	}
 
 	_disable() {
-		this._core.removeListener('dom.added.chapter', this._onAddedChapter, this);
-		this._core.removeListener('dom.added.chapterButtonControls', this._onAddedChapterButtonControls, this);
+		this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
+		this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAPTER_BUTTON_CONTROLS, this._onAddedChapterButtonControls, this);
 		document.querySelectorAll('.akun-x-chapter-html-editor-edit').forEach(node => {
 			delete node.parentNode.dataset[ChapterHTMLEditor.id];
 			node.parentNode.removeChild(node);
