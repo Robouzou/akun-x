@@ -2,7 +2,7 @@
 // @name          AkunX
 // @description   Extends the functionality of Akun to enhance the experience
 // @author        Fiddlekins
-// @version       1.1.0
+// @version       1.1.1
 // @namespace     https://github.com/Fiddlekins/akun-x
 // @include       https://anonkun.com/*
 // @include       http://anonkun.com/*
@@ -433,7 +433,20 @@ var createClass = function () {
 
 
 
+var defineProperty = function (obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
 
+  return obj;
+};
 
 
 
@@ -471,6 +484,8 @@ var possibleConstructorReturn = function (self, call) {
   return call && (typeof call === "object" || typeof call === "function") ? call : self;
 };
 
+var _settings;
+
 var LOCAL_STORAGE_KEY = 'akun-x';
 
 var THEME_CLASS = {
@@ -494,21 +509,17 @@ var THIS_ID = 'settings';
 var DEFAULT_SETTINGS = {
 	name: 'Settings',
 	id: THIS_ID,
-	settings: {}
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.KEYBIND_OPEN] = {
-	name: 'Open Keybind',
-	description: 'The keybind used to open the settings menu.',
-	type: SETTING_TYPES.KEYBIND,
-	value: { key: 'o' }
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.KEYBIND_CLOSE] = {
-	name: 'Close Keybind',
-	description: 'The keybind used to close the settings menu.',
-	type: SETTING_TYPES.KEYBIND,
-	value: { key: 'escape' }
+	settings: (_settings = {}, defineProperty(_settings, SETTING_IDS.KEYBIND_OPEN, {
+		name: 'Open Keybind',
+		description: 'The keybind used to open the settings menu.',
+		type: SETTING_TYPES.KEYBIND,
+		value: { key: 'o' }
+	}), defineProperty(_settings, SETTING_IDS.KEYBIND_CLOSE, {
+		name: 'Close Keybind',
+		description: 'The keybind used to close the settings menu.',
+		type: SETTING_TYPES.KEYBIND,
+		value: { key: 'escape' }
+	}), _settings)
 };
 
 /* Modules have default settings. When loading the locally stored settings, these defaults should be overridden where
@@ -1315,14 +1326,12 @@ var SETTING_IDS$1 = {
 var DEFAULT_SETTINGS$1 = {
 	name: 'Anon Toggle',
 	id: MODULE_ID,
-	settings: {}
-};
-
-DEFAULT_SETTINGS$1.settings[SETTING_IDS$1.ENABLED] = {
-	name: 'Enabled',
-	description: 'Turn the Anon Toggle module on or off.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
+	settings: defineProperty({}, SETTING_IDS$1.ENABLED, {
+		name: 'Enabled',
+		description: 'Turn the Anon Toggle module on or off.',
+		type: SETTING_TYPES.BOOLEAN,
+		value: true
+	})
 };
 
 var AnonToggle = function () {
@@ -1552,14 +1561,12 @@ var SETTING_IDS$2 = {
 var DEFAULT_SETTINGS$2 = {
 	name: 'Chapter HTML Editor',
 	id: MODULE_ID$1,
-	settings: {}
-};
-
-DEFAULT_SETTINGS$2.settings[SETTING_IDS$2.ENABLED] = {
-	name: 'Enabled',
-	description: 'Turn the Chapter HTML Editor module on or off.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
+	settings: defineProperty({}, SETTING_IDS$2.ENABLED, {
+		name: 'Enabled',
+		description: 'Turn the Chapter HTML Editor module on or off.',
+		type: SETTING_TYPES.BOOLEAN,
+		value: true
+	})
 };
 
 var ChapterHTMLEditor = function () {
@@ -1678,6 +1685,8 @@ var ChapterHTMLEditor = function () {
 	return ChapterHTMLEditor;
 }();
 
+var _settings$1;
+
 var MODULE_ID$2 = 'imageToggle';
 
 var SETTING_IDS$3 = {
@@ -1697,84 +1706,62 @@ var SETTING_IDS$3 = {
 var DEFAULT_SETTINGS$3 = {
 	name: 'Image Toggle',
 	id: MODULE_ID$2,
-	settings: {}
-};
-
-DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.ENABLED] = {
-	name: 'Enabled',
-	description: 'Turn the Image Toggle module on or off.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: false
-};
-
-DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.KEYBIND] = {
-	name: 'Keybind',
-	description: 'The keybind to enable or disable this module.',
-	type: SETTING_TYPES.KEYBIND,
-	value: { key: 'i' }
-};
-
-DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.ALL] = {
-	name: 'All Images',
-	description: 'Every image on the site disappears. Has the potential to hide things you don\'t want hidden.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: false
-};
-
-DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.STORY_COVERS] = {
-	name: 'Story Covers',
-	description: 'Hide the cover image for stories.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.STORY_BODY] = {
-	name: 'Story Body',
-	description: 'Hide any images that are in story chapters.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.CHAT_MESSAGES] = {
-	name: 'Chat Messages',
-	description: 'Hide images in chat.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.CHAT_MODALS] = {
-	name: 'Chat Modals',
-	description: 'Hide images in the popout chat modals.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.TOPIC_COVERS] = {
-	name: 'Topic Covers',
-	description: 'Hide the topic cover images.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.TOPIC_OP] = {
-	name: 'Topic Opening Post',
-	description: 'Hide any images within the topic\'s opening post.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.PROFILE_AVATARS] = {
-	name: 'Profile Avatar',
-	description: 'Hides the large avatar image displayed on a user\'s profile page.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS$3.settings[SETTING_IDS$3.LIVE_STORIES] = {
-	name: 'Live Story List',
-	description: 'Hides story cover images for stories listed in the live story list. Only has effect if you\'re using the Live Images AkunX module.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
+	settings: (_settings$1 = {}, defineProperty(_settings$1, SETTING_IDS$3.ENABLED, {
+		name: 'Enabled',
+		description: 'Turn the Image Toggle module on or off.',
+		type: SETTING_TYPES.BOOLEAN,
+		value: false
+	}), defineProperty(_settings$1, SETTING_IDS$3.KEYBIND, {
+		name: 'Keybind',
+		description: 'The keybind to enable or disable this module.',
+		type: SETTING_TYPES.KEYBIND,
+		value: { key: 'i' }
+	}), defineProperty(_settings$1, SETTING_IDS$3.ALL, {
+		name: 'All Images',
+		description: 'Every image on the site disappears. Has the potential to hide things you don\'t want hidden.',
+		type: SETTING_TYPES.BOOLEAN,
+		value: false
+	}), defineProperty(_settings$1, SETTING_IDS$3.STORY_COVERS, {
+		name: 'Story Covers',
+		description: 'Hide the cover image for stories.',
+		type: SETTING_TYPES.BOOLEAN,
+		value: true
+	}), defineProperty(_settings$1, SETTING_IDS$3.STORY_BODY, {
+		name: 'Story Body',
+		description: 'Hide any images that are in story chapters.',
+		type: SETTING_TYPES.BOOLEAN,
+		value: true
+	}), defineProperty(_settings$1, SETTING_IDS$3.CHAT_MESSAGES, {
+		name: 'Chat Messages',
+		description: 'Hide images in chat.',
+		type: SETTING_TYPES.BOOLEAN,
+		value: true
+	}), defineProperty(_settings$1, SETTING_IDS$3.CHAT_MODALS, {
+		name: 'Chat Modals',
+		description: 'Hide images in the popout chat modals.',
+		type: SETTING_TYPES.BOOLEAN,
+		value: true
+	}), defineProperty(_settings$1, SETTING_IDS$3.TOPIC_COVERS, {
+		name: 'Topic Covers',
+		description: 'Hide the topic cover images.',
+		type: SETTING_TYPES.BOOLEAN,
+		value: true
+	}), defineProperty(_settings$1, SETTING_IDS$3.TOPIC_OP, {
+		name: 'Topic Opening Post',
+		description: 'Hide any images within the topic\'s opening post.',
+		type: SETTING_TYPES.BOOLEAN,
+		value: true
+	}), defineProperty(_settings$1, SETTING_IDS$3.PROFILE_AVATARS, {
+		name: 'Profile Avatar',
+		description: 'Hides the large avatar image displayed on a user\'s profile page.',
+		type: SETTING_TYPES.BOOLEAN,
+		value: true
+	}), defineProperty(_settings$1, SETTING_IDS$3.LIVE_STORIES, {
+		name: 'Live Story List',
+		description: 'Hides story cover images for stories listed in the live story list. Only has effect if you\'re using the Live Images AkunX module.',
+		type: SETTING_TYPES.BOOLEAN,
+		value: true
+	}), _settings$1)
 };
 
 var ImageToggle = function () {
@@ -1874,49 +1861,59 @@ var ImageToggle = function () {
 	return ImageToggle;
 }();
 
+var _settings$2;
+
 var MODULE_ID$3 = 'linker';
-var imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
-var videoExtensions = ['webm', 'mp4', 'gifv'];
 
 var SETTING_IDS$4 = {
 	ENABLED: 'enabled',
+	STRICT_MODE: 'strictMode',
 	EMBED_IMAGES: 'embedImages',
 	EMBED_VIDEOS: 'embedVideos',
-	MEDIA_SITES: 'mediaSites'
+	MEDIA_SITES: 'mediaSites',
+	IMAGE_EXTENSIONS: 'imageExtensions',
+	VIDEO_EXTENSIONS: 'videoExtensions'
 };
 
 var DEFAULT_SETTINGS$4 = {
 	name: 'Linker',
 	id: MODULE_ID$3,
-	settings: {}
-};
-
-DEFAULT_SETTINGS$4.settings[SETTING_IDS$4.ENABLED] = {
-	name: 'Enabled',
-	description: 'Turn the Linker module on or off.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS$4.settings[SETTING_IDS$4.EMBED_IMAGES] = {
-	name: 'Embed Images',
-	description: 'Embed links recognised to be images as images instead.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS$4.settings[SETTING_IDS$4.EMBED_VIDEOS] = {
-	name: 'Embed Videos',
-	description: 'Embed links recognised to be videos as images instead.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS$4.settings[SETTING_IDS$4.MEDIA_SITES] = {
-	name: 'Media Sites',
-	description: 'Define a list of sites to embed links as media from. Used as a regex pattern.',
-	type: SETTING_TYPES.ARRAY,
-	value: ['puu.sh', 'i.imgur.com', 'data.archive.moe', 'i.4cdn.org', 'i0.kym-cdn.com', '[\\S]*.deviantart.net']
+	settings: (_settings$2 = {}, defineProperty(_settings$2, SETTING_IDS$4.ENABLED, {
+		name: 'Enabled',
+		description: 'Turn the Linker module on or off.',
+		type: SETTING_TYPES.BOOLEAN,
+		value: true
+	}), defineProperty(_settings$2, SETTING_IDS$4.STRICT_MODE, {
+		name: 'Strict Mode',
+		description: 'With Strict Mode enabled the link parsing will only accept URLs comprising of specification compliant characters. Disabling Strict Mode will recognise links as text that looks like it starts as a link and continues until it encounters whitespace.',
+		type: SETTING_TYPES.BOOLEAN,
+		value: false
+	}), defineProperty(_settings$2, SETTING_IDS$4.EMBED_IMAGES, {
+		name: 'Embed Images',
+		description: 'Embed links recognised to be images as images instead.',
+		type: SETTING_TYPES.BOOLEAN,
+		value: true
+	}), defineProperty(_settings$2, SETTING_IDS$4.EMBED_VIDEOS, {
+		name: 'Embed Videos',
+		description: 'Embed links recognised to be videos as images instead.',
+		type: SETTING_TYPES.BOOLEAN,
+		value: true
+	}), defineProperty(_settings$2, SETTING_IDS$4.MEDIA_SITES, {
+		name: 'Media Sites',
+		description: 'Define a list of sites to embed links as media from. Used as a regex pattern.',
+		type: SETTING_TYPES.ARRAY,
+		value: ['puu.sh', 'i.imgur.com', 'data.archive.moe', 'i.4cdn.org', 'i0.kym-cdn.com', '[\\S]*.deviantart.net']
+	}), defineProperty(_settings$2, SETTING_IDS$4.IMAGE_EXTENSIONS, {
+		name: 'Image Extensions',
+		description: 'Define a list of extensions to recognise as images.',
+		type: SETTING_TYPES.ARRAY,
+		value: ['jpg', 'jpeg', 'png', 'gif']
+	}), defineProperty(_settings$2, SETTING_IDS$4.VIDEO_EXTENSIONS, {
+		name: 'Video Extensions',
+		description: 'Define a list of extensions to recognise as videos.',
+		type: SETTING_TYPES.ARRAY,
+		value: ['webm', 'mp4', 'gifv']
+	}), _settings$2)
 };
 
 var Linker = function () {
@@ -1945,6 +1942,12 @@ var Linker = function () {
 						this._disable();
 					}
 					break;
+				case SETTING_IDS$4.STRICT_MODE:
+					if (this._settings[SETTING_IDS$4.ENABLED].value) {
+						this._disable();
+						this._enable();
+					}
+					break;
 				case SETTING_IDS$4.EMBED_IMAGES:
 					if (this._settings[SETTING_IDS$4.EMBED_IMAGES].value) {
 						this._disable();
@@ -1952,7 +1955,7 @@ var Linker = function () {
 							this._enable();
 						}
 					} else {
-						this._disableImages();
+						Linker._disableImages();
 						if (this._settings[SETTING_IDS$4.ENABLED].value) {
 							this._enable();
 						}
@@ -1965,13 +1968,15 @@ var Linker = function () {
 							this._enable();
 						}
 					} else {
-						this._disableVideos();
+						Linker._disableVideos();
 						if (this._settings[SETTING_IDS$4.ENABLED].value) {
 							this._enable();
 						}
 					}
 					break;
 				case SETTING_IDS$4.MEDIA_SITES:
+				case SETTING_IDS$4.IMAGE_EXTENSIONS:
+				case SETTING_IDS$4.VIDEO_EXTENSIONS:
 					this._updateMediaRegex();
 					if (this._settings[SETTING_IDS$4.ENABLED].value) {
 						this._disable();
@@ -1995,44 +2000,19 @@ var Linker = function () {
 			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAT_ITEM_MESSAGE, this._onAddedChatItemMessage, this);
 			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAT_ITEM_FIELD_BODY, this._onAddedChatItemFieldBody, this);
 			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
-			this._disableLinks();
-			this._disableImages();
-			this._disableVideos();
-		}
-	}, {
-		key: '_disableLinks',
-		value: function _disableLinks() {
-			document.querySelectorAll('.akun-x-linker-link').forEach(function (node) {
-				delete node.parentNode.dataset[Linker.id];
-				var textNode = document.createTextNode(node.href);
-				node.parentNode.replaceChild(textNode, node);
-			});
-		}
-	}, {
-		key: '_disableImages',
-		value: function _disableImages() {
-			document.querySelectorAll('.akun-x-linker-image').forEach(function (node) {
-				delete node.parentNode.dataset[Linker.id];
-				var textNode = document.createTextNode(node.src);
-				node.parentNode.replaceChild(textNode, node);
-			});
-		}
-	}, {
-		key: '_disableVideos',
-		value: function _disableVideos() {
-			document.querySelectorAll('.akun-x-linker-video').forEach(function (node) {
-				delete node.parentNode.dataset[Linker.id];
-				var textNode = document.createTextNode(node.dataset.src);
-				node.parentNode.replaceChild(textNode, node);
-			});
+			Linker._disableLinks();
+			Linker._disableImages();
+			Linker._disableVideos();
 		}
 	}, {
 		key: '_updateMediaRegex',
 		value: function _updateMediaRegex() {
 			var mediaSites = this._settings[SETTING_IDS$4.MEDIA_SITES].value.join('|');
-			this._imageRegex = new RegExp('https?://(' + mediaSites + ')/.+\\.(' + imageExtensions.join('|') + ')($|\\?)');
-			this._videoRegex = new RegExp('https?://(' + mediaSites + ')/.+\\.(' + videoExtensions.join('|') + ')($|\\?)');
-			this._videoTypeRegex = new RegExp('\\.(' + videoExtensions.join('|') + ')(?:$|\\?)');
+			var imageExtensions = this._settings[SETTING_IDS$4.IMAGE_EXTENSIONS].value.join('|');
+			var videoExtensions = this._settings[SETTING_IDS$4.VIDEO_EXTENSIONS].value.join('|');
+			this._imageRegex = new RegExp('https?://(' + mediaSites + ')/.+\\.(' + imageExtensions + ')($|\\?)');
+			this._videoRegex = new RegExp('https?://(' + mediaSites + ')/.+\\.(' + videoExtensions + ')($|\\?)');
+			this._videoTypeRegex = new RegExp('\\.(' + videoExtensions + ')(?:$|\\?)');
 		}
 	}, {
 		key: '_onAddedChatItemMessage',
@@ -2076,7 +2056,7 @@ var Linker = function () {
 
 						if (node.nodeType === Node.TEXT_NODE) {
 							// Only touch text nodes to avoid interfering with any HTML
-							var urlMatch = /https?:\/\/[A-z0-9\-\._~:\/\?#\[\]@\!\$&'\(\)*\+,;=%]+/.exec(node.nodeValue);
+							var urlMatch = this._getURLRegex().exec(node.nodeValue);
 							if (urlMatch) {
 								var url = urlMatch[0];
 								var newLink = this._getWrappedLink(url);
@@ -2110,6 +2090,7 @@ var Linker = function () {
 			if (this._settings[SETTING_IDS$4.EMBED_IMAGES].value && this.isImageUrl(url)) {
 				var img = document.createElement('img');
 				img.classList.add('akun-x-linker-image');
+				img.dataset.url = url;
 				img.src = url.replace(/^https?:\/\//, 'https://'); // Make it https
 				img.onerror = function () {
 					this.onerror = null;
@@ -2123,7 +2104,7 @@ var Linker = function () {
 				type = type && type[1];
 				var vid = document.createElement('video');
 				vid.classList.add('akun-x-linker-video');
-				vid.dataset.src = url;
+				vid.dataset.url = url;
 				vid.setAttribute('controls', 'controls');
 				if (type === 'gifv') {
 					// Handle Imgur's dumb idea
@@ -2146,9 +2127,21 @@ var Linker = function () {
 
 			var link = document.createElement('a');
 			link.classList.add('akun-x-linker-link');
+			link.dataset.url = url;
 			link.textContent = url;
 			link.href = url;
 			return link;
+		}
+	}, {
+		key: '_getURLRegex',
+		value: function _getURLRegex() {
+			if (this._settings[SETTING_IDS$4.STRICT_MODE].value) {
+				return (/https?:\/\/[A-z0-9\-\._~:\/\?#\[\]@\!\$&'\(\)*\+,;=%]+/
+				);
+			} else {
+				return (/https?:\/\/[^\s]+/
+				);
+			}
 		}
 	}, {
 		key: 'isImageUrl',
@@ -2161,6 +2154,30 @@ var Linker = function () {
 			return this._videoRegex.test(url);
 		}
 	}], [{
+		key: '_disableLinks',
+		value: function _disableLinks() {
+			document.querySelectorAll('.akun-x-linker-link').forEach(Linker._disableNode);
+		}
+	}, {
+		key: '_disableImages',
+		value: function _disableImages() {
+			document.querySelectorAll('.akun-x-linker-image').forEach(Linker._disableNode);
+		}
+	}, {
+		key: '_disableVideos',
+		value: function _disableVideos() {
+			document.querySelectorAll('.akun-x-linker-video').forEach(Linker._disableNode);
+		}
+	}, {
+		key: '_disableNode',
+		value: function _disableNode(node) {
+			delete node.parentNode.dataset[Linker.id];
+			var textNode = document.createTextNode(node.dataset.url);
+			var parentNode = node.parentNode;
+			parentNode.replaceChild(textNode, node);
+			parentNode.normalize(); // Tidy up those fragmented text nodes
+		}
+	}, {
 		key: 'id',
 		get: function get$$1() {
 			return MODULE_ID$3;
@@ -2178,14 +2195,12 @@ var SETTING_IDS$5 = {
 var DEFAULT_SETTINGS$5 = {
 	name: 'Live Images',
 	id: MODULE_ID$4,
-	settings: {}
-};
-
-DEFAULT_SETTINGS$5.settings[SETTING_IDS$5.ENABLED] = {
-	name: 'Enabled',
-	description: 'Turn the Live Images module on or off.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
+	settings: defineProperty({}, SETTING_IDS$5.ENABLED, {
+		name: 'Enabled',
+		description: 'Turn the Live Images module on or off.',
+		type: SETTING_TYPES.BOOLEAN,
+		value: true
+	})
 };
 
 var PLACEHOLDER_IMAGE_URL = '//placekitten.com/g/320/180';
