@@ -9,6 +9,7 @@ export const EVENTS = {
 			CHAT_ITEM_MESSAGE: 'dom.added.chatItemMessage',
 			CHAT_ITEM_FIELD_BODY: 'dom.added.chatItemFieldBody',
 			CHAT_HEADER: 'dom.added.chatHeader',
+			CHAT_INPUT_CONTAINER: 'dom.added.chatInputContainer',
 			CHAPTER: 'dom.added.chapter',
 			CHAPTER_BUTTON_CONTROLS: 'dom.added.chapterButtonControls',
 			STORY: 'dom.added.storyItem',
@@ -126,6 +127,9 @@ export default class ObserverDOM {
 						node.querySelectorAll('.chatHeader').forEach(nodeChatHeader => {
 							this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_HEADER, nodeChatHeader);
 						})
+					}
+					if (node.classList.contains('chatInputContainer')) {
+						this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_INPUT_CONTAINER, node);
 					}
 				}
 			}
