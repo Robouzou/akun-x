@@ -16,6 +16,11 @@ const THEMES = {
 	DARK: 'dark'
 };
 
+const THEME_CLASS = {
+	LIGHT: 'akun-x-theme-light',
+	DARK: 'akun-x-theme-dark'
+};
+
 export default class Core extends EventEmitter {
 	constructor() {
 		super();
@@ -23,11 +28,21 @@ export default class Core extends EventEmitter {
 		this._observerInput = new ObserverInput(this);
 		this._observerNet = new ObserverNet(this);
 		this._settings = new Settings(this);
+		this._restructure = new Restructure(this);
 		this._modules = {};
 
 		window.onfocus = () => {
 			this.emit(EVENTS.FOCUS);
 		};
+
+		switch (this.theme) {
+			case THEMES.LIGHT:
+				document.body.classList.add(THEME_CLASS.LIGHT);
+				break;
+			case THEMES.DARK:
+				document.body.classList.add(THEME_CLASS.DARK);
+				break;
+		}
 	}
 
 	addModule(module) {

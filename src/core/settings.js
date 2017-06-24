@@ -5,11 +5,6 @@ import './settings.pcss';
 
 const LOCAL_STORAGE_KEY = 'akun-x';
 
-const THEME_CLASS = {
-	LIGHT: 'akun-x-settings-theme-light',
-	DARK: 'akun-x-settings-theme-dark'
-};
-
 export const SETTING_TYPES = {
 	BOOLEAN: 'boolean',
 	ARRAY: 'array',
@@ -149,9 +144,8 @@ export default class Settings {
 	}
 
 	_createMenu() {
-		const themeClass = this._core.theme === this._core.THEMES.DARK ? THEME_CLASS.DARK : THEME_CLASS.LIGHT;
 		const backdropNode = document.createElement('div');
-		backdropNode.classList.add('akun-x-settings-backdrop', themeClass);
+		backdropNode.classList.add('akun-x-settings-backdrop');
 		const horizontalAlignNode = document.createElement('div');
 		horizontalAlignNode.classList.add('akun-x-settings-horizontal-align');
 		const verticalAlignNode = document.createElement('div');
