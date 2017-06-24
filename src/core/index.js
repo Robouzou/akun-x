@@ -5,6 +5,7 @@ import Settings from './settings';
 import {default as ObserverDOM, EVENTS as DOM_EVENTS} from './observerDOM';
 import {default as ObserverInput, EVENTS as INPUT_EVENTS} from './observerInput';
 import {default as ObserverNet, EVENTS as NET_EVENTS} from './observerNet';
+import {default as Restructure} from './restructure';
 
 const EVENTS = {
 	FOCUS: 'focus'
