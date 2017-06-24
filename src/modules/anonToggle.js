@@ -1,7 +1,8 @@
 'use strict';
 
 import {SETTING_TYPES} from '../core/settings';
-import './anonToggle.css';
+import ElementPool from '../core/elementPool';
+import './anonToggle.pcss';
 
 const MODULE_ID = 'anonToggle';
 
@@ -27,15 +28,12 @@ export default class AnonToggle {
 		this._core = core;
 		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS, this._onSettingsChanged.bind(this));
 		this._onClickShouldSetToAnon = false;
-		this._toggleElement = null;
-		this._avatarElement = null;
-		this._usernameElement = null;
-		this._createToggleElement();
-		this._toggleElementPool = new Set();
+		this._toggleElementPool = new ElementPool(this._createToggleElement());
 		if (this._settings[SETTING_IDS.ENABLED].value) {
 			this._enable();
 		}
 		this._boundToggleClickCallback = this._toggleClickCallback.bind(this);
+		this._toggleElementPool.addEventListener('click', this._boundToggleClickCallback);
 	}
 
 	static get id() {
@@ -81,22 +79,6 @@ export default class AnonToggle {
 		usernameElement.classList.add('username');
 		toggleElement.appendChild(avatarElement);
 		toggleElement.appendChild(usernameElement);
-		this._toggleElement = toggleElement;
-		this._avatarElement = avatarElement;
-		this._usernameElement = usernameElement;
-	}
-
-	_getToggleElement() {
-		for (let toggleElement of this._toggleElementPool) {
-			// Check if the node is a descendant of the document
-			if (!document.contains(toggleElement)) {
-				// If it isn't then recycle it
-				return toggleElement;
-			}
-		}
-		const toggleElement = this._toggleElement.cloneNode(true);
-		toggleElement.addEventListener('click', this._boundToggleClickCallback);
-		this._toggleElementPool.add(toggleElement);
 		return toggleElement;
 	}
 
@@ -117,7 +99,7 @@ export default class AnonToggle {
 	}
 
 	_onAddedChatHeader(node) {
-		node.querySelector('.pagination-dropdown').appendChild(this._getToggleElement());
+		node.querySelector('.pagination-dropdown').appendChild(this._toggleElementPool.getElement());
 		const currentUser = this._core.currentUser;
 		this._updateToggleElement(currentUser);
 	}
@@ -130,16 +112,12 @@ export default class AnonToggle {
 	_updateToggleElement(currentUser) {
 		if (currentUser['profile']['asAnon']) {
 			this._onClickShouldSetToAnon = false;
-			this._usernameElement.textContent = 'Anon';
-			this._avatarElement.style.display = 'none';
-			for (let toggleElement of this._toggleElementPool) {
+			this._toggleElementPool.forEach(toggleElement=>{
 				toggleElement.querySelector('.username').textContent = 'Anon';
 				toggleElement.querySelector('.avatar').style.display = 'none';
-			}
+			});
 		} else {
 			this._onClickShouldSetToAnon = true;
-			this._usernameElement.textContent = currentUser['username'];
-			this._avatarElement.style.display = 'inline';
 			let avatarSrc = currentUser['profile']['image'];
 			if (/cloudfront\.net/.test(avatarSrc)) {
 				const match = avatarSrc.match(/cloudfront.net\/images\/([A-z0-9_\.]+)/);
@@ -147,13 +125,12 @@ export default class AnonToggle {
 			} else if (/filepicker\.io/.test(avatarSrc)) {
 				avatarSrc += '/convert?w=16&h=16&fit=crop&cache=true';
 			}
-			this._avatarElement.src = avatarSrc;
-			for (let toggleElement of this._toggleElementPool) {
+			this._toggleElementPool.forEach(toggleElement=>{
 				toggleElement.querySelector('.username').textContent = currentUser['username'];
 				const avatarNode = toggleElement.querySelector('.avatar');
 				avatarNode.style.display = 'inline';
 				avatarNode.src = avatarSrc;
-			}
+			});
 		}
 	}
 }
