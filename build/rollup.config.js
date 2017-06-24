@@ -8,6 +8,7 @@ const simplevars = require('postcss-simple-vars');
 const nested = require('postcss-nested');
 const cssnext = require('postcss-cssnext');
 const cssnano = require('cssnano');
+const autoprefixer = require('autoprefixer');
 
 module.exports = {
 	entry: 'src/index.js',
@@ -18,7 +19,8 @@ module.exports = {
 				simplevars(),
 				nested(),
 				cssnext({ warnForDuplicates: false }),
-				cssnano({ safe: true })
+				cssnano({ safe: true }),
+				autoprefixer()
 			],
 			extensions: ['.css', '.pcss']
 		}),
