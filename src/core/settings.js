@@ -26,21 +26,20 @@ const THIS_ID = 'settings';
 const DEFAULT_SETTINGS = {
 	name: 'Settings',
 	id: THIS_ID,
-	settings: {}
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.KEYBIND_OPEN] = {
-	name: 'Open Keybind',
-	description: 'The keybind used to open the settings menu.',
-	type: SETTING_TYPES.KEYBIND,
-	value: { key: 'o' }
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.KEYBIND_CLOSE] = {
-	name: 'Close Keybind',
-	description: 'The keybind used to close the settings menu.',
-	type: SETTING_TYPES.KEYBIND,
-	value: { key: 'escape' }
+	settings: {
+		[SETTING_IDS.KEYBIND_OPEN]: {
+			name: 'Open Keybind',
+			description: 'The keybind used to open the settings menu.',
+			type: SETTING_TYPES.KEYBIND,
+			value: { key: 'o' }
+		},
+		[SETTING_IDS.KEYBIND_CLOSE]: {
+			name: 'Close Keybind',
+			description: 'The keybind used to close the settings menu.',
+			type: SETTING_TYPES.KEYBIND,
+			value: { key: 'escape' }
+		}
+	}
 };
 
 /* Modules have default settings. When loading the locally stored settings, these defaults should be overridden where

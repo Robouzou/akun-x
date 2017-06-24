@@ -11,14 +11,14 @@ const SETTING_IDS = {
 const DEFAULT_SETTINGS = {
 	name: 'Live Images',
 	id: MODULE_ID,
-	settings: {}
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.ENABLED] = {
-	name: 'Enabled',
-	description: 'Turn the Live Images module on or off.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
+	settings: {
+		[SETTING_IDS.ENABLED]: {
+			name: 'Enabled',
+			description: 'Turn the Live Images module on or off.',
+			type: SETTING_TYPES.BOOLEAN,
+			value: true
+		}
+	}
 };
 
 const PLACEHOLDER_IMAGE_URL = '//placekitten.com/g/320/180';

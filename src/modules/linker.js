@@ -3,55 +3,73 @@
 import {SETTING_TYPES} from '../core/settings';
 
 const MODULE_ID = 'linker';
-const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
-const videoExtensions = ['webm', 'mp4', 'gifv'];
 
 const SETTING_IDS = {
 	ENABLED: 'enabled',
 	EMBED_IMAGES: 'embedImages',
 	EMBED_VIDEOS: 'embedVideos',
-	MEDIA_SITES: 'mediaSites'
+	MEDIA_SITES: 'mediaSites',
+	IMAGE_EXTENSIONS: 'imageExtensions',
+	VIDEO_EXTENSIONS: 'videoExtensions'
 };
 
 const DEFAULT_SETTINGS = {
 	name: 'Linker',
 	id: MODULE_ID,
-	settings: {}
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.ENABLED] = {
-	name: 'Enabled',
-	description: 'Turn the Linker module on or off.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.EMBED_IMAGES] = {
-	name: 'Embed Images',
-	description: 'Embed links recognised to be images as images instead.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.EMBED_VIDEOS] = {
-	name: 'Embed Videos',
-	description: 'Embed links recognised to be videos as images instead.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.MEDIA_SITES] = {
-	name: 'Media Sites',
-	description: 'Define a list of sites to embed links as media from. Used as a regex pattern.',
-	type: SETTING_TYPES.ARRAY,
-	value: [
-		'puu.sh',
-		'i.imgur.com',
-		'data.archive.moe',
-		'i.4cdn.org',
-		'i0.kym-cdn.com',
-		'[\\S]*.deviantart.net'
-	]
+	settings: {
+		[SETTING_IDS.ENABLED]: {
+			name: 'Enabled',
+			description: 'Turn the Linker module on or off.',
+			type: SETTING_TYPES.BOOLEAN,
+			value: true
+		},
+		[SETTING_IDS.EMBED_IMAGES]: {
+			name: 'Embed Images',
+			description: 'Embed links recognised to be images as images instead.',
+			type: SETTING_TYPES.BOOLEAN,
+			value: true
+		},
+		[SETTING_IDS.EMBED_VIDEOS]: {
+			name: 'Embed Videos',
+			description: 'Embed links recognised to be videos as images instead.',
+			type: SETTING_TYPES.BOOLEAN,
+			value: true
+		},
+		[SETTING_IDS.MEDIA_SITES]: {
+			name: 'Media Sites',
+			description: 'Define a list of sites to embed links as media from. Used as a regex pattern.',
+			type: SETTING_TYPES.ARRAY,
+			value: [
+				'puu.sh',
+				'i.imgur.com',
+				'data.archive.moe',
+				'i.4cdn.org',
+				'i0.kym-cdn.com',
+				'[\\S]*.deviantart.net'
+			]
+		},
+		[SETTING_IDS.IMAGE_EXTENSIONS]: {
+			name: 'Image Extensions',
+			description: 'Define a list of extensions to recognise as images.',
+			type: SETTING_TYPES.ARRAY,
+			value: [
+				'jpg',
+				'jpeg',
+				'png',
+				'gif'
+			]
+		},
+		[SETTING_IDS.VIDEO_EXTENSIONS]: {
+			name: 'Video Extensions',
+			description: 'Define a list of extensions to recognise as videos.',
+			type: SETTING_TYPES.ARRAY,
+			value: [
+				'webm',
+				'mp4',
+				'gifv'
+			]
+		}
+	}
 };
 
 export default class Linker {
@@ -107,6 +125,8 @@ export default class Linker {
 				}
 				break;
 			case SETTING_IDS.MEDIA_SITES:
+			case SETTING_IDS.IMAGE_EXTENSIONS:
+			case SETTING_IDS.VIDEO_EXTENSIONS:
 				this._updateMediaRegex();
 				if (this._settings[SETTING_IDS.ENABLED].value) {
 					this._disable();
@@ -158,10 +178,12 @@ export default class Linker {
 	}
 
 	_updateMediaRegex() {
-		let mediaSites = this._settings[SETTING_IDS.MEDIA_SITES].value.join('|');
-		this._imageRegex = new RegExp(`https?://(${mediaSites})/.+\\.(${imageExtensions.join('|')})($|\\?)`);
-		this._videoRegex = new RegExp(`https?://(${mediaSites})/.+\\.(${videoExtensions.join('|')})($|\\?)`);
-		this._videoTypeRegex = new RegExp(`\\.(${videoExtensions.join('|')})(?:$|\\?)`);
+		const mediaSites = this._settings[SETTING_IDS.MEDIA_SITES].value.join('|');
+		const imageExtensions = this._settings[SETTING_IDS.IMAGE_EXTENSIONS].value.join('|');
+		const videoExtensions = this._settings[SETTING_IDS.VIDEO_EXTENSIONS].value.join('|');
+		this._imageRegex = new RegExp(`https?://(${mediaSites})/.+\\.(${imageExtensions})($|\\?)`);
+		this._videoRegex = new RegExp(`https?://(${mediaSites})/.+\\.(${videoExtensions})($|\\?)`);
+		this._videoTypeRegex = new RegExp(`\\.(${videoExtensions})(?:$|\\?)`);
 	}
 
 	_onAddedChatItemMessage(node) {

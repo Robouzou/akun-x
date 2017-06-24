@@ -22,84 +22,74 @@ const SETTING_IDS = {
 const DEFAULT_SETTINGS = {
 	name: 'Image Toggle',
 	id: MODULE_ID,
-	settings: {}
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.ENABLED] = {
-	name: 'Enabled',
-	description: 'Turn the Image Toggle module on or off.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: false
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.KEYBIND] = {
-	name: 'Keybind',
-	description: 'The keybind to enable or disable this module.',
-	type: SETTING_TYPES.KEYBIND,
-	value: { key: 'i' }
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.ALL] = {
-	name: 'All Images',
-	description: 'Every image on the site disappears. Has the potential to hide things you don\'t want hidden.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: false
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.STORY_COVERS] = {
-	name: 'Story Covers',
-	description: 'Hide the cover image for stories.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.STORY_BODY] = {
-	name: 'Story Body',
-	description: 'Hide any images that are in story chapters.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.CHAT_MESSAGES] = {
-	name: 'Chat Messages',
-	description: 'Hide images in chat.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.CHAT_MODALS] = {
-	name: 'Chat Modals',
-	description: 'Hide images in the popout chat modals.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.TOPIC_COVERS] = {
-	name: 'Topic Covers',
-	description: 'Hide the topic cover images.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.TOPIC_OP] = {
-	name: 'Topic Opening Post',
-	description: 'Hide any images within the topic\'s opening post.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.PROFILE_AVATARS] = {
-	name: 'Profile Avatar',
-	description: 'Hides the large avatar image displayed on a user\'s profile page.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.LIVE_STORIES] = {
-	name: 'Live Story List',
-	description: 'Hides story cover images for stories listed in the live story list. Only has effect if you\'re using the Live Images AkunX module.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
+	settings: {
+		[SETTING_IDS.ENABLED]: {
+			name: 'Enabled',
+			description: 'Turn the Image Toggle module on or off.',
+			type: SETTING_TYPES.BOOLEAN,
+			value: false
+		},
+		[SETTING_IDS.KEYBIND]: {
+			name: 'Keybind',
+			description: 'The keybind to enable or disable this module.',
+			type: SETTING_TYPES.KEYBIND,
+			value: { key: 'i' }
+		},
+		[SETTING_IDS.ALL]: {
+			name: 'All Images',
+			description: 'Every image on the site disappears. Has the potential to hide things you don\'t want hidden.',
+			type: SETTING_TYPES.BOOLEAN,
+			value: false
+		},
+		[SETTING_IDS.STORY_COVERS]: {
+			name: 'Story Covers',
+			description: 'Hide the cover image for stories.',
+			type: SETTING_TYPES.BOOLEAN,
+			value: true
+		},
+		[SETTING_IDS.STORY_BODY]: {
+			name: 'Story Body',
+			description: 'Hide any images that are in story chapters.',
+			type: SETTING_TYPES.BOOLEAN,
+			value: true
+		},
+		[SETTING_IDS.CHAT_MESSAGES]: {
+			name: 'Chat Messages',
+			description: 'Hide images in chat.',
+			type: SETTING_TYPES.BOOLEAN,
+			value: true
+		},
+		[SETTING_IDS.CHAT_MODALS]: {
+			name: 'Chat Modals',
+			description: 'Hide images in the popout chat modals.',
+			type: SETTING_TYPES.BOOLEAN,
+			value: true
+		},
+		[SETTING_IDS.TOPIC_COVERS]: {
+			name: 'Topic Covers',
+			description: 'Hide the topic cover images.',
+			type: SETTING_TYPES.BOOLEAN,
+			value: true
+		},
+		[SETTING_IDS.TOPIC_OP]: {
+			name: 'Topic Opening Post',
+			description: 'Hide any images within the topic\'s opening post.',
+			type: SETTING_TYPES.BOOLEAN,
+			value: true
+		},
+		[SETTING_IDS.PROFILE_AVATARS]: {
+			name: 'Profile Avatar',
+			description: 'Hides the large avatar image displayed on a user\'s profile page.',
+			type: SETTING_TYPES.BOOLEAN,
+			value: true
+		},
+		[SETTING_IDS.LIVE_STORIES]: {
+			name: 'Live Story List',
+			description: 'Hides story cover images for stories listed in the live story list. Only has effect if you\'re using the Live Images AkunX module.',
+			type: SETTING_TYPES.BOOLEAN,
+			value: true
+		}
+	}
 };
 
 export default class ImageToggle {

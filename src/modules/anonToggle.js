@@ -12,14 +12,14 @@ const SETTING_IDS = {
 const DEFAULT_SETTINGS = {
 	name: 'Anon Toggle',
 	id: MODULE_ID,
-	settings: {}
-};
-
-DEFAULT_SETTINGS.settings[SETTING_IDS.ENABLED] = {
-	name: 'Enabled',
-	description: 'Turn the Anon Toggle module on or off.',
-	type: SETTING_TYPES.BOOLEAN,
-	value: true
+	settings: {
+		[SETTING_IDS.ENABLED]: {
+			name: 'Enabled',
+			description: 'Turn the Anon Toggle module on or off.',
+			type: SETTING_TYPES.BOOLEAN,
+			value: true
+		}
+	}
 };
 
 export default class AnonToggle {
