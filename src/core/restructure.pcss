@@ -72,30 +72,56 @@
 }
 
 .chatModal {
-  .pagination-dropdown {
+  .modal-header {
     display: flex;
-    flex-direction: row-reverse;
-    padding: 12px 12px;
-    margin-top: 2px;
-    max-width: 79%;
-    cursor: inherit;
+    align-items: center;
+    padding: 0;
 
-    > * {
+    h3 {
+      order: 0;
       flex-shrink: 0;
-      min-width: 0;
+      padding: 0 15px;
     }
 
-    .akun-x-restructure-chat-header-title {
-      order: 2;
-      font-size: 18px;
-      color: #90939d;
-      text-transform: uppercase;
-      line-height: 25px;
-    }
-
-    .akun-x-restructure-chat-header-filler {
+    .chatHeader {
       order: 1;
-      flex-grow: 1000;
+      flex-grow: 1;
+
+      .pagination-dropdown {
+        display: flex;
+        flex-direction: row-reverse;
+        padding: 0;
+        margin: 0;
+        cursor: inherit;
+
+        > * {
+          flex-shrink: 0;
+          min-width: 0;
+        }
+
+        .akun-x-restructure-chat-header-title {
+          order: 2;
+          font-size: 18px;
+          color: #90939d;
+          text-transform: uppercase;
+          line-height: 25px;
+        }
+
+        .akun-x-restructure-chat-header-filler {
+          order: 1;
+          flex-grow: 1000;
+        }
+      }
+
+      .chat-control {
+        top: 50px !important;
+      }
+    }
+
+    button {
+      order: 2;
+      flex-shrink: 0;
+      margin: 0 !important;
     }
   }
 }
@@ -137,5 +163,19 @@
       background: #2a2c3b;
       color: #d4d5d9;
     }
+  }
+}
+
+.threads .pagination-dropdown {
+  position: fixed !important;
+  right: 100px !important;
+  top: 100px !important;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  > * {
+    margin: 7px 0 0 0 !important;
+    flex-shrink: 0 !important;
   }
 }

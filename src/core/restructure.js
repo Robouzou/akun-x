@@ -16,11 +16,14 @@ export default class Restructure {
 
 	_onAddedChatHeader(node) {
 		const paginationNode = node.querySelector('.pagination-dropdown');
-		const mainChatNode = document.getElementById('mainChat');
-		if (mainChatNode && mainChatNode.contains(node)) {
+		const chatModalNode = node.closest('.chatModal');
+		if (node.closest('#mainChat')) {
 			paginationNode.appendChild(this._chatHeaderTitlePool.getElement());
+			paginationNode.appendChild(this._chatHeaderFillerPool.getElement());
+		} else if (chatModalNode) {
+			paginationNode.appendChild(this._chatHeaderFillerPool.getElement());
+			chatModalNode.querySelector('.modal-header').appendChild(node);
 		}
-		paginationNode.appendChild(this._chatHeaderFillerPool.getElement());
 	}
 
 	_createChatHeaderTitleElement() {
