@@ -53,6 +53,10 @@
             flex-grow: 1000;
           }
         }
+
+        .chat-control {
+          top: 43px !important;
+        }
       }
 
       .chatLog {
@@ -63,47 +67,75 @@
 
     .chatInputContainer {
       position: static;
-      margin: 0;
-      display: flex;
-      flex-shrink: 0;
-      align-items: stretch;
-
-      .chatInput {
-        flex-grow: 1;
-        padding-right: 6px;
-        z-index: 1;
-      }
-
-      .image.file {
-        position: static;
-        border: 1px solid #fff;
-        border-left-width: 0;
-        padding: 7px 5px;
-      }
     }
   }
 }
 
+.chatModal {
+  .pagination-dropdown {
+    display: flex;
+    flex-direction: row-reverse;
+    padding: 12px 12px;
+    margin-top: 2px;
+    max-width: 79%;
+    cursor: inherit;
+
+    > * {
+      flex-shrink: 0;
+      min-width: 0;
+    }
+
+    .akun-x-restructure-chat-header-title {
+      order: 2;
+      font-size: 18px;
+      color: #90939d;
+      text-transform: uppercase;
+      line-height: 25px;
+    }
+
+    .akun-x-restructure-chat-header-filler {
+      order: 1;
+      flex-grow: 1000;
+    }
+  }
+}
+
+.chatInputContainer {
+  margin: 0;
+  display: flex;
+  flex-shrink: 0;
+  align-items: stretch;
+
+  .chatInput {
+    flex-grow: 1;
+    padding-right: 6px;
+    z-index: 1;
+  }
+
+  .image.file {
+    position: static;
+    border: 1px solid #fff;
+    border-left-width: 0;
+    padding: 7px 5px;
+  }
+}
+
 .akun-x-theme-light {
-  #mainChat {
-    .chatInputContainer {
-      .image.file {
-        border-color: #eaedef !important;
-        background: #fff;
-        color: #272727;
-      }
+  .chatInputContainer {
+    .image.file {
+      border-color: #eaedef !important;
+      background: #fff;
+      color: #272727;
     }
   }
 }
 
 .akun-x-theme-dark {
-  #mainChat {
-    .chatInputContainer {
-      .image.file {
-        border-color: #393a4d !important;
-        background: #2a2c3b;
-        color: #d4d5d9;
-      }
+  .chatInputContainer {
+    .image.file {
+      border-color: #393a4d !important;
+      background: #2a2c3b;
+      color: #d4d5d9;
     }
   }
 }

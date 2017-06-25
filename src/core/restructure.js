@@ -16,7 +16,9 @@ export default class Restructure {
 
 	_onAddedChatHeader(node) {
 		const paginationNode = node.querySelector('.pagination-dropdown');
-		paginationNode.appendChild(this._chatHeaderTitlePool.getElement());
+		if (document.getElementById('mainChat').contains(node)) {
+			paginationNode.appendChild(this._chatHeaderTitlePool.getElement());
+		}
 		paginationNode.appendChild(this._chatHeaderFillerPool.getElement());
 	}
 
