@@ -2,7 +2,7 @@
 // @name          AkunX
 // @description   Extends the functionality of Akun to enhance the experience
 // @author        Fiddlekins
-// @version       1.1.1
+// @version       1.1.2
 // @namespace     https://github.com/Fiddlekins/akun-x
 // @include       https://anonkun.com/*
 // @include       http://anonkun.com/*
@@ -389,7 +389,7 @@ var doesObjectShareValues = function doesObjectShareValues(obj1, obj2) {
 	return true;
 };
 
-__$styleInject(".akun-x-settings-backdrop{position:fixed;top:0;right:0;bottom:0;left:0;z-index:9999;background-color:rgba(0,0,0,.5)}.akun-x-settings-horizontal-align{width:100%;height:100%}.akun-x-settings-horizontal-align,.akun-x-settings-vertical-align{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.akun-x-settings-vertical-align{-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;width:40%;min-width:700px}.akun-x-settings-theme-light .akun-x-settings{background:#fff;border-color:#f7f9fa;box-shadow:0 3px 7px rgba(0,0,0,.3)}.akun-x-settings-theme-light .akun-x-settings-header{border-color:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-header-exit:hover{background:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-module-list{border-color:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-module-list-item:hover{background-color:#eaeced}.akun-x-settings-theme-light .akun-x-settings-selected{background-color:#f7f9fa}.akun-x-settings-theme-light .akun-x-settings-header-exit{color:#272727;text-shadow:0 1px 0 #fff}.akun-x-settings-theme-dark .akun-x-settings{background:#2a2c3b;border-color:#323448;box-shadow:0 3px 7px rgba(0,0,0,.3)}.akun-x-settings-theme-dark .akun-x-settings-header{border-color:#323448}.akun-x-settings-theme-dark .akun-x-settings-header-exit:hover{background:#323448}.akun-x-settings-theme-dark .akun-x-settings-module-list{border-color:#323448}.akun-x-settings-theme-dark .akun-x-settings-module-list-item:hover{background-color:#4c4f6d}.akun-x-settings-theme-dark .akun-x-settings-selected{background-color:#323448}.akun-x-settings-theme-dark .akun-x-settings-header-exit{color:#d4d5d9;text-shadow:0 1px 0 #fff}.akun-x-settings{-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;height:50%;min-height:500px;border-radius:0;border-width:1px;border-style:solid;outline:0}.akun-x-settings,.akun-x-settings-header{display:-webkit-box;display:-ms-flexbox;display:flex}.akun-x-settings-header{-ms-flex-negative:0;flex-shrink:0;border-bottom-width:1px;border-style:solid}.akun-x-settings-header-title{margin:0;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1}.akun-x-settings-header-issues,.akun-x-settings-header-title{vertical-align:middle;padding:0 16px;line-height:50px}.akun-x-settings-header-exit{height:50px;width:50px;padding:0;border:0;margin:0;opacity:.2;background:transparent;cursor:pointer;font-size:20px;font-weight:700;line-height:20px;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;-webkit-appearance:none;vertical-align:middle;box-sizing:border-box;-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;text-align:center;text-rendering:auto;letter-spacing:normal;word-spacing:normal;text-transform:none;text-indent:0;display:inline-block}.akun-x-settings-header-exit:hover{opacity:.4}.akun-x-settings-body{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-webkit-box-align:stretch;-ms-flex-align:stretch;align-items:stretch}.akun-x-settings-module-list{-ms-flex-negative:0;flex-shrink:0;overflow-y:auto;border-right-width:1px;border-style:solid}.akun-x-settings-module-list-item{padding:5px 16px;cursor:pointer}.akun-x-settings-module-details-container{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;overflow-y:auto;padding:15px}.akun-x-settings-module-details>div{padding-bottom:10px}.akun-x-settings-setting-name{font-weight:700}.akun-x-settings-hidden{display:none!important}", undefined);
+__$styleInject(".akun-x-settings-backdrop{position:fixed;top:0;right:0;bottom:0;left:0;z-index:9999;background-color:rgba(0,0,0,.5)}.akun-x-settings-horizontal-align{width:100%;height:100%}.akun-x-settings-horizontal-align,.akun-x-settings-vertical-align{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.akun-x-settings-vertical-align{-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;width:40%;min-width:700px}.akun-x-theme-light .akun-x-settings{background:#fff;border-color:#f7f9fa;-webkit-box-shadow:0 3px 7px rgba(0,0,0,.3);box-shadow:0 3px 7px rgba(0,0,0,.3)}.akun-x-theme-light .akun-x-settings-header{border-color:#f7f9fa}.akun-x-theme-light .akun-x-settings-header-exit:hover{background:#f7f9fa}.akun-x-theme-light .akun-x-settings-module-list{border-color:#f7f9fa}.akun-x-theme-light .akun-x-settings-module-list-item:hover{background-color:#eaeced}.akun-x-theme-light .akun-x-settings-selected{background-color:#f7f9fa}.akun-x-theme-light .akun-x-settings-header-exit{color:#272727;text-shadow:0 1px 0 #fff}.akun-x-theme-dark .akun-x-settings{background:#2a2c3b;border-color:#323448;-webkit-box-shadow:0 3px 7px rgba(0,0,0,.3);box-shadow:0 3px 7px rgba(0,0,0,.3)}.akun-x-theme-dark .akun-x-settings-header{border-color:#323448}.akun-x-theme-dark .akun-x-settings-header-exit:hover{background:#323448}.akun-x-theme-dark .akun-x-settings-module-list{border-color:#323448}.akun-x-theme-dark .akun-x-settings-module-list-item:hover{background-color:#4c4f6d}.akun-x-theme-dark .akun-x-settings-selected{background-color:#323448}.akun-x-theme-dark .akun-x-settings-header-exit{color:#d4d5d9;text-shadow:0 1px 0 #fff}.akun-x-settings{-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;height:50%;min-height:500px;border-radius:0;border-width:1px;border-style:solid;outline:0}.akun-x-settings,.akun-x-settings-header{display:-webkit-box;display:-ms-flexbox;display:flex}.akun-x-settings-header{-ms-flex-negative:0;flex-shrink:0;border-bottom-width:1px;border-style:solid}.akun-x-settings-header-title{margin:0;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1}.akun-x-settings-header-issues,.akun-x-settings-header-title{vertical-align:middle;padding:0 16px;line-height:50px}.akun-x-settings-header-exit{height:50px;width:50px;padding:0;border:0;margin:0;opacity:.2;background:transparent;cursor:pointer;font-size:20px;font-weight:700;line-height:20px;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;-webkit-appearance:none;vertical-align:middle;-webkit-box-sizing:border-box;box-sizing:border-box;-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;text-align:center;text-rendering:auto;letter-spacing:normal;word-spacing:normal;text-transform:none;text-indent:0;display:inline-block}.akun-x-settings-header-exit:hover{opacity:.4}.akun-x-settings-body{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-webkit-box-align:stretch;-ms-flex-align:stretch;align-items:stretch}.akun-x-settings-module-list{-ms-flex-negative:0;flex-shrink:0;overflow-y:auto;border-right-width:1px;border-style:solid}.akun-x-settings-module-list-item{padding:5px 16px;cursor:pointer}.akun-x-settings-module-details-container{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;overflow-y:auto;padding:15px}.akun-x-settings-module-details>div{padding-bottom:10px}.akun-x-settings-setting-name{font-weight:700}.akun-x-settings-hidden{display:none!important}", undefined);
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
@@ -489,11 +489,6 @@ var possibleConstructorReturn = function (self, call) {
 var _settings;
 
 var LOCAL_STORAGE_KEY = 'akun-x';
-
-var THEME_CLASS = {
-	LIGHT: 'akun-x-settings-theme-light',
-	DARK: 'akun-x-settings-theme-dark'
-};
 
 var SETTING_TYPES = {
 	BOOLEAN: 'boolean',
@@ -637,9 +632,8 @@ var Settings = function () {
 	}, {
 		key: '_createMenu',
 		value: function _createMenu() {
-			var themeClass = this._core.theme === this._core.THEMES.DARK ? THEME_CLASS.DARK : THEME_CLASS.LIGHT;
 			var backdropNode = document.createElement('div');
-			backdropNode.classList.add('akun-x-settings-backdrop', themeClass);
+			backdropNode.classList.add('akun-x-settings-backdrop');
 			var horizontalAlignNode = document.createElement('div');
 			horizontalAlignNode.classList.add('akun-x-settings-horizontal-align');
 			var verticalAlignNode = document.createElement('div');
@@ -865,6 +859,7 @@ var EVENTS$1 = {
 			CHAT_ITEM_MESSAGE: 'dom.added.chatItemMessage',
 			CHAT_ITEM_FIELD_BODY: 'dom.added.chatItemFieldBody',
 			CHAT_HEADER: 'dom.added.chatHeader',
+			CHAT_INPUT_CONTAINER: 'dom.added.chatInputContainer',
 			CHAPTER: 'dom.added.chapter',
 			CHAPTER_BUTTON_CONTROLS: 'dom.added.chapterButtonControls',
 			STORY: 'dom.added.storyItem',
@@ -1001,6 +996,9 @@ var ObserverDOM = function () {
 									node.querySelectorAll('.chatHeader').forEach(function (nodeChatHeader) {
 										_this2._eventEmitter.emit(EVENTS$1.DOM.ADDED.CHAT_HEADER, nodeChatHeader);
 									});
+								}
+								if (node.classList.contains('chatInputContainer')) {
+									this._eventEmitter.emit(EVENTS$1.DOM.ADDED.CHAT_INPUT_CONTAINER, node);
 								}
 							}
 						}
@@ -1220,6 +1218,207 @@ var ObserverNet = function () {
 	return ObserverNet;
 }();
 
+var ElementPool = function () {
+	function ElementPool(element) {
+		classCallCheck(this, ElementPool);
+
+		this._element = element;
+		this._pool = new Set();
+		this._eventListeners = new Map();
+	}
+
+	createClass(ElementPool, [{
+		key: 'getElement',
+		value: function getElement() {
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
+
+			try {
+				for (var _iterator = this._pool[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					var element = _step.value;
+
+					// Check if the node is a descendant of the document
+					if (!document.contains(element)) {
+						// If it isn't then recycle it
+						return element;
+					}
+				}
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
+				}
+			}
+
+			return this._createNewElement();
+		}
+	}, {
+		key: 'forEach',
+		value: function forEach(callback) {
+			callback(this._element);
+			var _iteratorNormalCompletion2 = true;
+			var _didIteratorError2 = false;
+			var _iteratorError2 = undefined;
+
+			try {
+				for (var _iterator2 = this._pool[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+					var element = _step2.value;
+
+					callback(element);
+				}
+			} catch (err) {
+				_didIteratorError2 = true;
+				_iteratorError2 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion2 && _iterator2.return) {
+						_iterator2.return();
+					}
+				} finally {
+					if (_didIteratorError2) {
+						throw _iteratorError2;
+					}
+				}
+			}
+		}
+	}, {
+		key: 'addEventListener',
+		value: function addEventListener(event, listener) {
+			if (!this._eventListeners.has(event)) {
+				this._eventListeners.set(event, new Set());
+			}
+			this._eventListeners.get(event).add(listener);
+			var _iteratorNormalCompletion3 = true;
+			var _didIteratorError3 = false;
+			var _iteratorError3 = undefined;
+
+			try {
+				for (var _iterator3 = this._pool[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+					var element = _step3.value;
+
+					element.addEventListener(event, listener);
+				}
+			} catch (err) {
+				_didIteratorError3 = true;
+				_iteratorError3 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion3 && _iterator3.return) {
+						_iterator3.return();
+					}
+				} finally {
+					if (_didIteratorError3) {
+						throw _iteratorError3;
+					}
+				}
+			}
+		}
+	}, {
+		key: 'removeEventListener',
+		value: function removeEventListener(event, listener) {
+			this._eventListeners.get(event).delete(listener);
+			if (this._eventListeners.get(event).size === 0) {
+				this._eventListeners.delete(event);
+			}
+		}
+	}, {
+		key: '_createNewElement',
+		value: function _createNewElement() {
+			var element = this._element.cloneNode(true);
+			this._eventListeners.forEach(function (listeners, event) {
+				var _iteratorNormalCompletion4 = true;
+				var _didIteratorError4 = false;
+				var _iteratorError4 = undefined;
+
+				try {
+					for (var _iterator4 = listeners[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+						var listener = _step4.value;
+
+						element.addEventListener(event, listener);
+					}
+				} catch (err) {
+					_didIteratorError4 = true;
+					_iteratorError4 = err;
+				} finally {
+					try {
+						if (!_iteratorNormalCompletion4 && _iterator4.return) {
+							_iterator4.return();
+						}
+					} finally {
+						if (_didIteratorError4) {
+							throw _iteratorError4;
+						}
+					}
+				}
+			});
+			this._pool.add(element);
+			return element;
+		}
+	}, {
+		key: 'template',
+		get: function get$$1() {
+			return this._element;
+		}
+	}]);
+	return ElementPool;
+}();
+
+__$styleInject("#right{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column}#right>*{min-height:0}#right #threads{margin:0}#right #mainChat{-ms-flex-negative:1;flex-shrink:1;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;height:auto}#right #mainChat>.header{display:none}#right #mainChat .chatContainer{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column}#right #mainChat .chatContainer .chatHeader{float:none;margin:0;padding:9px 1em;-webkit-box-shadow:0 6px 4px -3px rgba(0,0,0,.2);box-shadow:0 6px 4px -3px rgba(0,0,0,.2)}#right #mainChat .chatContainer .chatHeader .pagination-dropdown{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;cursor:inherit}#right #mainChat .chatContainer .chatHeader .pagination-dropdown>*{-ms-flex-negative:0;flex-shrink:0;min-width:0}#right #mainChat .chatContainer .chatHeader .pagination-dropdown .akun-x-restructure-chat-header-title{-webkit-box-ordinal-group:3;-ms-flex-order:2;order:2;font-size:18px;color:#90939d;text-transform:uppercase;line-height:25px}#right #mainChat .chatContainer .chatHeader .pagination-dropdown .akun-x-restructure-chat-header-filler{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1;-webkit-box-flex:1000;-ms-flex-positive:1000;flex-grow:1000}#right #mainChat .chatContainer .chatHeader .chat-control{top:43px!important}#right #mainChat .chatContainer .chatLog{height:auto!important;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1}#right #mainChat .chatInputContainer{position:static}.chatModal .modal-header{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;padding:0}.chatModal .modal-header h3{-webkit-box-ordinal-group:1;-ms-flex-order:0;order:0;-ms-flex-negative:0;flex-shrink:0;padding:0 15px}.chatModal .modal-header .chatHeader{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1}.chatModal .modal-header .chatHeader .pagination-dropdown{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;padding:0;margin:0;cursor:inherit}.chatModal .modal-header .chatHeader .pagination-dropdown>*{-ms-flex-negative:0;flex-shrink:0;min-width:0}.chatModal .modal-header .chatHeader .pagination-dropdown .akun-x-restructure-chat-header-title{-webkit-box-ordinal-group:3;-ms-flex-order:2;order:2;font-size:18px;color:#90939d;text-transform:uppercase;line-height:25px}.chatModal .modal-header .chatHeader .pagination-dropdown .akun-x-restructure-chat-header-filler{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1;-webkit-box-flex:1000;-ms-flex-positive:1000;flex-grow:1000}.chatModal .modal-header .chatHeader .chat-control{top:50px!important}.chatModal .modal-header button{-webkit-box-ordinal-group:3;-ms-flex-order:2;order:2;-ms-flex-negative:0;flex-shrink:0;margin:0!important}.chatInputContainer{margin:0;display:-webkit-box;display:-ms-flexbox;display:flex;-ms-flex-negative:0;flex-shrink:0;-webkit-box-align:stretch;-ms-flex-align:stretch;align-items:stretch}.chatInputContainer .chatInput{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;padding-right:6px;z-index:1}.chatInputContainer .image.file{position:static;border:1px solid #fff;border-left-width:0;padding:7px 5px}.akun-x-theme-light .chatInputContainer .image.file{border-color:#eaedef!important;background:#fff;color:#272727}.akun-x-theme-dark .chatInputContainer .image.file{border-color:#393a4d!important;background:#2a2c3b;color:#d4d5d9}.threads .pagination-dropdown{position:fixed!important;right:100px!important;top:100px!important;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.threads .pagination-dropdown>*{margin:7px 0 0!important;-ms-flex-negative:0!important;flex-shrink:0!important}", undefined);
+
+/* This handles the restructuring of the native site to be bent into a more convenient shape for our machinations
+ */
+
+var Restructure = function () {
+	function Restructure(core) {
+		classCallCheck(this, Restructure);
+
+		this._core = core;
+		this._chatHeaderTitlePool = new ElementPool(this._createChatHeaderTitleElement());
+		this._chatHeaderFillerPool = new ElementPool(this._createChatHeaderFillerElement());
+		this._core.on(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
+	}
+
+	createClass(Restructure, [{
+		key: '_onAddedChatHeader',
+		value: function _onAddedChatHeader(node) {
+			var paginationNode = node.querySelector('.pagination-dropdown');
+			var chatModalNode = node.closest('.chatModal');
+			if (node.closest('#mainChat')) {
+				paginationNode.appendChild(this._chatHeaderTitlePool.getElement());
+				paginationNode.appendChild(this._chatHeaderFillerPool.getElement());
+			} else if (chatModalNode) {
+				paginationNode.appendChild(this._chatHeaderFillerPool.getElement());
+				chatModalNode.querySelector('.modal-header').appendChild(node);
+			}
+		}
+	}, {
+		key: '_createChatHeaderTitleElement',
+		value: function _createChatHeaderTitleElement() {
+			var element = document.createElement('div');
+			element.classList.add('akun-x-restructure-chat-header-title');
+			element.textContent = 'Chat';
+			return element;
+		}
+	}, {
+		key: '_createChatHeaderFillerElement',
+		value: function _createChatHeaderFillerElement() {
+			var element = document.createElement('div');
+			element.classList.add('akun-x-restructure-chat-header-filler');
+			return element;
+		}
+	}]);
+	return Restructure;
+}();
+
 var EVENTS$$1 = {
 	FOCUS: 'focus'
 };
@@ -1228,6 +1427,11 @@ Object.assign(EVENTS$$1, EVENTS$1, EVENTS$2, EVENTS$3);
 var THEMES = {
 	LIGHT: 'snowdrift',
 	DARK: 'dark'
+};
+
+var THEME_CLASS = {
+	LIGHT: 'akun-x-theme-light',
+	DARK: 'akun-x-theme-dark'
 };
 
 var Core = function (_EventEmitter) {
@@ -1242,11 +1446,21 @@ var Core = function (_EventEmitter) {
 		_this._observerInput = new ObserverInput(_this);
 		_this._observerNet = new ObserverNet(_this);
 		_this._settings = new Settings(_this);
+		_this._restructure = new Restructure(_this);
 		_this._modules = {};
 
 		window.onfocus = function () {
 			_this.emit(EVENTS$$1.FOCUS);
 		};
+
+		switch (_this.theme) {
+			case THEMES.LIGHT:
+				document.body.classList.add(THEME_CLASS.LIGHT);
+				break;
+			case THEMES.DARK:
+				document.body.classList.add(THEME_CLASS.DARK);
+				break;
+		}
 		return _this;
 	}
 
@@ -1317,7 +1531,7 @@ var Core = function (_EventEmitter) {
 	return Core;
 }(index);
 
-__$styleInject(".akun-x-anon-toggle{-webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.akun-x-anon-toggle .avatar{margin-right:4px;display:inline;border-radius:2em;position:relative;top:-1px}", undefined);
+__$styleInject(".akun-x-anon-toggle{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;display:-webkit-box!important;display:-ms-flexbox!important;display:flex!important;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-ms-flex-negative:1!important;flex-shrink:1!important;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;overflow:hidden}.akun-x-anon-toggle .avatar{margin-right:4px;display:inline;border-radius:2em;position:relative}.akun-x-anon-toggle .username{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}", undefined);
 
 var MODULE_ID = 'anonToggle';
 
@@ -1343,15 +1557,12 @@ var AnonToggle = function () {
 		this._core = core;
 		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS$1, this._onSettingsChanged.bind(this));
 		this._onClickShouldSetToAnon = false;
-		this._toggleElement = null;
-		this._avatarElement = null;
-		this._usernameElement = null;
-		this._createToggleElement();
-		this._toggleElementPool = new Set();
+		this._toggleElementPool = new ElementPool(this._createToggleElement());
 		if (this._settings[SETTING_IDS$1.ENABLED].value) {
 			this._enable();
 		}
 		this._boundToggleClickCallback = this._toggleClickCallback.bind(this);
+		this._toggleElementPool.addEventListener('click', this._boundToggleClickCallback);
 	}
 
 	createClass(AnonToggle, [{
@@ -1398,45 +1609,6 @@ var AnonToggle = function () {
 			usernameElement.classList.add('username');
 			toggleElement.appendChild(avatarElement);
 			toggleElement.appendChild(usernameElement);
-			this._toggleElement = toggleElement;
-			this._avatarElement = avatarElement;
-			this._usernameElement = usernameElement;
-		}
-	}, {
-		key: '_getToggleElement',
-		value: function _getToggleElement() {
-			var _iteratorNormalCompletion = true;
-			var _didIteratorError = false;
-			var _iteratorError = undefined;
-
-			try {
-				for (var _iterator = this._toggleElementPool[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-					var _toggleElement = _step.value;
-
-					// Check if the node is a descendant of the document
-					if (!document.contains(_toggleElement)) {
-						// If it isn't then recycle it
-						return _toggleElement;
-					}
-				}
-			} catch (err) {
-				_didIteratorError = true;
-				_iteratorError = err;
-			} finally {
-				try {
-					if (!_iteratorNormalCompletion && _iterator.return) {
-						_iterator.return();
-					}
-				} finally {
-					if (_didIteratorError) {
-						throw _iteratorError;
-					}
-				}
-			}
-
-			var toggleElement = this._toggleElement.cloneNode(true);
-			toggleElement.addEventListener('click', this._boundToggleClickCallback);
-			this._toggleElementPool.add(toggleElement);
 			return toggleElement;
 		}
 	}, {
@@ -1460,7 +1632,7 @@ var AnonToggle = function () {
 	}, {
 		key: '_onAddedChatHeader',
 		value: function _onAddedChatHeader(node) {
-			node.querySelector('.pagination-dropdown').appendChild(this._getToggleElement());
+			node.querySelector('.pagination-dropdown').appendChild(this._toggleElementPool.getElement());
 			var currentUser = this._core.currentUser;
 			this._updateToggleElement(currentUser);
 		}
@@ -1475,37 +1647,12 @@ var AnonToggle = function () {
 		value: function _updateToggleElement(currentUser) {
 			if (currentUser['profile']['asAnon']) {
 				this._onClickShouldSetToAnon = false;
-				this._usernameElement.textContent = 'Anon';
-				this._avatarElement.style.display = 'none';
-				var _iteratorNormalCompletion2 = true;
-				var _didIteratorError2 = false;
-				var _iteratorError2 = undefined;
-
-				try {
-					for (var _iterator2 = this._toggleElementPool[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-						var toggleElement = _step2.value;
-
-						toggleElement.querySelector('.username').textContent = 'Anon';
-						toggleElement.querySelector('.avatar').style.display = 'none';
-					}
-				} catch (err) {
-					_didIteratorError2 = true;
-					_iteratorError2 = err;
-				} finally {
-					try {
-						if (!_iteratorNormalCompletion2 && _iterator2.return) {
-							_iterator2.return();
-						}
-					} finally {
-						if (_didIteratorError2) {
-							throw _iteratorError2;
-						}
-					}
-				}
+				this._toggleElementPool.forEach(function (toggleElement) {
+					toggleElement.querySelector('.username').textContent = 'Anon';
+					toggleElement.querySelector('.avatar').style.display = 'none';
+				});
 			} else {
 				this._onClickShouldSetToAnon = true;
-				this._usernameElement.textContent = currentUser['username'];
-				this._avatarElement.style.display = 'inline';
 				var avatarSrc = currentUser['profile']['image'];
 				if (/cloudfront\.net/.test(avatarSrc)) {
 					var match = avatarSrc.match(/cloudfront.net\/images\/([A-z0-9_\.]+)/);
@@ -1513,34 +1660,12 @@ var AnonToggle = function () {
 				} else if (/filepicker\.io/.test(avatarSrc)) {
 					avatarSrc += '/convert?w=16&h=16&fit=crop&cache=true';
 				}
-				this._avatarElement.src = avatarSrc;
-				var _iteratorNormalCompletion3 = true;
-				var _didIteratorError3 = false;
-				var _iteratorError3 = undefined;
-
-				try {
-					for (var _iterator3 = this._toggleElementPool[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-						var _toggleElement2 = _step3.value;
-
-						_toggleElement2.querySelector('.username').textContent = currentUser['username'];
-						var avatarNode = _toggleElement2.querySelector('.avatar');
-						avatarNode.style.display = 'inline';
-						avatarNode.src = avatarSrc;
-					}
-				} catch (err) {
-					_didIteratorError3 = true;
-					_iteratorError3 = err;
-				} finally {
-					try {
-						if (!_iteratorNormalCompletion3 && _iterator3.return) {
-							_iterator3.return();
-						}
-					} finally {
-						if (_didIteratorError3) {
-							throw _iteratorError3;
-						}
-					}
-				}
+				this._toggleElementPool.forEach(function (toggleElement) {
+					toggleElement.querySelector('.username').textContent = currentUser['username'];
+					var avatarNode = toggleElement.querySelector('.avatar');
+					avatarNode.style.display = 'inline';
+					avatarNode.src = avatarSrc;
+				});
 			}
 		}
 	}], [{
@@ -1717,7 +1842,7 @@ var DEFAULT_SETTINGS$3 = {
 		name: 'Keybind',
 		description: 'The keybind to enable or disable this module.',
 		type: SETTING_TYPES.KEYBIND,
-		value: { key: 'i' }
+		value: { key: 'i', ctrl: true }
 	}), defineProperty(_settings$1, SETTING_IDS$3.ALL, {
 		name: 'All Images',
 		description: 'Every image on the site disappears. Has the potential to hide things you don\'t want hidden.',
