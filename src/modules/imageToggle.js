@@ -33,7 +33,7 @@ const DEFAULT_SETTINGS = {
 			name: 'Keybind',
 			description: 'The keybind to enable or disable this module.',
 			type: SETTING_TYPES.KEYBIND,
-			value: { key: 'i' }
+			value: { key: 'i', ctrl: true }
 		},
 		[SETTING_IDS.ALL]: {
 			name: 'All Images',
