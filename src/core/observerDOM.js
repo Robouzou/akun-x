@@ -122,7 +122,7 @@ export default class ObserverDOM {
 							}
 						});
 					}
-					if (node.classList.contains('chatItemDetail')) {
+					if (node.classList.contains('chatItemDetail') || node.classList.contains('choiceReply')) {
 						this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_MODAL, node);
 						node.querySelectorAll('.chatHeader').forEach(nodeChatHeader => {
 							this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_HEADER, nodeChatHeader);
