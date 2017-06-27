@@ -122,11 +122,19 @@ export default class ObserverDOM {
 							}
 						});
 					}
-					if (node.classList.contains('chatItemDetail') || node.classList.contains('choiceReply')) {
+					if (node.classList.contains('chatItemDetail')) {
 						this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_MODAL, node);
 						node.querySelectorAll('.chatHeader').forEach(nodeChatHeader => {
 							this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_HEADER, nodeChatHeader);
-						})
+						});
+						node.querySelectorAll('.chatInputContainer').forEach(nodeChatInputContainer => {
+							this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_INPUT_CONTAINER, nodeChatInputContainer);
+						});
+					}
+					if (node.classList.contains('choiceReply')) {
+						node.querySelectorAll('.chatHeader').forEach(nodeChatHeader => {
+							this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_HEADER, nodeChatHeader);
+						});
 					}
 					if (node.classList.contains('chatInputContainer')) {
 						this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_INPUT_CONTAINER, node);
