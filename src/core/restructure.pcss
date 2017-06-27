@@ -126,32 +126,41 @@
   }
 }
 
-#mainChat, .chatModal {
-  .chatInputContainer {
-    margin: 0;
-    display: flex;
-    flex-shrink: 0;
-    align-items: stretch;
-    z-index: 3;
+.chatInputContainer {
+  margin: 0;
+  display: flex !important;
+  flex-shrink: 0;
+  align-items: stretch;
+  z-index: 3;
 
-    .chatInput {
-      flex-grow: 1;
-      padding-right: 6px;
-      z-index: 1;
-    }
-
-    .image.file {
-      position: static;
-      border: 1px solid #fff;
-      border-left-width: 0;
-      padding: 7px 5px;
-    }
+  .chatInput {
+    flex-grow: 1;
+    padding-right: 6px;
+    z-index: 1;
   }
+
+  .image {
+    position: static;
+    border: 1px solid #fff;
+    border-left-width: 0;
+    padding: 7px 5px;
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+.input > .chatInputContainer > form {
+  margin: 0;
+  display: flex !important;
+  flex-shrink: 0;
+  flex-grow: 1;
+  align-items: stretch;
+  z-index: 3;
 }
 
 .akun-x-theme-light {
   .chatInputContainer {
-    .image.file {
+    .image {
       border-color: #eaedef !important;
       background: #fff;
       color: #272727;
@@ -161,7 +170,7 @@
 
 .akun-x-theme-dark {
   .chatInputContainer {
-    .image.file {
+    .image {
       border-color: #393a4d !important;
       background: #2a2c3b;
       color: #d4d5d9;
