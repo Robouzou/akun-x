@@ -1,8 +1,12 @@
 'use strict';
 
 export default class ElementPool {
-	constructor(element) {
+	constructor(element, appliedFunction) {
 		this._element = element;
+		this._appliedFunction = appliedFunction;
+		if (this._appliedFunction) {
+			this._appliedFunction(this._element);
+		}
 		this._pool = new Set();
 		this._eventListeners = new Map();
 	}
@@ -48,6 +52,9 @@ export default class ElementPool {
 
 	_createNewElement() {
 		const element = this._element.cloneNode(true);
+		if (this._appliedFunction) {
+			this._appliedFunction(element);
+		}
 		this._eventListeners.forEach((listeners, event) => {
 			for (let listener of listeners) {
 				element.addEventListener(event, listener);
