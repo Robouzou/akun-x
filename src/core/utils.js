@@ -25,6 +25,7 @@ export const makeElastic = (node) => {
 	node.addEventListener('paste', delayedResize, false);
 	node.addEventListener('drop', delayedResize, false);
 	node.addEventListener('keydown', delayedResize, false);
+	node.addEventListener('focus', delayedResize, false);
 
 	node.focus();
 	node.select();
