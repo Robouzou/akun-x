@@ -54,6 +54,8 @@ export default class ObserverDOM {
 				return document.querySelectorAll('.logItem .message');
 			case 'mainMenu':
 				return [document.getElementById('mainMenu')];
+			case 'chatModal':
+				return document.querySelectorAll('.chatItemDetail');
 			default:
 				return [];
 		}
