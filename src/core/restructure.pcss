@@ -30,7 +30,7 @@
         padding: 0 1em;
         box-shadow: 0 6px 4px -3px rgba(0, 0, 0, .2);
         display: flex;
-        align-items: center;
+        align-items: stretch;
 
         .akun-x-restructure-chat-header-title {
           order: 0;
@@ -38,6 +38,7 @@
           color: #90939d;
           text-transform: uppercase;
           line-height: 25px;
+          margin: auto;
         }
 
         .header {
@@ -93,13 +94,14 @@
 
   .modal-header {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     padding: 0;
 
     h3 {
       order: 0;
       flex-shrink: 0;
       padding: 0 15px;
+      margin: auto;
     }
 
     .chatHeader {
@@ -107,6 +109,7 @@
       flex-grow: 1;
       padding-top: 7px;
       padding-right: 7px;
+      margin: auto;
 
       .pagination-dropdown {
         display: flex;
@@ -149,6 +152,8 @@
       order: 2;
       flex-shrink: 0;
       margin: 0 !important;
+      height: auto !important;
+      min-height: 50px;
     }
   }
 

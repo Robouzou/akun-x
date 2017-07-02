@@ -136,6 +136,11 @@ export default class ObserverDOM {
 							this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_HEADER, nodeChatHeader);
 						});
 					}
+					if (node.classList.contains('privateChat')) {
+						node.querySelectorAll('.chatHeader').forEach(nodeChatHeader => {
+							this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_HEADER, nodeChatHeader);
+						});
+					}
 					if (node.classList.contains('chatInputContainer')) {
 						this._eventEmitter.emit(EVENTS.DOM.ADDED.CHAT_INPUT_CONTAINER, node);
 					}
