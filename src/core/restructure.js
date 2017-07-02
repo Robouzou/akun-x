@@ -10,20 +10,16 @@ export default class Restructure {
 	constructor(core) {
 		this._core = core;
 		this._chatHeaderTitlePool = new ElementPool(this._createChatHeaderTitleElement());
-		this._chatHeaderFillerPool = new ElementPool(this._createChatHeaderFillerElement());
 		this._core.on(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
 	}
 
 	_onAddedChatHeader(node) {
-		const paginationNode = node.querySelector('.pagination-dropdown');
 		if (node.closest('#mainChat')) {
 			node.appendChild(this._chatHeaderTitlePool.getElement());
-			paginationNode.appendChild(this._chatHeaderFillerPool.getElement());
 			return;
 		}
 		const chatModalNode = node.closest('.chatModal');
 		if (chatModalNode) {
-			paginationNode.appendChild(this._chatHeaderFillerPool.getElement());
 			chatModalNode.querySelector('.modal-header').appendChild(node);
 		}
 	}

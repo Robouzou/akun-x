@@ -2,7 +2,7 @@
 // @name          AkunX
 // @description   Extends the functionality of Akun to enhance the experience
 // @author        Fiddlekins
-// @version       1.1.6
+// @version       1.1.7
 // @namespace     https://github.com/Fiddlekins/akun-x
 // @include       https://anonkun.com/*
 // @include       http://anonkun.com/*
@@ -1396,22 +1396,18 @@ var Restructure = function () {
 
 		this._core = core;
 		this._chatHeaderTitlePool = new ElementPool(this._createChatHeaderTitleElement());
-		this._chatHeaderFillerPool = new ElementPool(this._createChatHeaderFillerElement());
 		this._core.on(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
 	}
 
 	createClass(Restructure, [{
 		key: '_onAddedChatHeader',
 		value: function _onAddedChatHeader(node) {
-			var paginationNode = node.querySelector('.pagination-dropdown');
 			if (node.closest('#mainChat')) {
 				node.appendChild(this._chatHeaderTitlePool.getElement());
-				paginationNode.appendChild(this._chatHeaderFillerPool.getElement());
 				return;
 			}
 			var chatModalNode = node.closest('.chatModal');
 			if (chatModalNode) {
-				paginationNode.appendChild(this._chatHeaderFillerPool.getElement());
 				chatModalNode.querySelector('.modal-header').appendChild(node);
 			}
 		}
@@ -1546,7 +1542,7 @@ var Core = function (_EventEmitter) {
 	return Core;
 }(index);
 
-__$styleInject(".akun-x-anon-toggle{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;display:-webkit-box!important;display:-ms-flexbox!important;display:flex!important;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-ms-flex-negative:1!important;flex-shrink:1!important;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;overflow:hidden}.akun-x-anon-toggle .avatar{margin-right:4px;display:inline;border-radius:2em;position:relative}.akun-x-anon-toggle .username{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:20px!important}", undefined);
+__$styleInject(".akun-x-anon-toggle{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;display:-webkit-box!important;display:-ms-flexbox!important;display:flex!important;-webkit-box-align:center;-ms-flex-align:center;align-items:center}.akun-x-anon-toggle .avatar{margin-right:4px;display:inline;border-radius:2em;position:relative}.akun-x-anon-toggle .username{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:20px!important}", undefined);
 
 var MODULE_ID = 'anonToggle';
 
