@@ -20,7 +20,10 @@ export default class Restructure {
 		}
 		const chatModalNode = node.closest('.chatModal');
 		if (chatModalNode) {
-			chatModalNode.querySelector('.modal-header').appendChild(node);
+			const modalHeaderNode = chatModalNode.querySelector('.modal-header');
+			modalHeaderNode.appendChild(node);
+			const closeNode = chatModalNode.querySelector('.close');
+			modalHeaderNode.appendChild(closeNode);
 		}
 	}
 
