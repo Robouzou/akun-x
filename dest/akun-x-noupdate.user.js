@@ -11,7 +11,6 @@
 // @include       https://beta.fiction.live/*
 // @include       http://beta.fiction.live/*
 // @grant         none
-// @icon          https://avatars2.githubusercontent.com/u/11947488
 // ==/UserScript==
 
 (function () {
