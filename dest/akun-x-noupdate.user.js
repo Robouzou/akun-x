@@ -2,7 +2,7 @@
 // @name          AkunX
 // @description   Extends the functionality of Akun to enhance the experience
 // @author        Fiddlekins
-// @version       1.1.8
+// @version       1.1.9
 // @namespace     https://github.com/Fiddlekins/akun-x
 // @include       https://anonkun.com/*
 // @include       http://anonkun.com/*
@@ -1962,7 +1962,7 @@ var ImageToggle = function () {
 		value: function _regenerateCurrentStyling() {
 			var css = '';
 			if (this._settings[SETTING_IDS$3.ALL].value) {
-				css += 'img {display: none!important;}';
+				css += 'img, video {display: none!important;}';
 			} else {
 				if (this._settings[SETTING_IDS$3.STORY_COVERS].value) {
 					css += '.storyImg, .imgWithBackground, .authorOf img, .storyListItem .imgContainer img {display: none!important;}';
@@ -1971,18 +1971,23 @@ var ImageToggle = function () {
 				}
 				if (this._settings[SETTING_IDS$3.STORY_BODY].value) {
 					css += '#storyPosts img {display: none!important;}';
+					css += '#storyPosts video {display: none!important;}';
 				}
 				if (this._settings[SETTING_IDS$3.CHAT_MESSAGES].value) {
 					css += '#mainChat .message img, #page-body .message img {display: none!important;}';
+					css += '#mainChat .message video, #page-body .message video {display: none!important;}';
 				}
 				if (this._settings[SETTING_IDS$3.CHAT_MODALS].value) {
 					css += '.chatModal .message img, .chatModal .postBody img {display: none!important;}';
+					css += '.chatModal .message video, .chatModal .postBody video {display: none!important;}';
 				}
 				if (this._settings[SETTING_IDS$3.TOPIC_COVERS].value) {
 					css += '#threads td:not(:last-child) img, .newsFeed img {display: none!important;}';
+					css += '#threads td:not(:last-child) video, .newsFeed video {display: none!important;}';
 				}
 				if (this._settings[SETTING_IDS$3.TOPIC_OP].value) {
 					css += '.page-head-body #page-body img {display: none!important;}';
+					css += '.page-head-body #page-body video {display: none!important;}';
 				}
 				if (this._settings[SETTING_IDS$3.PROFILE_AVATARS].value) {
 					css += '#userProfile .avatar img {display: none!important;}';
@@ -2044,7 +2049,7 @@ var DEFAULT_SETTINGS$4 = {
 		value: true
 	}), defineProperty(_settings$2, SETTING_IDS$4.EMBED_VIDEOS, {
 		name: 'Embed Videos',
-		description: 'Embed links recognised to be videos as images instead.',
+		description: 'Embed links recognised to be videos as videos instead.',
 		type: SETTING_TYPES.BOOLEAN,
 		value: true
 	}), defineProperty(_settings$2, SETTING_IDS$4.MEDIA_SITES, {

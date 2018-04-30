@@ -138,7 +138,7 @@ export default class ImageToggle {
 	_regenerateCurrentStyling() {
 		let css = '';
 		if (this._settings[SETTING_IDS.ALL].value) {
-			css += 'img {display: none!important;}';
+			css += 'img, video {display: none!important;}';
 		} else {
 			if (this._settings[SETTING_IDS.STORY_COVERS].value) {
 				css += '.storyImg, .imgWithBackground, .authorOf img, .storyListItem .imgContainer img {display: none!important;}';
@@ -147,18 +147,23 @@ export default class ImageToggle {
 			}
 			if (this._settings[SETTING_IDS.STORY_BODY].value) {
 				css += '#storyPosts img {display: none!important;}';
+				css += '#storyPosts video {display: none!important;}';
 			}
 			if (this._settings[SETTING_IDS.CHAT_MESSAGES].value) {
 				css += '#mainChat .message img, #page-body .message img {display: none!important;}';
+				css += '#mainChat .message video, #page-body .message video {display: none!important;}';
 			}
 			if (this._settings[SETTING_IDS.CHAT_MODALS].value) {
 				css += '.chatModal .message img, .chatModal .postBody img {display: none!important;}';
+				css += '.chatModal .message video, .chatModal .postBody video {display: none!important;}';
 			}
 			if (this._settings[SETTING_IDS.TOPIC_COVERS].value) {
 				css += '#threads td:not(:last-child) img, .newsFeed img {display: none!important;}';
+				css += '#threads td:not(:last-child) video, .newsFeed video {display: none!important;}';
 			}
 			if (this._settings[SETTING_IDS.TOPIC_OP].value) {
 				css += '.page-head-body #page-body img {display: none!important;}';
+				css += '.page-head-body #page-body video {display: none!important;}';
 			}
 			if (this._settings[SETTING_IDS.PROFILE_AVATARS].value) {
 				css += '#userProfile .avatar img {display: none!important;}';
