@@ -2,7 +2,7 @@
 // @name          AkunX
 // @description   Extends the functionality of Akun to enhance the experience
 // @author        Fiddlekins
-// @version       1.1.8
+// @version       1.1.9
 // @namespace     https://github.com/Fiddlekins/akun-x
 // @include       https://anonkun.com/*
 // @include       http://anonkun.com/*
@@ -2473,6 +2473,185 @@ var LiveImages = function () {
 	return LiveImages;
 }();
 
+__$styleInject(".akun-x-sort-button{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;display:-webkit-box!important;display:-ms-flexbox!important;display:flex!important;-webkit-box-align:center;-ms-flex-align:center;align-items:center}.akun-x-sort-button .button-text{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:20px!important}", undefined);
+
+var MODULE_ID$5 = 'choiceReorder';
+
+var SETTING_IDS$6 = {
+	ENABLED: 'enabled'
+};
+
+var DEFAULT_SETTINGS$6 = {
+	name: 'Choice Reorder',
+	id: MODULE_ID$5,
+	settings: defineProperty({}, SETTING_IDS$6.ENABLED, {
+		name: 'Enabled',
+		description: 'Enable sorting of polls where the results were hidden',
+		type: SETTING_TYPES.BOOLEAN,
+		value: true
+	})
+};
+
+var ChoiceReorder = function () {
+	function ChoiceReorder(core) {
+		classCallCheck(this, ChoiceReorder);
+
+		this._core = core;
+		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS$6, this._onSettingsChanged.bind(this));
+		this._buttonPool = new ElementPool(this._createButtonElement());
+		if (this._settings[SETTING_IDS$6.ENABLED].value) {
+			this._enable();
+		}
+		this._boundSortAll = this.sortAllCallBack.bind(this);
+		this._buttonPool.addEventListener('click', this._boundSortAll);
+	}
+
+	createClass(ChoiceReorder, [{
+		key: '_onSettingsChanged',
+		value: function _onSettingsChanged(settingId) {
+			switch (settingId) {
+				case SETTING_IDS$6.ENABLED:
+					if (this._settings[SETTING_IDS$6.ENABLED].value) {
+						this._enable();
+					} else {
+						this._disable();
+					}
+					break;
+			}
+		}
+	}, {
+		key: '_enable',
+		value: function _enable() {
+			this._core.dom.nodes('chatHeader').forEach(this._onAddedChatHeader, this);
+			this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this);
+			this._core.on(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
+			this._core.on(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
+		}
+	}, {
+		key: '_disable',
+		value: function _disable() {
+			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
+			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
+			document.querySelectorAll('.akun-x-sort-button').forEach(function (node) {
+				delete node.parentNode.dataset[ChoiceReorder.id];
+				node.parentNode.removeChild(node);
+			});
+
+			this._core.dom.nodes('chapter').forEach(function (node) {
+				if (!node.classList.contains('choice')) {
+					return;
+				}
+				var tbody = node.getElementsByClassName('poll')[0].firstChild;
+				delete tbody.dataset.sorted;
+
+				var choices = [];
+				Array.from(tbody.getElementsByClassName('choiceItem')).forEach(function (choiceItem) {
+					choices.push(choiceItem.cloneNode(true));
+					choiceItem.parentNode.removeChild(choiceItem);
+				});
+				choices.sort(function (a, b) {
+					if (parseInt(a.dataset.prevPosition) > parseInt(b.dataset.prevPosition)) {
+						return 1;
+					}
+					if (parseInt(a.dataset.prevPosition) < parseInt(b.dataset.prevPosition)) {
+						return -1;
+					}
+					return 0;
+				});
+
+				choices.forEach(function (choiceItem) {
+					tbody.append(choiceItem);
+				});
+				[].forEach.call(tbody.getElementsByClassName('result'), function (result) {
+					Array.from(result.childNodes).forEach(function (total) {
+						if (!total.classList.contains('userVote')) {
+							delete result.parentNode.dataset.prevPosition;
+							delete result.parentNode.dataset.voteCount;
+						}
+					});
+				});
+			}, this);
+		}
+	}, {
+		key: 'sortAllCallBack',
+		value: function sortAllCallBack(e) {
+			this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this);
+		}
+	}, {
+		key: '_onAddedChatHeader',
+		value: function _onAddedChatHeader(node) {
+			node.querySelector('.pagination-dropdown').appendChild(this._buttonPool.getElement());
+		}
+	}, {
+		key: '_onAddedChapter',
+		value: function _onAddedChapter(node) {
+			if (node.classList.contains('choice')) {
+				try {
+					this.reorderChoices(node.getElementsByClassName('poll')[0].firstChild);
+				} catch (e) {
+					console.log("Can't sort polls where vote count is currently hidden");
+				}
+			}
+		}
+	}, {
+		key: '_createButtonElement',
+		value: function _createButtonElement() {
+			var buttonElement = document.createElement('div');
+			buttonElement.classList.add('akun-x-sort-button', 'noselect', 'btn', 'dim-font-color', 'hover-font-color');
+			var textElement = document.createElement('span');
+			textElement.innerHTML = "Sort";
+			textElement.classList.add('button-text');
+			buttonElement.appendChild(textElement);
+			return buttonElement;
+		}
+	}, {
+		key: 'reorderChoices',
+		value: function reorderChoices(tbody) {
+			if (tbody.dataset.sorted) {
+				return;
+			}
+			var position = 0;
+			[].forEach.call(tbody.getElementsByClassName('result'), function (result) {
+				Array.from(result.childNodes).forEach(function (total) {
+					if (!total.classList.contains('userVote')) {
+						result.parentNode.dataset.voteCount = total.textContent;
+						result.parentNode.dataset.prevPosition = position++;
+					}
+				});
+			});
+			[].forEach.call(tbody.getElementsByClassName('xOut'), function (xOut) {
+				xOut.dataset.voteCount = -1;
+			});
+
+			var choices = [];
+			Array.from(tbody.getElementsByClassName('choiceItem')).forEach(function (choiceItem) {
+				choices.push(choiceItem.cloneNode(true));
+				choiceItem.parentNode.removeChild(choiceItem);
+			});
+			choices.sort(function (a, b) {
+				if (parseInt(a.dataset.voteCount) < parseInt(b.dataset.voteCount)) {
+					return 1;
+				}
+				if (parseInt(a.dataset.voteCount) > parseInt(b.dataset.voteCount)) {
+					return -1;
+				}
+				return 0;
+			});
+
+			choices.forEach(function (choiceItem) {
+				tbody.append(choiceItem);
+			});
+			tbody.dataset.sorted = true;
+		}
+	}], [{
+		key: 'id',
+		get: function get$$1() {
+			return MODULE_ID$5;
+		}
+	}]);
+	return ChoiceReorder;
+}();
+
 var core = new Core();
 
 core.addModule(AnonToggle);
@@ -2480,5 +2659,6 @@ core.addModule(ChapterHTMLEditor);
 core.addModule(ImageToggle);
 core.addModule(Linker);
 core.addModule(LiveImages);
+core.addModule(ChoiceReorder);
 
 }());
