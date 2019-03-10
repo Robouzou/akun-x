@@ -2547,8 +2547,6 @@ var DEFAULT_SETTINGS$6 = {
 
 var ChoiceReorder = function () {
 	function ChoiceReorder(core) {
-		var _this = this;
-
 		classCallCheck(this, ChoiceReorder);
 
 		this._core = core;
@@ -2556,11 +2554,6 @@ var ChoiceReorder = function () {
 		if (this._settings[SETTING_IDS$6.ENABLED].value) {
 			this._enable();
 		}
-
-		this._buttonPool = new ElementPool(this._createButtonElement());
-		this._buttonPool.addEventListener('click', function () {
-			return _this._core.dom.nodes('chapter').forEach(_this._onAddedChapter, _this);
-		});
 	}
 
 	createClass(ChoiceReorder, [{
@@ -2579,28 +2572,20 @@ var ChoiceReorder = function () {
 	}, {
 		key: '_enable',
 		value: function _enable() {
-			this._core.on(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
 			this._core.on(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
 
 			this._core.on(this._core.EVENTS.NET.POSTED.NODE, this._onPostedNode, this);
 			this._core.on(this._core.EVENTS.REALTIME.CHILD_CHANGED, this._onChildChanged, this);
 
-			this._core.dom.nodes('chatHeader').forEach(this._onAddedChatHeader, this);
 			this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this);
 		}
 	}, {
 		key: '_disable',
 		value: function _disable() {
 			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
-			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
 
 			this._core.removeListener(this._core.EVENTS.NET.POSTED.NODE, this._onPostedNode, this);
 			this._core.removeListener(this._core.EVENTS.REALTIME.CHILD_CHANGED, this._onChildChanged, this);
-
-			document.querySelectorAll('.akun-x-sort-button').forEach(function (node) {
-				delete node.parentNode.dataset[ChoiceReorder.id];
-				node.parentNode.removeChild(node);
-			});
 
 			this._core.dom.nodes('chapter').forEach(function (node) {
 				if (!node.classList.contains('choice')) {
@@ -2641,11 +2626,6 @@ var ChoiceReorder = function () {
 			}, this);
 		}
 	}, {
-		key: '_onAddedChatHeader',
-		value: function _onAddedChatHeader(node) {
-			node.querySelector('.pagination-dropdown').appendChild(this._buttonPool.getElement());
-		}
-	}, {
 		key: '_onAddedChapter',
 		value: function _onAddedChapter(node) {
 			if (node.classList.contains('choice')) {
@@ -2676,19 +2656,6 @@ var ChoiceReorder = function () {
 					delete document.querySelector('article[data-id="' + json['_id'] + '"] > div.chapterContent > div > table > tbody').dataset.sorted;
 				}
 			}
-		}
-	}, {
-		key: '_createButtonElement',
-		value: function _createButtonElement() {
-			var buttonElement = document.createElement('div');
-			buttonElement.classList.add('noselect', 'btn', 'dim-font-color', 'hover-font-color');
-			buttonElement.id = ChoiceReorder.id + "-sortButton";
-
-			var textElement = document.createElement('span');
-			textElement.innerHTML = "Sort";
-
-			buttonElement.appendChild(textElement);
-			return buttonElement;
 		}
 	}, {
 		key: 'reorderChoices',

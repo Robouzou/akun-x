@@ -1,7 +1,6 @@
 'use strict';
 
 import {SETTING_TYPES} from '../core/settings';
-import ElementPool from '../core/elementPool';
 
 const MODULE_ID = 'choiceReorder';
 
@@ -29,9 +28,6 @@ export default class ChoiceReorder {
 		if (this._settings[SETTING_IDS.ENABLED].value) {
 			this._enable();
 		}
-
-		this._buttonPool = new ElementPool(this._createButtonElement());
-		this._buttonPool.addEventListener('click', () => this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this));
 	}
 
 	static get id() {
@@ -51,27 +47,19 @@ export default class ChoiceReorder {
 	}
 
 	_enable() {
-		this._core.on(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
 		this._core.on(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
 
 		this._core.on(this._core.EVENTS.NET.POSTED.NODE, this._onPostedNode, this);
 		this._core.on(this._core.EVENTS.REALTIME.CHILD_CHANGED, this._onChildChanged, this);
 
-		this._core.dom.nodes('chatHeader').forEach(this._onAddedChatHeader, this);
 		this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this);
 	}
 
 	_disable() {
 		this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
-		this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
 
 		this._core.removeListener(this._core.EVENTS.NET.POSTED.NODE, this._onPostedNode, this);
 		this._core.removeListener(this._core.EVENTS.REALTIME.CHILD_CHANGED, this._onChildChanged, this);
-
-		document.querySelectorAll('.akun-x-sort-button').forEach(node => {
-			delete node.parentNode.dataset[ChoiceReorder.id];
-			node.parentNode.removeChild(node);
-		});
 
 		this._core.dom.nodes('chapter').forEach(node => {
 			if (!node.classList.contains('choice')) {
@@ -112,10 +100,6 @@ export default class ChoiceReorder {
 		}, this);
 	}
 
-	_onAddedChatHeader(node) {
-		node.querySelector('.pagination-dropdown').appendChild(this._buttonPool.getElement());
-	}
-
 	_onAddedChapter(node) {
 		if (node.classList.contains('choice')) {
 			try {
@@ -142,18 +126,6 @@ export default class ChoiceReorder {
 				delete document.querySelector(`article[data-id="${json['_id']}"] > div.chapterContent > div > table > tbody`).dataset.sorted;
 			}
 		}
-	}
-
-	_createButtonElement() {
-		const buttonElement = document.createElement('div');
-		buttonElement.classList.add('noselect', 'btn', 'dim-font-color', 'hover-font-color');
-		buttonElement.id = ChoiceReorder.id + "-sortButton";
-
-		const textElement = document.createElement('span');
-		textElement.innerHTML = "Sort";
-
-		buttonElement.appendChild(textElement);
-		return buttonElement;
 	}
 
 	reorderChoices(tbody) {
