@@ -2,7 +2,6 @@
 
 import {SETTING_TYPES} from '../core/settings';
 import ElementPool from '../core/elementPool';
-import './sortPolls.pcss';
 
 const MODULE_ID = 'choiceReorder';
 
@@ -27,12 +26,12 @@ export default class ChoiceReorder {
 	constructor(core) {
 		this._core = core;
 		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS, this._onSettingsChanged.bind(this));
-		this._buttonPool = new ElementPool(this._createButtonElement());
 		if (this._settings[SETTING_IDS.ENABLED].value) {
 			this._enable();
 		}
-		this._boundSortAll = this.sortAllCallBack.bind(this);
-		this._buttonPool.addEventListener('click', this._boundSortAll);
+
+		this._buttonPool = new ElementPool(this._createButtonElement());
+		this._buttonPool.addEventListener('click', () => this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this));
 	}
 
 	static get id() {
@@ -61,24 +60,28 @@ export default class ChoiceReorder {
 	_disable() {
 		this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
 		this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
-		document.querySelectorAll('.akun-x-sort-button').forEach(node => {
+
+
+		forEach(document.querySelectorAll('.akun-x-sort-button'), node => {
 			delete node.parentNode.dataset[ChoiceReorder.id];
 			node.parentNode.removeChild(node);
 		});
 
-		this._core.dom.nodes('chapter').forEach(function(node) {
+		forEach(this._core.dom.nodes('chapter'), node => {
 			if (!node.classList.contains('choice')) {
 				return;
 			}
+
 			let tbody = node.getElementsByClassName('poll')[0].firstChild
 			delete tbody.dataset.sorted;
 
 			let choices = [];
-			Array.from(tbody.getElementsByClassName('choiceItem')).forEach(function(choiceItem) {
+			forEach(tbody.getElementsByClassName('choiceItem'), choiceItem => {
 				choices.push(choiceItem.cloneNode(true));
 				choiceItem.parentNode.removeChild(choiceItem)
 			});
-			choices.sort(function(a, b) {
+
+			choices.sort((a, b) => {
 				if (parseInt(a.dataset.prevPosition) > parseInt(b.dataset.prevPosition)) {
 					return 1;
 				}
@@ -88,11 +91,12 @@ export default class ChoiceReorder {
 				return 0;
 			});
 
-			choices.forEach(function(choiceItem) {
+			choices.forEach(choiceItem => {
 				tbody.append(choiceItem);
 			});
-			[].forEach.call(tbody.getElementsByClassName('result'), function(result) {
-				Array.from(result.childNodes).forEach(function(total) {
+
+			forEach(tbody.getElementsByClassName('result'), result => {
+				forEach(result.childNodes, total => {
 					if (!total.classList.contains('userVote')) {
 						delete result.parentNode.dataset.prevPosition;
 						delete result.parentNode.dataset.voteCount;
@@ -100,10 +104,6 @@ export default class ChoiceReorder {
 				});
 			});
 		}, this);
-	}
-
-	sortAllCallBack(e) {
-		this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this);
 	}
 
 	_onAddedChatHeader(node) {
@@ -122,10 +122,12 @@ export default class ChoiceReorder {
 
 	_createButtonElement() {
 		const buttonElement = document.createElement('div');
-		buttonElement.classList.add('akun-x-sort-button', 'noselect', 'btn', 'dim-font-color', 'hover-font-color');
+		buttonElement.classList.add('noselect', 'btn', 'dim-font-color', 'hover-font-color');
+		buttonElement.id = ChoiceReorder.id + "-sortButton";
+
 		const textElement = document.createElement('span');
 		textElement.innerHTML = "Sort";
-		textElement.classList.add('button-text');
+
 		buttonElement.appendChild(textElement);
 		return buttonElement;
 	}
@@ -135,24 +137,24 @@ export default class ChoiceReorder {
 			return;
 		}
 		let position = 0;
-		[].forEach.call(tbody.getElementsByClassName('result'), function(result) {
-			Array.from(result.childNodes).forEach(function(total) {
+		forEach(tbody.getElementsByClassName('result'), result => {
+			forEach(result.childNodes, total => {
 				if (!total.classList.contains('userVote')) {
 					result.parentNode.dataset.voteCount = total.textContent;
 					result.parentNode.dataset.prevPosition = position++;
 				}
 			});
 		});
-		[].forEach.call(tbody.getElementsByClassName('xOut'), function(xOut) {
+		forEach(tbody.getElementsByClassName('xOut'), xOut => {
 			xOut.dataset.voteCount = -1;
 		});
 
 		let choices = [];
-		Array.from(tbody.getElementsByClassName('choiceItem')).forEach(function(choiceItem) {
+		forEach(tbody.getElementsByClassName('choiceItem'), choiceItem => {
 			choices.push(choiceItem.cloneNode(true));
 			choiceItem.parentNode.removeChild(choiceItem)
 		});
-		choices.sort(function(a, b) {
+		choices.sort((a, b) => {
 			if (parseInt(a.dataset.voteCount) < parseInt(b.dataset.voteCount)) {
 				return 1;
 			}
@@ -162,9 +164,18 @@ export default class ChoiceReorder {
 			return 0;
 		});
 
-		choices.forEach(function(choiceItem) {
+		choices.forEach(choiceItem => {
 			tbody.append(choiceItem);
 		});
 		tbody.dataset.sorted = true;
+	}
+
+	// Because fuck this [].forEach.call() or Array.from() business
+	forEach(collection, callback) {
+		Array.prototype.forEach.call(collection, callback);
+	}
+
+	removeNode(node) {
+		node.parentNode.removeChild(node);
 	}
 }

@@ -2473,8 +2473,6 @@ var LiveImages = function () {
 	return LiveImages;
 }();
 
-__$styleInject(".akun-x-sort-button{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;display:-webkit-box!important;display:-ms-flexbox!important;display:flex!important;-webkit-box-align:center;-ms-flex-align:center;align-items:center}.akun-x-sort-button .button-text{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:20px!important}", undefined);
-
 var MODULE_ID$5 = 'choiceReorder';
 
 var SETTING_IDS$6 = {
@@ -2494,16 +2492,20 @@ var DEFAULT_SETTINGS$6 = {
 
 var ChoiceReorder = function () {
 	function ChoiceReorder(core) {
+		var _this = this;
+
 		classCallCheck(this, ChoiceReorder);
 
 		this._core = core;
 		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS$6, this._onSettingsChanged.bind(this));
-		this._buttonPool = new ElementPool(this._createButtonElement());
 		if (this._settings[SETTING_IDS$6.ENABLED].value) {
 			this._enable();
 		}
-		this._boundSortAll = this.sortAllCallBack.bind(this);
-		this._buttonPool.addEventListener('click', this._boundSortAll);
+
+		this._buttonPool = new ElementPool(this._createButtonElement());
+		this._buttonPool.addEventListener('click', function () {
+			return _this._core.dom.nodes('chapter').forEach(_this._onAddedChapter, _this);
+		});
 	}
 
 	createClass(ChoiceReorder, [{
@@ -2532,23 +2534,26 @@ var ChoiceReorder = function () {
 		value: function _disable() {
 			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
 			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
-			document.querySelectorAll('.akun-x-sort-button').forEach(function (node) {
+
+			forEach(document.querySelectorAll('.akun-x-sort-button'), function (node) {
 				delete node.parentNode.dataset[ChoiceReorder.id];
 				node.parentNode.removeChild(node);
 			});
 
-			this._core.dom.nodes('chapter').forEach(function (node) {
+			forEach(this._core.dom.nodes('chapter'), function (node) {
 				if (!node.classList.contains('choice')) {
 					return;
 				}
+
 				var tbody = node.getElementsByClassName('poll')[0].firstChild;
 				delete tbody.dataset.sorted;
 
 				var choices = [];
-				Array.from(tbody.getElementsByClassName('choiceItem')).forEach(function (choiceItem) {
+				forEach(tbody.getElementsByClassName('choiceItem'), function (choiceItem) {
 					choices.push(choiceItem.cloneNode(true));
 					choiceItem.parentNode.removeChild(choiceItem);
 				});
+
 				choices.sort(function (a, b) {
 					if (parseInt(a.dataset.prevPosition) > parseInt(b.dataset.prevPosition)) {
 						return 1;
@@ -2562,8 +2567,9 @@ var ChoiceReorder = function () {
 				choices.forEach(function (choiceItem) {
 					tbody.append(choiceItem);
 				});
-				[].forEach.call(tbody.getElementsByClassName('result'), function (result) {
-					Array.from(result.childNodes).forEach(function (total) {
+
+				forEach(tbody.getElementsByClassName('result'), function (result) {
+					forEach(result.childNodes, function (total) {
 						if (!total.classList.contains('userVote')) {
 							delete result.parentNode.dataset.prevPosition;
 							delete result.parentNode.dataset.voteCount;
@@ -2571,11 +2577,6 @@ var ChoiceReorder = function () {
 					});
 				});
 			}, this);
-		}
-	}, {
-		key: 'sortAllCallBack',
-		value: function sortAllCallBack(e) {
-			this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this);
 		}
 	}, {
 		key: '_onAddedChatHeader',
@@ -2597,10 +2598,12 @@ var ChoiceReorder = function () {
 		key: '_createButtonElement',
 		value: function _createButtonElement() {
 			var buttonElement = document.createElement('div');
-			buttonElement.classList.add('akun-x-sort-button', 'noselect', 'btn', 'dim-font-color', 'hover-font-color');
+			buttonElement.classList.add('noselect', 'btn', 'dim-font-color', 'hover-font-color');
+			buttonElement.id = ChoiceReorder.id + "-sortButton";
+
 			var textElement = document.createElement('span');
 			textElement.innerHTML = "Sort";
-			textElement.classList.add('button-text');
+
 			buttonElement.appendChild(textElement);
 			return buttonElement;
 		}
@@ -2611,20 +2614,20 @@ var ChoiceReorder = function () {
 				return;
 			}
 			var position = 0;
-			[].forEach.call(tbody.getElementsByClassName('result'), function (result) {
-				Array.from(result.childNodes).forEach(function (total) {
+			forEach(tbody.getElementsByClassName('result'), function (result) {
+				forEach(result.childNodes, function (total) {
 					if (!total.classList.contains('userVote')) {
 						result.parentNode.dataset.voteCount = total.textContent;
 						result.parentNode.dataset.prevPosition = position++;
 					}
 				});
 			});
-			[].forEach.call(tbody.getElementsByClassName('xOut'), function (xOut) {
+			forEach(tbody.getElementsByClassName('xOut'), function (xOut) {
 				xOut.dataset.voteCount = -1;
 			});
 
 			var choices = [];
-			Array.from(tbody.getElementsByClassName('choiceItem')).forEach(function (choiceItem) {
+			forEach(tbody.getElementsByClassName('choiceItem'), function (choiceItem) {
 				choices.push(choiceItem.cloneNode(true));
 				choiceItem.parentNode.removeChild(choiceItem);
 			});
@@ -2642,6 +2645,19 @@ var ChoiceReorder = function () {
 				tbody.append(choiceItem);
 			});
 			tbody.dataset.sorted = true;
+		}
+
+		// Because fuck this [].forEach.call() or Array.from() business
+
+	}, {
+		key: 'forEach',
+		value: function forEach(collection, callback) {
+			Array.prototype.forEach.call(collection, callback);
+		}
+	}, {
+		key: 'removeNode',
+		value: function removeNode(node) {
+			node.parentNode.removeChild(node);
 		}
 	}], [{
 		key: 'id',
