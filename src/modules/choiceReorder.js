@@ -51,16 +51,22 @@ export default class ChoiceReorder {
 	}
 
 	_enable() {
-		this._core.dom.nodes('chatHeader').forEach(this._onAddedChatHeader, this);
-		this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this);
 		this._core.on(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
 		this._core.on(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
+
+		this._core.on(this._core.EVENTS.NET.POSTED.NODE, this._onPostedNode, this);
+		this._core.on(this._core.EVENTS.REALTIME.CHILD_CHANGED, this._onChildChanged, this);
+
+		this._core.dom.nodes('chatHeader').forEach(this._onAddedChatHeader, this);
+		this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this);
 	}
 
 	_disable() {
 		this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
 		this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
 
+		this._core.removeListener(this._core.EVENTS.NET.POSTED.NODE, this._onPostedNode, this);
+		this._core.removeListener(this._core.EVENTS.REALTIME.CHILD_CHANGED, this._onChildChanged, this);
 
 		document.querySelectorAll('.akun-x-sort-button').forEach(node => {
 			delete node.parentNode.dataset[ChoiceReorder.id];
@@ -120,6 +126,24 @@ export default class ChoiceReorder {
 		}
 	}
 
+	_onPostedNode(json) {
+		this._handleNodeJson(json);
+	}
+
+	_onChildChanged(json){
+		this._handleNodeJson(json);
+	}
+
+	_handleNodeJson(json){
+		if (json['nt'] && json['nt'] === 'choice') {
+			if (json['closed']) {
+				this.reorderChoices(document.querySelector(`article[data-id="${json['_id']}"] > div.chapterContent > div > table > tbody`));
+			} else {
+				delete document.querySelector(`article[data-id="${json['_id']}"] > div.chapterContent > div > table > tbody`).dataset.sorted;
+			}
+		}
+	}
+
 	_createButtonElement() {
 		const buttonElement = document.createElement('div');
 		buttonElement.classList.add('noselect', 'btn', 'dim-font-color', 'hover-font-color');
@@ -137,8 +161,6 @@ export default class ChoiceReorder {
 			return;
 		}
 
-		// Mark all choices with their vote count to make it simpler to sort them
-		// Also mark them with their previous index in the poll to allow disabling the module to fully undo its changes
 		let position = 0;
 		[].forEach.call(tbody.getElementsByClassName('result'), result => {
 			result.childNodes.forEach(node => {
@@ -148,11 +170,9 @@ export default class ChoiceReorder {
 				}
 			});
 		});
-		// Make sure crossed out options go to the bottom
 		[].forEach.call(tbody.getElementsByClassName('xOut'), xOut => {
 			xOut.dataset.voteCount = -1;
 		});
-
 
 		let choices = [];
 		while (tbody.childNodes.length > 1) {

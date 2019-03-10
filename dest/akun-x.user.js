@@ -850,7 +850,7 @@ var Settings = function () {
 	return Settings;
 }();
 
-var MutationObserver$1 = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
 
 var EVENTS$1 = {
 	DOM: {
@@ -1050,7 +1050,7 @@ var ObserverDOM = function () {
 	}], [{
 		key: '_observe',
 		value: function _observe(node, callback, config) {
-			var observer = new MutationObserver$1(callback);
+			var observer = new MutationObserver(callback);
 			observer.observe(node, config);
 		}
 	}]);
@@ -1223,14 +1223,63 @@ var ObserverNet = function () {
 					console.log('Unhandled network request: ' + settings.url);
 			}
 		}
-	}], [{
-		key: '_observe',
-		value: function _observe(node, callback, config) {
-			var observer = new MutationObserver(callback);
-			observer.observe(node, config);
-		}
 	}]);
 	return ObserverNet;
+}();
+
+var EVENTS$4 = {
+	REALTIME: {
+		RAW: 'realtime.raw',
+		CHILD_CHANGED: 'realtime.childChanged'
+	}
+};
+
+var ObserverRealtime = function () {
+	function ObserverRealtime(eventEmitter) {
+		classCallCheck(this, ObserverRealtime);
+
+		this._eventEmitter = eventEmitter;
+		this._listenToRealtimeConnection();
+	}
+
+	createClass(ObserverRealtime, [{
+		key: '_listenToRealtimeConnection',
+		value: function _listenToRealtimeConnection() {
+			// Hook into the websocket connection akun establishes
+			if (window.ty && window.ty.realtime && window.ty.realtime.transport && window.ty.realtime.transport.on) {
+				window.ty.realtime.transport.on('event', this._onEvent.bind(this));
+			} else {
+				setTimeout(this._listenToRealtimeConnection.bind(this), 50);
+			}
+		}
+	}, {
+		key: '_onEvent',
+		value: function _onEvent(type, message) {
+			switch (type) {
+				case 'message':
+					this._eventEmitter.emit(EVENTS$4.REALTIME.RAW, message);
+					break;
+				case '#publish':
+					if (message && message.data && message.data.event) {
+						var eventName = message.data.event;
+						var payload = message.data.message;
+						switch (eventName) {
+							case 'childChanged':
+								this._eventEmitter.emit(EVENTS$4.REALTIME.CHILD_CHANGED, payload);
+								break;
+							default:
+								console.log('Unhandled realtime #publish event with eventName: ' + eventName, payload);
+						}
+					} else {
+						console.log('Unhandled realtime #publish event:', message);
+					}
+					break;
+				default:
+					console.log('Unhandled realtime event: ' + type);
+			}
+		}
+	}]);
+	return ObserverRealtime;
 }();
 
 var ElementPool = function () {
@@ -1445,7 +1494,7 @@ var Restructure = function () {
 var EVENTS$$1 = {
 	FOCUS: 'focus'
 };
-Object.assign(EVENTS$$1, EVENTS$1, EVENTS$2, EVENTS$3);
+Object.assign(EVENTS$$1, EVENTS$1, EVENTS$2, EVENTS$3, EVENTS$4);
 
 var THEMES = {
 	LIGHT: 'snowdrift',
@@ -1468,6 +1517,7 @@ var Core = function (_EventEmitter) {
 		_this._observerDOM = new ObserverDOM(_this);
 		_this._observerInput = new ObserverInput(_this);
 		_this._observerNet = new ObserverNet(_this);
+		_this._observerRealtime = new ObserverRealtime(_this);
 		_this._settings = new Settings(_this);
 		_this._restructure = new Restructure(_this);
 		_this._modules = {};
@@ -1512,6 +1562,11 @@ var Core = function (_EventEmitter) {
 		key: 'net',
 		get: function get$$1() {
 			return this._observerNet;
+		}
+	}, {
+		key: 'realtime',
+		get: function get$$1() {
+			return this._observerRealtime;
 		}
 	}, {
 		key: 'currentUser',
@@ -2524,16 +2579,23 @@ var ChoiceReorder = function () {
 	}, {
 		key: '_enable',
 		value: function _enable() {
-			this._core.dom.nodes('chatHeader').forEach(this._onAddedChatHeader, this);
-			this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this);
 			this._core.on(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
 			this._core.on(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
+
+			this._core.on(this._core.EVENTS.NET.POSTED.NODE, this._onPostedNode, this);
+			this._core.on(this._core.EVENTS.REALTIME.CHILD_CHANGED, this._onChildChanged, this);
+
+			this._core.dom.nodes('chatHeader').forEach(this._onAddedChatHeader, this);
+			this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this);
 		}
 	}, {
 		key: '_disable',
 		value: function _disable() {
 			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
 			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
+
+			this._core.removeListener(this._core.EVENTS.NET.POSTED.NODE, this._onPostedNode, this);
+			this._core.removeListener(this._core.EVENTS.REALTIME.CHILD_CHANGED, this._onChildChanged, this);
 
 			document.querySelectorAll('.akun-x-sort-button').forEach(function (node) {
 				delete node.parentNode.dataset[ChoiceReorder.id];
@@ -2595,6 +2657,27 @@ var ChoiceReorder = function () {
 			}
 		}
 	}, {
+		key: '_onPostedNode',
+		value: function _onPostedNode(json) {
+			this._handleNodeJson(json);
+		}
+	}, {
+		key: '_onChildChanged',
+		value: function _onChildChanged(json) {
+			this._handleNodeJson(json);
+		}
+	}, {
+		key: '_handleNodeJson',
+		value: function _handleNodeJson(json) {
+			if (json['nt'] && json['nt'] === 'choice') {
+				if (json['closed']) {
+					this.reorderChoices(document.querySelector('article[data-id="' + json['_id'] + '"] > div.chapterContent > div > table > tbody'));
+				} else {
+					delete document.querySelector('article[data-id="' + json['_id'] + '"] > div.chapterContent > div > table > tbody').dataset.sorted;
+				}
+			}
+		}
+	}, {
 		key: '_createButtonElement',
 		value: function _createButtonElement() {
 			var buttonElement = document.createElement('div');
@@ -2614,8 +2697,6 @@ var ChoiceReorder = function () {
 				return;
 			}
 
-			// Mark all choices with their vote count to make it simpler to sort them
-			// Also mark them with their previous index in the poll to allow disabling the module to fully undo its changes
 			var position = 0;
 			[].forEach.call(tbody.getElementsByClassName('result'), function (result) {
 				result.childNodes.forEach(function (node) {
@@ -2625,7 +2706,6 @@ var ChoiceReorder = function () {
 					}
 				});
 			});
-			// Make sure crossed out options go to the bottom
 			[].forEach.call(tbody.getElementsByClassName('xOut'), function (xOut) {
 				xOut.dataset.voteCount = -1;
 			});
