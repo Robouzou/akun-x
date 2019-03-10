@@ -2535,12 +2535,12 @@ var ChoiceReorder = function () {
 			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
 			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
 
-			forEach(document.querySelectorAll('.akun-x-sort-button'), function (node) {
+			document.querySelectorAll('.akun-x-sort-button').forEach(function (node) {
 				delete node.parentNode.dataset[ChoiceReorder.id];
 				node.parentNode.removeChild(node);
 			});
 
-			forEach(this._core.dom.nodes('chapter'), function (node) {
+			this._core.dom.nodes('chapter').forEach(function (node) {
 				if (!node.classList.contains('choice')) {
 					return;
 				}
@@ -2549,7 +2549,7 @@ var ChoiceReorder = function () {
 				delete tbody.dataset.sorted;
 
 				var choices = [];
-				forEach(tbody.getElementsByClassName('choiceItem'), function (choiceItem) {
+				tbody.getElementsByClassName('choiceItem').forEach(function (choiceItem) {
 					choices.push(choiceItem.cloneNode(true));
 					choiceItem.parentNode.removeChild(choiceItem);
 				});
@@ -2568,8 +2568,8 @@ var ChoiceReorder = function () {
 					tbody.append(choiceItem);
 				});
 
-				forEach(tbody.getElementsByClassName('result'), function (result) {
-					forEach(result.childNodes, function (total) {
+				tbody.getElementsByClassName('result').forEach(function (result) {
+					result.childNodes.forEach(function (total) {
 						if (!total.classList.contains('userVote')) {
 							delete result.parentNode.dataset.prevPosition;
 							delete result.parentNode.dataset.voteCount;
@@ -2590,7 +2590,7 @@ var ChoiceReorder = function () {
 				try {
 					this.reorderChoices(node.getElementsByClassName('poll')[0].firstChild);
 				} catch (e) {
-					console.log("Can't sort polls where vote count is currently hidden");
+					console.log(e);
 				}
 			}
 		}
@@ -2613,51 +2613,38 @@ var ChoiceReorder = function () {
 			if (tbody.dataset.sorted) {
 				return;
 			}
+
+			// Mark all choices with their vote count to make it simpler to sort them
+			// Also mark them with their previous index in the poll to allow disabling the module to fully undo its changes
 			var position = 0;
-			forEach(tbody.getElementsByClassName('result'), function (result) {
-				forEach(result.childNodes, function (total) {
-					if (!total.classList.contains('userVote')) {
-						result.parentNode.dataset.voteCount = total.textContent;
+			[].forEach.call(tbody.getElementsByClassName('result'), function (result) {
+				result.childNodes.forEach(function (node) {
+					if (node.dataset.hint === "Total Votes") {
+						result.parentNode.dataset.voteCount = node.textContent;
 						result.parentNode.dataset.prevPosition = position++;
 					}
 				});
 			});
-			forEach(tbody.getElementsByClassName('xOut'), function (xOut) {
+			// Make sure crossed out options go to the bottom
+			[].forEach.call(tbody.getElementsByClassName('xOut'), function (xOut) {
 				xOut.dataset.voteCount = -1;
 			});
 
 			var choices = [];
-			forEach(tbody.getElementsByClassName('choiceItem'), function (choiceItem) {
-				choices.push(choiceItem.cloneNode(true));
-				choiceItem.parentNode.removeChild(choiceItem);
-			});
+			while (tbody.childNodes.length > 1) {
+				choices.push(tbody.childNodes[1]);
+				tbody.removeChild(tbody.childNodes[1]);
+			}
+
 			choices.sort(function (a, b) {
-				if (parseInt(a.dataset.voteCount) < parseInt(b.dataset.voteCount)) {
-					return 1;
-				}
-				if (parseInt(a.dataset.voteCount) > parseInt(b.dataset.voteCount)) {
-					return -1;
-				}
-				return 0;
+				return b.dataset.voteCount - a.dataset.voteCount;
 			});
 
 			choices.forEach(function (choiceItem) {
 				tbody.append(choiceItem);
 			});
+
 			tbody.dataset.sorted = true;
-		}
-
-		// Because fuck this [].forEach.call() or Array.from() business
-
-	}, {
-		key: 'forEach',
-		value: function forEach(collection, callback) {
-			Array.prototype.forEach.call(collection, callback);
-		}
-	}, {
-		key: 'removeNode',
-		value: function removeNode(node) {
-			node.parentNode.removeChild(node);
 		}
 	}], [{
 		key: 'id',

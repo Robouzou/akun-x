@@ -62,12 +62,12 @@ export default class ChoiceReorder {
 		this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAT_HEADER, this._onAddedChatHeader, this);
 
 
-		forEach(document.querySelectorAll('.akun-x-sort-button'), node => {
+		document.querySelectorAll('.akun-x-sort-button').forEach(node => {
 			delete node.parentNode.dataset[ChoiceReorder.id];
 			node.parentNode.removeChild(node);
 		});
 
-		forEach(this._core.dom.nodes('chapter'), node => {
+		this._core.dom.nodes('chapter').forEach(node => {
 			if (!node.classList.contains('choice')) {
 				return;
 			}
@@ -76,7 +76,7 @@ export default class ChoiceReorder {
 			delete tbody.dataset.sorted;
 
 			let choices = [];
-			forEach(tbody.getElementsByClassName('choiceItem'), choiceItem => {
+			tbody.getElementsByClassName('choiceItem').forEach(choiceItem => {
 				choices.push(choiceItem.cloneNode(true));
 				choiceItem.parentNode.removeChild(choiceItem)
 			});
@@ -95,8 +95,8 @@ export default class ChoiceReorder {
 				tbody.append(choiceItem);
 			});
 
-			forEach(tbody.getElementsByClassName('result'), result => {
-				forEach(result.childNodes, total => {
+			tbody.getElementsByClassName('result').forEach(result => {
+				result.childNodes.forEach(total => {
 					if (!total.classList.contains('userVote')) {
 						delete result.parentNode.dataset.prevPosition;
 						delete result.parentNode.dataset.voteCount;
@@ -115,7 +115,7 @@ export default class ChoiceReorder {
 			try {
 				this.reorderChoices(node.getElementsByClassName('poll')[0].firstChild);
 			} catch (e) {
-				console.log("Can't sort polls where vote count is currently hidden");
+				console.log(e);
 			}
 		}
 	}
@@ -136,46 +136,38 @@ export default class ChoiceReorder {
 		if (tbody.dataset.sorted) {
 			return;
 		}
+
+		// Mark all choices with their vote count to make it simpler to sort them
+		// Also mark them with their previous index in the poll to allow disabling the module to fully undo its changes
 		let position = 0;
-		forEach(tbody.getElementsByClassName('result'), result => {
-			forEach(result.childNodes, total => {
-				if (!total.classList.contains('userVote')) {
-					result.parentNode.dataset.voteCount = total.textContent;
+		[].forEach.call(tbody.getElementsByClassName('result'), result => {
+			result.childNodes.forEach(node => {
+				if (node.dataset.hint === "Total Votes") {
+					result.parentNode.dataset.voteCount = node.textContent;
 					result.parentNode.dataset.prevPosition = position++;
 				}
 			});
 		});
-		forEach(tbody.getElementsByClassName('xOut'), xOut => {
+		// Make sure crossed out options go to the bottom
+		[].forEach.call(tbody.getElementsByClassName('xOut'), xOut => {
 			xOut.dataset.voteCount = -1;
 		});
 
+
 		let choices = [];
-		forEach(tbody.getElementsByClassName('choiceItem'), choiceItem => {
-			choices.push(choiceItem.cloneNode(true));
-			choiceItem.parentNode.removeChild(choiceItem)
-		});
+		while (tbody.childNodes.length > 1) {
+			choices.push(tbody.childNodes[1]);
+			tbody.removeChild(tbody.childNodes[1]);
+		}
+
 		choices.sort((a, b) => {
-			if (parseInt(a.dataset.voteCount) < parseInt(b.dataset.voteCount)) {
-				return 1;
-			}
-			if (parseInt(a.dataset.voteCount) > parseInt(b.dataset.voteCount)) {
-				return -1;
-			}
-			return 0;
+			return b.dataset.voteCount - a.dataset.voteCount;
 		});
 
 		choices.forEach(choiceItem => {
 			tbody.append(choiceItem);
 		});
+
 		tbody.dataset.sorted = true;
-	}
-
-	// Because fuck this [].forEach.call() or Array.from() business
-	forEach(collection, callback) {
-		Array.prototype.forEach.call(collection, callback);
-	}
-
-	removeNode(node) {
-		node.parentNode.removeChild(node);
 	}
 }
