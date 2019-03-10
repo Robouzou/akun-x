@@ -49,6 +49,8 @@ export default class ChoiceReorder {
 	_enable() {
 		this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this);
 		this._core.on(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
+		this._core.on(this._core.EVENTS.NET.POSTED.NODE, this._onPostedNode, this);
+		this._core.on(this._core.EVENTS.REALTIME.CHILD_CHANGED, this._onChildChanged, this);
 	}
 
 	_disable() {
@@ -59,34 +61,52 @@ export default class ChoiceReorder {
 		if (!node.classList.contains('choice')) {
 			return;
 		}
+		this._reorderChoices(node);
+	}
+
+	_onPostedNode(json) {
+		this._handleNodeJson(json);
+	}
+
+	_onChildChanged(json){
+		this._handleNodeJson(json);
+	}
+
+	_handleNodeJson(json){
+		if (json['nt'] && json['nt'] === 'choice' && json['closed']) {
+			this._reorderChoices(document.querySelector(`article[data-id="${json['_id']}"]`));
+		}
+	}
+
+	_reorderChoices(node) {
 		this.reorderChoices(node.getElementsByClassName('poll')[0].firstChild);
 	}
 
 	reorderChoices(tbody) {
-		[].forEach.call(tbody.getElementsByClassName('result'), function(result) {
-				Array.from(result.childNodes).forEach(function(total) {
-					if (!total.classList.contains('userVote')) {
-						result.parentNode.dataset.index = total.textContent;
-					}
-				});
+		[].forEach.call(tbody.getElementsByClassName('result'), function (result) {
+			Array.from(result.childNodes).forEach(function (total) {
+				if (!total.classList.contains('userVote')) {
+					result.parentNode.dataset.index = total.textContent;
+				}
+			});
 		});
-		[].forEach.call(tbody.getElementsByClassName('xOut'), function(xOut) {
+		[].forEach.call(tbody.getElementsByClassName('xOut'), function (xOut) {
 			xOut.dataset.index = -1;
 		});
 
 		let choices = [];
-		Array.from(tbody.getElementsByClassName('choiceItem')).forEach(function(choiceItem) {
+		Array.from(tbody.getElementsByClassName('choiceItem')).forEach(function (choiceItem) {
 			choices.push(choiceItem.cloneNode(true));
 			choiceItem.parentNode.removeChild(choiceItem)
 		});
-		choices.sort(function(a, b) {
+		choices.sort(function (a, b) {
 			if (a.dataset)
-			if (parseInt(a.dataset.index) < parseInt(b.dataset.index)) return 1;
+				if (parseInt(a.dataset.index) < parseInt(b.dataset.index)) return 1;
 			if (parseInt(a.dataset.index) > parseInt(b.dataset.index)) return -1;
 			return 0;
 		});
 
-		choices.forEach(function(choiceItem) {
+		choices.forEach(function (choiceItem) {
 			tbody.append(choiceItem);
 		});
 	}

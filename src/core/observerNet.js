@@ -29,11 +29,6 @@ export default class ObserverNet {
 		$(document).ajaxComplete(this._onAjaxComplete.bind(this));
 	}
 
-	static _observe(node, callback, config) {
-		const observer = new MutationObserver(callback);
-		observer.observe(node, config);
-	}
-
 	_onAjaxComplete(event, request, settings) {
 		const urlFragments = settings.url.split('/');
 		urlFragments.shift(); // Remove initial empty element
