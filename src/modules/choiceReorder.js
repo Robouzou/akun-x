@@ -47,67 +47,119 @@ export default class ChoiceReorder {
 	}
 
 	_enable() {
-		this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this);
 		this._core.on(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
+
 		this._core.on(this._core.EVENTS.NET.POSTED.NODE, this._onPostedNode, this);
 		this._core.on(this._core.EVENTS.REALTIME.CHILD_CHANGED, this._onChildChanged, this);
+
+		this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this);
 	}
 
 	_disable() {
 		this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
+
+		this._core.removeListener(this._core.EVENTS.NET.POSTED.NODE, this._onPostedNode, this);
+		this._core.removeListener(this._core.EVENTS.REALTIME.CHILD_CHANGED, this._onChildChanged, this);
+
+		this._core.dom.nodes('chapter').forEach(node => {
+			if (!node.classList.contains('choice')) {
+				return;
+			}
+
+			let tbody = node.getElementsByClassName('poll')[0].firstChild
+			delete tbody.dataset.sorted;
+
+			let choices = [];
+			tbody.getElementsByClassName('choiceItem').forEach(choiceItem => {
+				choices.push(choiceItem.cloneNode(true));
+				choiceItem.parentNode.removeChild(choiceItem)
+			});
+
+			choices.sort((a, b) => {
+				if (parseInt(a.dataset.prevPosition) > parseInt(b.dataset.prevPosition)) {
+					return 1;
+				}
+				if (parseInt(a.dataset.prevPosition) < parseInt(b.dataset.prevPosition)) {
+					return -1;
+				}
+				return 0;
+			});
+
+			choices.forEach(choiceItem => {
+				tbody.append(choiceItem);
+			});
+
+			tbody.getElementsByClassName('result').forEach(result => {
+				result.childNodes.forEach(total => {
+					if (!total.classList.contains('userVote')) {
+						delete result.parentNode.dataset.prevPosition;
+						delete result.parentNode.dataset.voteCount;
+					}
+				});
+			});
+		}, this);
 	}
 
 	_onAddedChapter(node) {
-		if (!node.classList.contains('choice')) {
-			return;
+		if (node.classList.contains('choice')) {
+			try {
+				this.reorderChoices(node.getElementsByClassName('poll')[0].firstChild);
+			} catch (e) {
+				console.log(e);
+			}
 		}
-		this._reorderChoices(node);
 	}
 
 	_onPostedNode(json) {
 		this._handleNodeJson(json);
 	}
 
-	_onChildChanged(json){
+	_onChildChanged(json) {
 		this._handleNodeJson(json);
 	}
 
-	_handleNodeJson(json){
-		if (json['nt'] && json['nt'] === 'choice' && json['closed']) {
-			this._reorderChoices(document.querySelector(`article[data-id="${json['_id']}"]`));
+	_handleNodeJson(json) {
+		if (json['nt'] && json['nt'] === 'choice') {
+			if (json['closed']) {
+				this.reorderChoices(document.querySelector(`article[data-id="${json['_id']}"] > div.chapterContent > div > table > tbody`));
+			} else {
+				delete document.querySelector(`article[data-id="${json['_id']}"] > div.chapterContent > div > table > tbody`).dataset.sorted;
+			}
 		}
 	}
 
-	_reorderChoices(node) {
-		this.reorderChoices(node.getElementsByClassName('poll')[0].firstChild);
-	}
-
 	reorderChoices(tbody) {
-		[].forEach.call(tbody.getElementsByClassName('result'), function (result) {
-			Array.from(result.childNodes).forEach(function (total) {
-				if (!total.classList.contains('userVote')) {
-					result.parentNode.dataset.index = total.textContent;
+		if (tbody.dataset.sorted) {
+			return;
+		}
+
+		let position = 0;
+		[].forEach.call(tbody.getElementsByClassName('result'), result => {
+			result.childNodes.forEach(node => {
+				if (node.dataset.hint === "Total Votes") {
+					result.parentNode.dataset.voteCount = node.textContent;
+					result.parentNode.dataset.prevPosition = position++;
 				}
 			});
 		});
-		[].forEach.call(tbody.getElementsByClassName('xOut'), function (xOut) {
-			xOut.dataset.index = -1;
+		[].forEach.call(tbody.getElementsByClassName('xOut'), xOut => {
+			xOut.dataset.voteCount = -1;
 		});
 
 		let choices = [];
-		Array.from(tbody.getElementsByClassName('choiceItem')).forEach(function (choiceItem) {
-			choices.push(choiceItem.cloneNode(true));
-			choiceItem.parentNode.removeChild(choiceItem)
-		});
-		choices.sort(function (a, b) {
-			if (a.dataset)
-				if (parseInt(a.dataset.index) < parseInt(b.dataset.index)) return 1;
-			if (parseInt(a.dataset.index) > parseInt(b.dataset.index)) return -1;
-			return 0;
+		while (tbody.childNodes.length > 1) {
+			choices.push(tbody.childNodes[1]);
+			tbody.removeChild(tbody.childNodes[1]);
+		}
+
+		choices.sort((a, b) => {
+			return b.dataset.voteCount - a.dataset.voteCount;
 		});
 
-		choices.forEach(function (choiceItem) {
+		choices.forEach(choiceItem => {
 			tbody.append(choiceItem);
 		});
+
+		tbody.dataset.sorted = true;
 	}
 }
