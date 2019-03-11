@@ -17,7 +17,7 @@
 (function () {
 'use strict';
 
-function __$styleInject(css, returnValue) {
+function __$styleInject (css, returnValue) {
   if (typeof document === 'undefined') {
     return returnValue;
   }
@@ -849,7 +849,7 @@ var Settings = function () {
 	return Settings;
 }();
 
-var MutationObserver$1 = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
 
 var EVENTS$1 = {
 	DOM: {
@@ -904,6 +904,8 @@ var ObserverDOM = function () {
 					return document.querySelectorAll('.storyItem');
 				case 'chapter':
 					return document.querySelectorAll('.chapter');
+				case 'choice':
+					return document.querySelectorAll('.chapter.choice');
 				case 'logItem':
 					return document.querySelectorAll('.logItem');
 				case 'message':
@@ -1049,7 +1051,7 @@ var ObserverDOM = function () {
 	}], [{
 		key: '_observe',
 		value: function _observe(node, callback, config) {
-			var observer = new MutationObserver$1(callback);
+			var observer = new MutationObserver(callback);
 			observer.observe(node, config);
 		}
 	}]);
@@ -1222,14 +1224,63 @@ var ObserverNet = function () {
 					console.log('Unhandled network request: ' + settings.url);
 			}
 		}
-	}], [{
-		key: '_observe',
-		value: function _observe(node, callback, config) {
-			var observer = new MutationObserver(callback);
-			observer.observe(node, config);
-		}
 	}]);
 	return ObserverNet;
+}();
+
+var EVENTS$4 = {
+	REALTIME: {
+		RAW: 'realtime.raw',
+		CHILD_CHANGED: 'realtime.childChanged'
+	}
+};
+
+var ObserverRealtime = function () {
+	function ObserverRealtime(eventEmitter) {
+		classCallCheck(this, ObserverRealtime);
+
+		this._eventEmitter = eventEmitter;
+		this._listenToRealtimeConnection();
+	}
+
+	createClass(ObserverRealtime, [{
+		key: '_listenToRealtimeConnection',
+		value: function _listenToRealtimeConnection() {
+			// Hook into the websocket connection akun establishes
+			if (window.ty && window.ty.realtime && window.ty.realtime.transport && window.ty.realtime.transport.on) {
+				window.ty.realtime.transport.on('event', this._onEvent.bind(this));
+			} else {
+				setTimeout(this._listenToRealtimeConnection.bind(this), 50);
+			}
+		}
+	}, {
+		key: '_onEvent',
+		value: function _onEvent(type, message) {
+			switch (type) {
+				case 'message':
+					this._eventEmitter.emit(EVENTS$4.REALTIME.RAW, message);
+					break;
+				case '#publish':
+					if (message && message.data && message.data.event) {
+						var eventName = message.data.event;
+						var payload = message.data.message;
+						switch (eventName) {
+							case 'childChanged':
+								this._eventEmitter.emit(EVENTS$4.REALTIME.CHILD_CHANGED, payload);
+								break;
+							default:
+								console.log('Unhandled realtime #publish event with eventName: ' + eventName, payload);
+						}
+					} else {
+						console.log('Unhandled realtime #publish event:', message);
+					}
+					break;
+				default:
+					console.log('Unhandled realtime event: ' + type);
+			}
+		}
+	}]);
+	return ObserverRealtime;
 }();
 
 var ElementPool = function () {
@@ -1444,7 +1495,7 @@ var Restructure = function () {
 var EVENTS$$1 = {
 	FOCUS: 'focus'
 };
-Object.assign(EVENTS$$1, EVENTS$1, EVENTS$2, EVENTS$3);
+Object.assign(EVENTS$$1, EVENTS$1, EVENTS$2, EVENTS$3, EVENTS$4);
 
 var THEMES = {
 	LIGHT: 'snowdrift',
@@ -1467,6 +1518,7 @@ var Core = function (_EventEmitter) {
 		_this._observerDOM = new ObserverDOM(_this);
 		_this._observerInput = new ObserverInput(_this);
 		_this._observerNet = new ObserverNet(_this);
+		_this._observerRealtime = new ObserverRealtime(_this);
 		_this._settings = new Settings(_this);
 		_this._restructure = new Restructure(_this);
 		_this._modules = {};
@@ -1511,6 +1563,11 @@ var Core = function (_EventEmitter) {
 		key: 'net',
 		get: function get$$1() {
 			return this._observerNet;
+		}
+	}, {
+		key: 'realtime',
+		get: function get$$1() {
+			return this._observerRealtime;
 		}
 	}, {
 		key: 'currentUser',
@@ -2477,6 +2534,203 @@ var LiveImages = function () {
 	return LiveImages;
 }();
 
+var MODULE_ID$5 = 'choiceReorder';
+
+var SETTING_IDS$6 = {
+	ENABLED: 'enabled'
+};
+
+var DEFAULT_SETTINGS$6 = {
+	name: 'Choice Reorder',
+	id: MODULE_ID$5,
+	settings: defineProperty({}, SETTING_IDS$6.ENABLED, {
+		name: 'Enabled',
+		description: 'Enable sorting of polls where the results were hidden',
+		type: SETTING_TYPES.BOOLEAN,
+		value: true
+	})
+};
+
+var ChoiceReorder = function () {
+	function ChoiceReorder(core) {
+		classCallCheck(this, ChoiceReorder);
+
+		this._core = core;
+		this._settings = this._core.settings.addModule(DEFAULT_SETTINGS$6, this._onSettingsChanged.bind(this));
+		if (this._settings[SETTING_IDS$6.ENABLED].value) {
+			this._enable();
+		}
+	}
+
+	createClass(ChoiceReorder, [{
+		key: '_onSettingsChanged',
+		value: function _onSettingsChanged(settingId) {
+			switch (settingId) {
+				case SETTING_IDS$6.ENABLED:
+					if (this._settings[SETTING_IDS$6.ENABLED].value) {
+						this._enable();
+					} else {
+						this._disable();
+					}
+					break;
+			}
+		}
+	}, {
+		key: '_enable',
+		value: function _enable() {
+			this._core.on(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
+			this._core.on(this._core.EVENTS.REALTIME.CHILD_CHANGED, this._onChildChanged, this);
+
+			this._core.dom.nodes('choice').forEach(this._applyOrder, this);
+		}
+	}, {
+		key: '_disable',
+		value: function _disable() {
+			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
+			this._core.removeListener(this._core.EVENTS.REALTIME.CHILD_CHANGED, this._onChildChanged, this);
+
+			this._core.dom.nodes('choice').forEach(this._applyChaos, this);
+		}
+	}, {
+		key: '_onAddedChapter',
+		value: function _onAddedChapter(node) {
+			if (node.classList.contains('choice')) {
+				this._applyOrder(node);
+			}
+		}
+	}, {
+		key: '_onChildChanged',
+		value: function _onChildChanged(json) {
+			var _this = this;
+
+			if (json['nt'] && json['nt'] === 'choice') {
+				if (json['closed']) {
+					// Make sure that we're not trying to apply changes before the native site does
+					setImmediate(function () {
+						_this._applyOrder(document.querySelector('article[data-id="' + json['_id'] + '"]'));
+					});
+				}
+			}
+		}
+	}, {
+		key: '_applyOrder',
+		value: function _applyOrder(chapterNode) {
+			var tableNode = chapterNode.querySelector('.poll');
+			if (tableNode.dataset.xkunXChoiceReorderApplied) {
+				return;
+			}
+			var optionData = [];
+			var headerNode = tableNode.rows[0];
+			for (var rowIndex = 1; rowIndex < tableNode.rows.length; rowIndex++) {
+				var row = tableNode.rows[rowIndex];
+				row.dataset.originalIndex = rowIndex;
+				var voteCount = row.classList.contains('xOut') ? -1 : ChoiceReorder._parseVoteCount(row.querySelector('.result'));
+				optionData.push({
+					row: row,
+					voteCount: voteCount
+				});
+			}
+			optionData.sort(function (a, b) {
+				return a.voteCount - b.voteCount;
+			});
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
+
+			try {
+				for (var _iterator = optionData[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					var _row = _step.value.row;
+
+					ChoiceReorder._insertAfter(_row, headerNode);
+				}
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
+				}
+			}
+
+			tableNode.dataset.xkunXChoiceReorderApplied = true;
+		}
+	}, {
+		key: '_applyChaos',
+		value: function _applyChaos(chapterNode) {
+			var tableNode = chapterNode.querySelector('.poll');
+			if (!tableNode.dataset.xkunXChoiceReorderApplied) {
+				return;
+			}
+			var optionData = [];
+			var headerNode = tableNode.rows[0];
+			for (var rowIndex = 1; rowIndex < tableNode.rows.length; rowIndex++) {
+				var row = tableNode.rows[rowIndex];
+				optionData.push({
+					row: row,
+					originalIndex: parseInt(row.dataset.originalIndex, 10)
+				});
+				delete row.dataset.originalIndex;
+			}
+			optionData.sort(function (a, b) {
+				return b.originalIndex - a.originalIndex;
+			});
+			var _iteratorNormalCompletion2 = true;
+			var _didIteratorError2 = false;
+			var _iteratorError2 = undefined;
+
+			try {
+				for (var _iterator2 = optionData[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+					var _row2 = _step2.value.row;
+
+					ChoiceReorder._insertAfter(_row2, headerNode);
+				}
+			} catch (err) {
+				_didIteratorError2 = true;
+				_iteratorError2 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion2 && _iterator2.return) {
+						_iterator2.return();
+					}
+				} finally {
+					if (_didIteratorError2) {
+						throw _iteratorError2;
+					}
+				}
+			}
+
+			delete tableNode.dataset.xkunXChoiceReorderApplied;
+		}
+	}], [{
+		key: '_insertAfter',
+		value: function _insertAfter(newNode, referenceNode) {
+			referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+		}
+	}, {
+		key: '_parseVoteCount',
+		value: function _parseVoteCount(resultNode) {
+			var totalVotesNode = resultNode.querySelector('[data-hint="Total Votes"]');
+			if (totalVotesNode) {
+				return parseInt(totalVotesNode.innerText, 10);
+			} else {
+				return parseInt(resultNode.innerText, 10);
+			}
+		}
+	}, {
+		key: 'id',
+		get: function get$$1() {
+			return MODULE_ID$5;
+		}
+	}]);
+	return ChoiceReorder;
+}();
+
 var core = new Core();
 
 core.addModule(AnonToggle);
@@ -2484,5 +2738,6 @@ core.addModule(ChapterHTMLEditor);
 core.addModule(ImageToggle);
 core.addModule(Linker);
 core.addModule(LiveImages);
+core.addModule(ChoiceReorder);
 
 }());
