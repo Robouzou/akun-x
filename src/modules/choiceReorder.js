@@ -34,6 +34,19 @@ export default class ChoiceReorder {
 		return MODULE_ID;
 	}
 
+	static _insertAfter(newNode, referenceNode) {
+		referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+	}
+
+	static _parseVoteCount(resultNode) {
+		const totalVotesNode = resultNode.querySelector('[data-hint="Total Votes"]');
+		if (totalVotesNode) {
+			return parseInt(totalVotesNode.innerText, 10);
+		} else {
+			return parseInt(resultNode.innerText, 10);
+		}
+	}
+
 	_onSettingsChanged(settingId) {
 		switch (settingId) {
 			case SETTING_IDS.ENABLED:
@@ -48,118 +61,77 @@ export default class ChoiceReorder {
 
 	_enable() {
 		this._core.on(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
-
-		this._core.on(this._core.EVENTS.NET.POSTED.NODE, this._onPostedNode, this);
 		this._core.on(this._core.EVENTS.REALTIME.CHILD_CHANGED, this._onChildChanged, this);
 
-		this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this);
+		this._core.dom.nodes('choice').forEach(this._applyOrder, this);
 	}
 
 	_disable() {
 		this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
-
-		this._core.removeListener(this._core.EVENTS.NET.POSTED.NODE, this._onPostedNode, this);
 		this._core.removeListener(this._core.EVENTS.REALTIME.CHILD_CHANGED, this._onChildChanged, this);
 
-		this._core.dom.nodes('chapter').forEach(node => {
-			if (!node.classList.contains('choice')) {
-				return;
-			}
-
-			let tbody = node.getElementsByClassName('poll')[0].firstChild
-			delete tbody.dataset.sorted;
-
-			let choices = [];
-			tbody.getElementsByClassName('choiceItem').forEach(choiceItem => {
-				choices.push(choiceItem.cloneNode(true));
-				choiceItem.parentNode.removeChild(choiceItem)
-			});
-
-			choices.sort((a, b) => {
-				if (parseInt(a.dataset.prevPosition) > parseInt(b.dataset.prevPosition)) {
-					return 1;
-				}
-				if (parseInt(a.dataset.prevPosition) < parseInt(b.dataset.prevPosition)) {
-					return -1;
-				}
-				return 0;
-			});
-
-			choices.forEach(choiceItem => {
-				tbody.append(choiceItem);
-			});
-
-			tbody.getElementsByClassName('result').forEach(result => {
-				result.childNodes.forEach(total => {
-					if (!total.classList.contains('userVote')) {
-						delete result.parentNode.dataset.prevPosition;
-						delete result.parentNode.dataset.voteCount;
-					}
-				});
-			});
-		}, this);
+		this._core.dom.nodes('choice').forEach(this._applyChaos, this);
 	}
 
 	_onAddedChapter(node) {
 		if (node.classList.contains('choice')) {
-			try {
-				this.reorderChoices(node.getElementsByClassName('poll')[0].firstChild);
-			} catch (e) {
-				console.log(e);
-			}
+			this._applyOrder(node);
 		}
-	}
-
-	_onPostedNode(json) {
-		this._handleNodeJson(json);
 	}
 
 	_onChildChanged(json) {
-		this._handleNodeJson(json);
-	}
-
-	_handleNodeJson(json) {
 		if (json['nt'] && json['nt'] === 'choice') {
 			if (json['closed']) {
-				this.reorderChoices(document.querySelector(`article[data-id="${json['_id']}"] > div.chapterContent > div > table > tbody`));
-			} else {
-				delete document.querySelector(`article[data-id="${json['_id']}"] > div.chapterContent > div > table > tbody`).dataset.sorted;
+				// Make sure that we're not trying to apply changes before the native site does
+				setImmediate(() => {
+					this._applyOrder(document.querySelector(`article[data-id="${json['_id']}"]`));
+				});
 			}
 		}
 	}
 
-	reorderChoices(tbody) {
-		if (tbody.dataset.sorted) {
+	_applyOrder(chapterNode) {
+		const tableNode = chapterNode.querySelector('.poll');
+		if (tableNode.dataset.xkunXChoiceReorderApplied) {
 			return;
 		}
-
-		let position = 0;
-		[].forEach.call(tbody.getElementsByClassName('result'), result => {
-			result.childNodes.forEach(node => {
-				if (node.dataset.hint === "Total Votes") {
-					result.parentNode.dataset.voteCount = node.textContent;
-					result.parentNode.dataset.prevPosition = position++;
-				}
+		const optionData = [];
+		const headerNode = tableNode.rows[0];
+		for (let rowIndex = 1; rowIndex < tableNode.rows.length; rowIndex++) {
+			const row = tableNode.rows[rowIndex];
+			row.dataset.originalIndex = rowIndex;
+			const voteCount = row.classList.contains('xOut') ? -1 : ChoiceReorder._parseVoteCount(row.querySelector('.result'));
+			optionData.push({
+				row,
+				voteCount
 			});
-		});
-		[].forEach.call(tbody.getElementsByClassName('xOut'), xOut => {
-			xOut.dataset.voteCount = -1;
-		});
-
-		let choices = [];
-		while (tbody.childNodes.length > 1) {
-			choices.push(tbody.childNodes[1]);
-			tbody.removeChild(tbody.childNodes[1]);
 		}
+		optionData.sort((a, b) => a.voteCount - b.voteCount);
+		for (const { row } of optionData) {
+			ChoiceReorder._insertAfter(row, headerNode);
+		}
+		tableNode.dataset.xkunXChoiceReorderApplied = true;
+	}
 
-		choices.sort((a, b) => {
-			return b.dataset.voteCount - a.dataset.voteCount;
-		});
-
-		choices.forEach(choiceItem => {
-			tbody.append(choiceItem);
-		});
-
-		tbody.dataset.sorted = true;
+	_applyChaos(chapterNode) {
+		const tableNode = chapterNode.querySelector('.poll');
+		if (!tableNode.dataset.xkunXChoiceReorderApplied) {
+			return;
+		}
+		const optionData = [];
+		const headerNode = tableNode.rows[0];
+		for (let rowIndex = 1; rowIndex < tableNode.rows.length; rowIndex++) {
+			const row = tableNode.rows[rowIndex];
+			optionData.push({
+				row,
+				originalIndex: parseInt(row.dataset.originalIndex, 10)
+			});
+			delete row.dataset.originalIndex
+		}
+		optionData.sort((a, b) => b.originalIndex - a.originalIndex);
+		for (const { row } of optionData) {
+			ChoiceReorder._insertAfter(row, headerNode);
+		}
+		delete tableNode.dataset.xkunXChoiceReorderApplied;
 	}
 }
