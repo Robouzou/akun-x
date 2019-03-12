@@ -2,7 +2,7 @@
 // @name          AkunX
 // @description   Extends the functionality of Akun to enhance the experience
 // @author        Fiddlekins
-// @version       1.1.9
+// @version       1.2.0
 // @namespace     https://github.com/Fiddlekins/akun-x
 // @include       https://anonkun.com/*
 // @include       http://anonkun.com/*
@@ -11,14 +11,15 @@
 // @include       https://beta.fiction.live/*
 // @include       http://beta.fiction.live/*
 // @grant         none
-// @updateURL     https://github.com/Robouzou/akun-x/raw/master/dest/akun-x.meta.js
-// @downloadURL   https://github.com/Robouzou/akun-x/raw/master/dest/akun-x.user.js
+// @updateURL     https://github.com/Fiddlekins/akun-x/raw/master/dest/akun-x.meta.js
+// @downloadURL   https://github.com/Fiddlekins/akun-x/raw/master/dest/akun-x.user.js
+// @icon          https://avatars2.githubusercontent.com/u/11947488
 // ==/UserScript==
 
 (function () {
 'use strict';
 
-function __$styleInject(css, returnValue) {
+function __$styleInject (css, returnValue) {
   if (typeof document === 'undefined') {
     return returnValue;
   }
@@ -905,6 +906,8 @@ var ObserverDOM = function () {
 					return document.querySelectorAll('.storyItem');
 				case 'chapter':
 					return document.querySelectorAll('.chapter');
+				case 'choice':
+					return document.querySelectorAll('.chapter.choice');
 				case 'logItem':
 					return document.querySelectorAll('.logItem');
 				case 'message':
@@ -2018,7 +2021,7 @@ var ImageToggle = function () {
 		value: function _regenerateCurrentStyling() {
 			var css = '';
 			if (this._settings[SETTING_IDS$3.ALL].value) {
-				css += 'img {display: none!important;}';
+				css += 'img, video {display: none!important;}';
 			} else {
 				if (this._settings[SETTING_IDS$3.STORY_COVERS].value) {
 					css += '.storyImg, .imgWithBackground, .authorOf img, .storyListItem .imgContainer img {display: none!important;}';
@@ -2027,18 +2030,23 @@ var ImageToggle = function () {
 				}
 				if (this._settings[SETTING_IDS$3.STORY_BODY].value) {
 					css += '#storyPosts img {display: none!important;}';
+					css += '#storyPosts video {display: none!important;}';
 				}
 				if (this._settings[SETTING_IDS$3.CHAT_MESSAGES].value) {
 					css += '#mainChat .message img, #page-body .message img {display: none!important;}';
+					css += '#mainChat .message video, #page-body .message video {display: none!important;}';
 				}
 				if (this._settings[SETTING_IDS$3.CHAT_MODALS].value) {
 					css += '.chatModal .message img, .chatModal .postBody img {display: none!important;}';
+					css += '.chatModal .message video, .chatModal .postBody video {display: none!important;}';
 				}
 				if (this._settings[SETTING_IDS$3.TOPIC_COVERS].value) {
 					css += '#threads td:not(:last-child) img, .newsFeed img {display: none!important;}';
+					css += '#threads td:not(:last-child) video, .newsFeed video {display: none!important;}';
 				}
 				if (this._settings[SETTING_IDS$3.TOPIC_OP].value) {
 					css += '.page-head-body #page-body img {display: none!important;}';
+					css += '.page-head-body #page-body video {display: none!important;}';
 				}
 				if (this._settings[SETTING_IDS$3.PROFILE_AVATARS].value) {
 					css += '#userProfile .avatar img {display: none!important;}';
@@ -2100,7 +2108,7 @@ var DEFAULT_SETTINGS$4 = {
 		value: true
 	}), defineProperty(_settings$2, SETTING_IDS$4.EMBED_VIDEOS, {
 		name: 'Embed Videos',
-		description: 'Embed links recognised to be videos as images instead.',
+		description: 'Embed links recognised to be videos as videos instead.',
 		type: SETTING_TYPES.BOOLEAN,
 		value: true
 	}), defineProperty(_settings$2, SETTING_IDS$4.MEDIA_SITES, {
@@ -2573,127 +2581,150 @@ var ChoiceReorder = function () {
 		key: '_enable',
 		value: function _enable() {
 			this._core.on(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
-
-			this._core.on(this._core.EVENTS.NET.POSTED.NODE, this._onPostedNode, this);
 			this._core.on(this._core.EVENTS.REALTIME.CHILD_CHANGED, this._onChildChanged, this);
 
-			this._core.dom.nodes('chapter').forEach(this._onAddedChapter, this);
+			this._core.dom.nodes('choice').forEach(this._applyOrder, this);
 		}
 	}, {
 		key: '_disable',
 		value: function _disable() {
 			this._core.removeListener(this._core.EVENTS.DOM.ADDED.CHAPTER, this._onAddedChapter, this);
-
-			this._core.removeListener(this._core.EVENTS.NET.POSTED.NODE, this._onPostedNode, this);
 			this._core.removeListener(this._core.EVENTS.REALTIME.CHILD_CHANGED, this._onChildChanged, this);
 
-			this._core.dom.nodes('chapter').forEach(function (node) {
-				if (!node.classList.contains('choice')) {
-					return;
-				}
-
-				var tbody = node.getElementsByClassName('poll')[0].firstChild;
-				delete tbody.dataset.sorted;
-
-				var choices = [];
-				tbody.getElementsByClassName('choiceItem').forEach(function (choiceItem) {
-					choices.push(choiceItem.cloneNode(true));
-					choiceItem.parentNode.removeChild(choiceItem);
-				});
-
-				choices.sort(function (a, b) {
-					if (parseInt(a.dataset.prevPosition) > parseInt(b.dataset.prevPosition)) {
-						return 1;
-					}
-					if (parseInt(a.dataset.prevPosition) < parseInt(b.dataset.prevPosition)) {
-						return -1;
-					}
-					return 0;
-				});
-
-				choices.forEach(function (choiceItem) {
-					tbody.append(choiceItem);
-				});
-
-				tbody.getElementsByClassName('result').forEach(function (result) {
-					result.childNodes.forEach(function (total) {
-						if (!total.classList.contains('userVote')) {
-							delete result.parentNode.dataset.prevPosition;
-							delete result.parentNode.dataset.voteCount;
-						}
-					});
-				});
-			}, this);
+			this._core.dom.nodes('choice').forEach(this._applyChaos, this);
 		}
 	}, {
 		key: '_onAddedChapter',
 		value: function _onAddedChapter(node) {
 			if (node.classList.contains('choice')) {
-				try {
-					this.reorderChoices(node.getElementsByClassName('poll')[0].firstChild);
-				} catch (e) {
-					console.log(e);
-				}
+				this._applyOrder(node);
 			}
-		}
-	}, {
-		key: '_onPostedNode',
-		value: function _onPostedNode(json) {
-			this._handleNodeJson(json);
 		}
 	}, {
 		key: '_onChildChanged',
 		value: function _onChildChanged(json) {
-			this._handleNodeJson(json);
-		}
-	}, {
-		key: '_handleNodeJson',
-		value: function _handleNodeJson(json) {
+			var _this = this;
+
 			if (json['nt'] && json['nt'] === 'choice') {
 				if (json['closed']) {
-					this.reorderChoices(document.querySelector('article[data-id="' + json['_id'] + '"] > div.chapterContent > div > table > tbody'));
-				} else {
-					delete document.querySelector('article[data-id="' + json['_id'] + '"] > div.chapterContent > div > table > tbody').dataset.sorted;
+					// Make sure that we're not trying to apply changes before the native site does
+					setImmediate(function () {
+						_this._applyOrder(document.querySelector('article[data-id="' + json['_id'] + '"]'));
+					});
 				}
 			}
 		}
 	}, {
-		key: 'reorderChoices',
-		value: function reorderChoices(tbody) {
-			if (tbody.dataset.sorted) {
+		key: '_applyOrder',
+		value: function _applyOrder(chapterNode) {
+			var tableNode = chapterNode.querySelector('.poll');
+			if (tableNode.dataset.xkunXChoiceReorderApplied) {
 				return;
 			}
-
-			var position = 0;
-			[].forEach.call(tbody.getElementsByClassName('result'), function (result) {
-				result.childNodes.forEach(function (node) {
-					if (node.dataset.hint === "Total Votes") {
-						result.parentNode.dataset.voteCount = node.textContent;
-						result.parentNode.dataset.prevPosition = position++;
-					}
+			var optionData = [];
+			var headerNode = tableNode.rows[0];
+			for (var rowIndex = 1; rowIndex < tableNode.rows.length; rowIndex++) {
+				var row = tableNode.rows[rowIndex];
+				row.dataset.originalIndex = rowIndex;
+				var voteCount = row.classList.contains('xOut') ? -1 : ChoiceReorder._parseVoteCount(row.querySelector('.result'));
+				optionData.push({
+					row: row,
+					voteCount: voteCount
 				});
+			}
+			optionData.sort(function (a, b) {
+				return a.voteCount - b.voteCount;
 			});
-			[].forEach.call(tbody.getElementsByClassName('xOut'), function (xOut) {
-				xOut.dataset.voteCount = -1;
-			});
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
 
-			var choices = [];
-			while (tbody.childNodes.length > 1) {
-				choices.push(tbody.childNodes[1]);
-				tbody.removeChild(tbody.childNodes[1]);
+			try {
+				for (var _iterator = optionData[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					var _row = _step.value.row;
+
+					ChoiceReorder._insertAfter(_row, headerNode);
+				}
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
+				}
 			}
 
-			choices.sort(function (a, b) {
-				return b.dataset.voteCount - a.dataset.voteCount;
+			tableNode.dataset.xkunXChoiceReorderApplied = true;
+		}
+	}, {
+		key: '_applyChaos',
+		value: function _applyChaos(chapterNode) {
+			var tableNode = chapterNode.querySelector('.poll');
+			if (!tableNode.dataset.xkunXChoiceReorderApplied) {
+				return;
+			}
+			var optionData = [];
+			var headerNode = tableNode.rows[0];
+			for (var rowIndex = 1; rowIndex < tableNode.rows.length; rowIndex++) {
+				var row = tableNode.rows[rowIndex];
+				optionData.push({
+					row: row,
+					originalIndex: parseInt(row.dataset.originalIndex, 10)
+				});
+				delete row.dataset.originalIndex;
+			}
+			optionData.sort(function (a, b) {
+				return b.originalIndex - a.originalIndex;
 			});
+			var _iteratorNormalCompletion2 = true;
+			var _didIteratorError2 = false;
+			var _iteratorError2 = undefined;
 
-			choices.forEach(function (choiceItem) {
-				tbody.append(choiceItem);
-			});
+			try {
+				for (var _iterator2 = optionData[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+					var _row2 = _step2.value.row;
 
-			tbody.dataset.sorted = true;
+					ChoiceReorder._insertAfter(_row2, headerNode);
+				}
+			} catch (err) {
+				_didIteratorError2 = true;
+				_iteratorError2 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion2 && _iterator2.return) {
+						_iterator2.return();
+					}
+				} finally {
+					if (_didIteratorError2) {
+						throw _iteratorError2;
+					}
+				}
+			}
+
+			delete tableNode.dataset.xkunXChoiceReorderApplied;
 		}
 	}], [{
+		key: '_insertAfter',
+		value: function _insertAfter(newNode, referenceNode) {
+			referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+		}
+	}, {
+		key: '_parseVoteCount',
+		value: function _parseVoteCount(resultNode) {
+			var totalVotesNode = resultNode.querySelector('[data-hint="Total Votes"]');
+			if (totalVotesNode) {
+				return parseInt(totalVotesNode.innerText, 10);
+			} else {
+				return parseInt(resultNode.innerText, 10);
+			}
+		}
+	}, {
 		key: 'id',
 		get: function get$$1() {
 			return MODULE_ID$5;

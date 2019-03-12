@@ -36,6 +36,8 @@ for the chapter
   these directly into the page
 #### Live Images
  - Adds the story cover image to the list of Live stories 
+#### Choice Reorder (courtesy of [Robouzou](https://github.com/Robouzou/akun-x))
+ - With native Akun polls will display scrambled when the story is set to hidden poll mode even after the poll is closed and vote counts are visible. This fixes that
 
 ## Building AkunX
 Do `npm run build` to rebuild the userscripts from the source.

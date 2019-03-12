@@ -48,6 +48,8 @@ export default class ObserverDOM {
 				return document.querySelectorAll('.storyItem');
 			case 'chapter':
 				return document.querySelectorAll('.chapter');
+			case 'choice':
+				return document.querySelectorAll('.chapter.choice');
 			case 'logItem':
 				return document.querySelectorAll('.logItem');
 			case 'message':

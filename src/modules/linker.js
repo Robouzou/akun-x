@@ -38,7 +38,7 @@ const DEFAULT_SETTINGS = {
 		},
 		[SETTING_IDS.EMBED_VIDEOS]: {
 			name: 'Embed Videos',
-			description: 'Embed links recognised to be videos as images instead.',
+			description: 'Embed links recognised to be videos as videos instead.',
 			type: SETTING_TYPES.BOOLEAN,
 			value: true
 		},
